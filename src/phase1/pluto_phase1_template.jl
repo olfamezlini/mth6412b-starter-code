@@ -23,11 +23,11 @@ md"""
 ##### 1. Récupérer le code de la phase 1 sur le site web du cours. Vous y trouverez une structure de données Node pour les noeuds d’un graphe et Graph pour le graphe proprement dit. On fournit également un jeu de fonctions qui lisent les fichiers au format de TSPLib. On se limite ici aux problèmes symétriques dont les poids sont donnés au format EXPLICIT . """
 
 # ╔═╡ c49caeea-0bdd-4cd3-8e50-c739befecd98
-md"""[https://github.com/dpo/mth6412b-starter-code](https://github.com/dpo/mth6412b-starter-code)"""
+md"""[https://github.com/olfamezlini/mth6412b-starter-code/tree/Phase-1/src/phase1](https://github.com/olfamezlini/mth6412b-starter-code/tree/Phase-1/src/phase1)"""
 
 
 # ╔═╡ 2ca058c6-5f4b-47d1-9282-a8803eaf19c5
-md""" On a créee un fork pour le projet fournit sur github "MTH6412b-starter-code : Une fois que nous avons forké le projet, nous pouvons apporter toutes les modifications que nous souhaitons à cette copie. Cela vous permet de travailler sur les nouvelles fonctionnalités, de répondr aux questios et faire le travail demandé sans interférer avec le dépôt original."""
+md""" On a créé un fork pour le projet fournit sur GitHub "MTH6412b-starter-code : Une fois que nous avons forké le projet, nous pouvons apporter toutes les modifications que nous souhaitons à cette copie. Cela vous permet de travailler sur les nouvelles fonctionnalités, de répondre aux questions et faire le travail demandé sans interférer avec le dépôt original."""
 
 # ╔═╡ d16af9e4-e9fd-49df-97e4-b6af7193d63f
 md"""
@@ -80,10 +80,10 @@ edge = Edge("James", 10, node1, node2)
 
 # ╔═╡ 7f5af2f7-3a44-4650-af58-c7d9f3600f33
 md"""
-###### Méthode d'affichage show pour un type edge"""
+###### Méthode d'affichage pour un type edge"""
 
 # ╔═╡ b2dde163-2e25-4478-aeab-ba34df4e0f25
-md""" Pour affiche une arête on a créée la fonction show qui prend comme paramètre un arête et affiche les informations lui associées: """
+md""" Pour afficher une arête, on a créé la fonction show qui prend comme paramètre une arête et affiche les informations lui associer : """
 
 # ╔═╡ 623cc0bd-c29f-47c4-aab6-fa948cbb331e
 md"""
@@ -143,7 +143,7 @@ md"""
 """
 
 # ╔═╡ 737fea6b-ee3f-42d6-964d-de2bcbe9c242
-md""" Afin que la fonction show graph prend en considération les arêtes et les affiche, la modification suivante était faite : 
+md""" Afin que la fonction show graph prenne en considération les arêtes et les affiche, la modification suivante était faite : 
 """
 
 # ╔═╡ 61c286e5-cba5-43f0-ba50-6a4e219ba42a
@@ -194,12 +194,10 @@ md"""
 """
 
 # ╔═╡ ecca1940-1745-4b48-8183-ce1f0f7b18c2
-md""" Afin de répondre a cette question nous avons créer un fichier nommée Main.jl, ou on a fait la Lecture de l'instance de TSP symétrique (bayg29.tsp) et on a construit l'objet de type graph correspondant """
+md""" Afin de répondre à cette question, nous avons créé un fichier nommé Main.jl, ou on a fait la Lecture de l'instance de TSP symétrique (bayg29.tsp) et on a construit l'objet de type graph correspondant. Vous pouvez voir ça sur la branche phase 1 en appuyant sur le lien ci-dessous. """
 
 # ╔═╡ 60ae8928-896e-4ab1-81b3-5284ea72b686
-md"""
-![](C:/Users/olfam/mth6412b-starter-code/src/phase1/mon_graphe.png)
-"""
+md"""[https://github.com/olfamezlini/mth6412b-starter-code/blob/Phase-1/src/phase1/main.jl](https://github.com/olfamezlini/mth6412b-starter-code/blob/Phase-1/src/phase1/main.jl)"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -264,7 +262,7 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 # ╟─bbdffecf-e537-4562-ba0e-b3e006965992
 # ╟─621fe82a-ac2a-4b15-bdca-74925a115963
 # ╟─ecca1940-1745-4b48-8183-ce1f0f7b18c2
-# ╠═60ae8928-896e-4ab1-81b3-5284ea72b686
+# ╟─60ae8928-896e-4ab1-81b3-5284ea72b686
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
 
