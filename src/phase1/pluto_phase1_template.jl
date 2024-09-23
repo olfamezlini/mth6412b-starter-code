@@ -27,12 +27,15 @@ md"""[https://github.com/dpo/mth6412b-starter-code](https://github.com/dpo/mth64
 
 
 # ╔═╡ 2ca058c6-5f4b-47d1-9282-a8803eaf19c5
-md""" Le lecteur peut fork le projet et lancer le fichier main.jl pour retrouver les résultats ci-dessous"""
+md""" On a créee un fork pour le projet fournit sur github "MTH6412b-starter-code : Une fois que nous avons forké le projet, nous pouvons apporter toutes les modifications que nous souhaitons à cette copie. Cela vous permet de travailler sur les nouvelles fonctionnalités, de répondr aux questios et faire le travail demandé sans interférer avec le dépôt original."""
 
 # ╔═╡ d16af9e4-e9fd-49df-97e4-b6af7193d63f
 md"""
 ##### 2. Proposer un type Edge pour représenter les arêtes d’un graphe
 """
+
+# ╔═╡ 11e677b5-6ac6-45f2-a5ad-4ad36fd2776c
+md""" Nous avons définit la structure Edge de maniere semblale a celle de Node. La structure est décrite alors par un nom de type String, un poids d'un type général (DATA) et de deux noeuds de type Node. """
 
 # ╔═╡ 789d0351-e2db-4250-8694-7003fbe1c17b
 """Type abstrait dont d'autres types d'arrêtes dériveront."""
@@ -61,12 +64,26 @@ md"""
 md"""
 ###### Exemple"""
 
-# ╔═╡ af9dca34-559f-42a1-8d0c-a202c9a80037
-md""" edge = Edge("James", 10, node1, node2)"""
+# ╔═╡ 13d8a324-5850-4a1d-8206-bb4fe3c2a544
+md""" Vous voyez ci-dissous un exemple de création d'une arête, cette arête est nommée James evec un poids de 10 et qui lie node1 et node2. """
+
+# ╔═╡ c2519803-e129-405b-b1cc-21a2d3b647f2
+md"""
+```julia 
+node1 = Node("A", 3)
+
+node2 = Node("B", 2)
+
+edge = Edge("James", 10, node1, node2)
+```
+"""
 
 # ╔═╡ 7f5af2f7-3a44-4650-af58-c7d9f3600f33
 md"""
 ###### Méthode d'affichage show pour un type edge"""
+
+# ╔═╡ b2dde163-2e25-4478-aeab-ba34df4e0f25
+md""" Pour affiche une arête on a créée la fonction show qui prend comme paramètre un arête et affiche les informations lui associées: """
 
 # ╔═╡ 623cc0bd-c29f-47c4-aab6-fa948cbb331e
 md"""
@@ -77,11 +94,37 @@ end
 ```
 """
 
+# ╔═╡ af9dca34-559f-42a1-8d0c-a202c9a80037
+md"""
+```julia 
+show(node1)
+
+show(node2)
+
+show(edge)
+```
+"""
+
+# ╔═╡ 073418fb-8b6b-4c30-baee-75651749b89c
+md""" Le résultat de code ci-dessus est le suivant : """
+
+# ╔═╡ e9330884-d1d0-4c0c-b181-014109997a0a
+md"""
+Node A, data: 3
+
+Node B, data: 2
+
+Arete : James, data : 10, noeud_1 : Node{Int64}("A", 3), noeud_2 : Node{Int64}("B", 2)
+"""
+
 # ╔═╡ 1d6336d0-411e-4431-b2b5-73e813adb904
 md"""
 ##### 3. Étendre le type Graph afin qu’un graphe contienne ses arêtes. On se limite ici aux graphes non orientés. L’utilisateur doit pouvoir ajouter une arête à la fois à un graphe.
 
 """
+
+# ╔═╡ 60e6dd05-1c53-441c-a92a-bfc5505f7db1
+md""" Nous avons modifié le fichier Graph.jl, la fonction add_edge a été ajouté. """
 
 # ╔═╡ cc928741-3463-4b58-b552-af710f92ae30
 md"""
@@ -97,6 +140,10 @@ end
 md"""
 ##### 4.  Étendre la méthode d’affichage show d’un objet de type Graph afin que les arêtes du graphe soient également affichées
 
+"""
+
+# ╔═╡ 737fea6b-ee3f-42d6-964d-de2bcbe9c242
+md""" Afin que la fonction show graph prend en considération les arêtes et les affiche, la modification suivante était faite : 
 """
 
 # ╔═╡ 61c286e5-cba5-43f0-ba50-6a4e219ba42a
@@ -140,6 +187,20 @@ function read_edges(header::Dict{String}{String}, filename::String)
 ```
 """
 
+# ╔═╡ 621fe82a-ac2a-4b15-bdca-74925a115963
+md"""
+##### 6. Fournir un programme principal qui lit une instance de TSP symétrique dont les poids sont donnés au format EXPLICIT et construit un objet de type Graph correspondant.
+
+"""
+
+# ╔═╡ ecca1940-1745-4b48-8183-ce1f0f7b18c2
+md""" Afin de répondre a cette question nous avons créer un fichier nommée Main.jl, ou on a fait la Lecture de l'instance de TSP symétrique (bayg29.tsp) et on a construit l'objet de type graph correspondant """
+
+# ╔═╡ 60ae8928-896e-4ab1-81b3-5284ea72b686
+md"""
+![](C:/Users/olfam/mth6412b-starter-code/src/phase1/mon_graphe.png)
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -180,18 +241,33 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 # ╟─c49caeea-0bdd-4cd3-8e50-c739befecd98
 # ╟─2ca058c6-5f4b-47d1-9282-a8803eaf19c5
 # ╟─d16af9e4-e9fd-49df-97e4-b6af7193d63f
+# ╠═11e677b5-6ac6-45f2-a5ad-4ad36fd2776c
 # ╟─789d0351-e2db-4250-8694-7003fbe1c17b
 # ╟─905d4a8a-9d15-45b3-8e3a-ffb33cd835b3
 # ╟─d670b6ea-a115-4a5a-bf9e-0179b05fb447
 # ╟─5ffd582d-91f5-47d8-a184-d7b62cf76567
-# ╟─af9dca34-559f-42a1-8d0c-a202c9a80037
+# ╟─13d8a324-5850-4a1d-8206-bb4fe3c2a544
+# ╟─c2519803-e129-405b-b1cc-21a2d3b647f2
 # ╟─7f5af2f7-3a44-4650-af58-c7d9f3600f33
+# ╟─b2dde163-2e25-4478-aeab-ba34df4e0f25
 # ╟─623cc0bd-c29f-47c4-aab6-fa948cbb331e
+# ╟─af9dca34-559f-42a1-8d0c-a202c9a80037
+# ╟─073418fb-8b6b-4c30-baee-75651749b89c
+# ╟─e9330884-d1d0-4c0c-b181-014109997a0a
 # ╟─1d6336d0-411e-4431-b2b5-73e813adb904
+# ╟─60e6dd05-1c53-441c-a92a-bfc5505f7db1
 # ╟─cc928741-3463-4b58-b552-af710f92ae30
 # ╟─30d35ba2-4789-4f93-be23-15c034ae0146
+# ╟─737fea6b-ee3f-42d6-964d-de2bcbe9c242
 # ╟─61c286e5-cba5-43f0-ba50-6a4e219ba42a
-# ╟─281a9ab0-29c5-4491-8bb2-b1bed1b63eff
+# ╠═281a9ab0-29c5-4491-8bb2-b1bed1b63eff
 # ╟─bbdffecf-e537-4562-ba0e-b3e006965992
+# ╟─621fe82a-ac2a-4b15-bdca-74925a115963
+# ╟─ecca1940-1745-4b48-8183-ce1f0f7b18c2
+# ╠═60ae8928-896e-4ab1-81b3-5284ea72b686
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
+
+
+import Pluto
+Pluto.run()

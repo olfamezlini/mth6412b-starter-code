@@ -6,7 +6,7 @@ abstract type AbstractEdge{T} end
 """Type représentant les arêtes d'un graphe.
 
 Exemple:
-
+ 
         edge = Edge("James", 10, node1, node2)
 
 """
