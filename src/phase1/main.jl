@@ -22,10 +22,21 @@ show(edge)
 G = Graph("Ick", [node1, node2], [edge])
 show(G)
 
+# Ajout d'une arête au graphe G
+
+node3 = Node("C", 4)
+
+node4 = Node("D", 5)
+
+edge1 = Edge("Arthur", 20, node3, node4)
+
+add_edge!(G, edge1)
+
+show(G)
+
 # Lecture de l'instance de TSP symétrique (bayg29.tsp)
 # Le chemin du fichier de TSP symétrique doit être bien indiqué.
 
 graph_nodes, graph_edges = read_stsp("instances/stsp/bayg29.tsp")
 plot_graph(graph_nodes, graph_edges)
 
-savefig("mon_graphe.png")
