@@ -184,7 +184,11 @@ end
 md""" Le résultat de code ci-dessus est le suivant : """
 
 # ╔═╡ a01e331c-013b-48fb-bce1-ef5f3d87452f
-md""" Graph Ick has 2 nodes and 1 edges. """
+md""" Graph Ick has 2 nodes and 1 edges. 
+
+Node A, data: 3
+
+Node B, data: 2"""
 
 # ╔═╡ 281a9ab0-29c5-4491-8bb2-b1bed1b63eff
 md"""
@@ -410,4 +414,3 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 import Pluto
 Pluto.run()
-
