@@ -188,7 +188,10 @@ md""" Graph Ick has 2 nodes and 1 edges.
 
 Node A, data: 3
 
-Node B, data: 2"""
+Node B, data: 2
+
+Arete : James, data : 10, noeud_1 : Node{Int64}("A", 3), noeud_2 : Node{Int64}("B", 2)
+"""
 
 # ╔═╡ 281a9ab0-29c5-4491-8bb2-b1bed1b63eff
 md"""
@@ -412,5 +415,5 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
 
-import Pluto
+import Pluto 
 Pluto.run()
