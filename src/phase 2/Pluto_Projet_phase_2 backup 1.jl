@@ -19,7 +19,7 @@ md"""## Giorgi Gamkrelidze - Matricule : 2408995
 ## Projet phase 2"""
 
 # ╔═╡ 35ce874f-0c25-4ea3-ad96-837a7d262806
-md"""#### Lien de la phase 2 sur Github : [https://github.com/olfamezlini/mth6412b-starter-code](https://github.com/olfamezlini/mth6412b-starter-code)"""
+md"""#### Lien de la phase 2 sur Github : ?"""
 
 # ╔═╡ 84284d95-aac1-4816-81db-c61643359868
 md"""#### Étape 1 de la marche à suivre : Choisir et implémenter une structure de données pour les composantes connexes d’un graphe"""
@@ -88,7 +88,7 @@ end
 md"""Ensuite, nous avons également défini un fichier .tsp représentant l'exemple du cours dans l'objectif d'appliquer l'algorithme de Kruskal sur ce dernier."""
 
 # ╔═╡ ba3a86eb-278c-4db1-8290-708f7526017b
-exemple_cours = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/arbre_minimal_cours.PNG")
+exemple_cours = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/arbre_minimal_cours.png")
 
 # ╔═╡ b2bfac41-dc5e-42a1-90b9-175a82c14569
 md"""Dans un premier temps, nous avons défini ce graphe comme un fichier TSP. Nous avons donc implémenté une structure de données pour les composantes connexes de ce graphe."""
@@ -110,7 +110,7 @@ md"""Un fichier TSP se compose de plusieurs parties :
 md"""En ayant considéré ces informations, nous avons défini le fichier TSP pour le grpahe du cours."""
 
 # ╔═╡ f9af27f6-8bb6-4ca6-95a6-4caec59439e7
-image_file_cours_2 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/fichier_TSP_exemple.png")
+image_file_cours_2 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/fichier_TSP_exemple.png")
 
 # ╔═╡ e3156390-4bbf-4fd2-a4d4-4847e934e487
 md"""**Remarques :** 
@@ -242,10 +242,10 @@ end
 md"""En implémentant cet algorithme, on obtient ce résultat : """
 
 # ╔═╡ d49fb6a4-7e6e-4f47-8ff5-5a5289f87880
-image_resultats_algo = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/exemple_phase_2.png")
+image_resultats_algo = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/exemple_phase_2.png")
 
 # ╔═╡ 2705d4b4-953e-4972-b352-b5719e7ecc6e
-image_cours = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/arbre_minimal_cours.png")
+image_cours = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/arbre_minimal_cours.png")
 
 # ╔═╡ c1cf9c22-9e43-4dab-9081-41163fa81cfd
 md"""**Remarque** : On peut alors voir que l'arbre de recouvrement n'est pas exactement le même. En effet, dans l'arbre obtenu à partir de notre algorithme, l'arête bc n'est pas prise mais en contrepartie l'arête ah est prise. Ceci s'explique avec l'ordre dans lequel les arêtes apparaissent après le tri suivant le poids. Si on réalise un tri où les arêtes de mêmes poids ne sont pas prises dans le même ordre, on obtient par exemple : """
@@ -254,7 +254,7 @@ md"""**Remarque** : On peut alors voir que l'arbre de recouvrement n'est pas exa
 md"""On peut également afficher l'arbre minimal obtenu avec la méthode pour l'objet de type Graph : """
 
 # ╔═╡ ec3a181b-4139-428c-a842-d30905735cd4
-résultat_cours_2 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/résultat_graphe.png")
+résultat_cours_2 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/résultat_graphe.png")
 
 # ╔═╡ 4ba0929c-5edb-43d1-b86e-115aa64c233f
 md"""Ici, pour simplifier, nous avons décidé de numéroter les nœuds. Par conséquent, pour l'exemple du cours, on obtient : \
@@ -279,10 +279,10 @@ md"""Tout au long de l'implémentation, des tests unitaires ont été définis p
 md"""Les tests sont alors les suivants : """
 
 # ╔═╡ 7381e608-2441-406b-a59c-0e0f948889af
-résultat_test = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/resultats_tests.png")
+résultat_test = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/resultats_tests.png")
 
 # ╔═╡ 48cb823d-bce5-48f0-8e5c-4a50bfd22ae8
-nombre_tests = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/result_test.png")
+nombre_tests = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/result_test.png")
 
 # ╔═╡ 47c66d43-c99b-43bf-be55-7649e12d1784
 md"""On remarque alors que le nombre de tests est de 181 et que tous les tests ont été des succès. Les deux tests qui confirment que notre algorithme fonctionne bien sont le test avec le poids minimal ainsi que le test du type de graphe. En effet, dans l'exemple du cours, le poids minimal de l'arbre trouvé avec l'algorithme de Kruskal était de 37. Par ailleurs, le type est bien un Graph{Int64, Int64} ce qui respecte notre structure de graphe."""
@@ -297,10 +297,10 @@ md"""On a alors pu également tester notre algorithme sur diverses instances de 
 md"""Résultats pour le fichier bayg29.tsp"""
 
 # ╔═╡ 19c75f8b-cd3a-4850-a386-91a75b04c58e
-image_resultats_bayg29 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bayg29.png")
+image_resultats_bayg29 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bayg29.png")
 
 # ╔═╡ a19de5a1-21ea-460b-9c40-2d872cba4bea
-resultat_arbre = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/resultat_big.png")
+resultat_arbre = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/resultat_big.png")
 
 # ╔═╡ 1704e5d7-440c-4130-8fc8-822d2b85523a
 md"""**Pour la suite, nous allons simplement afficher le poids de l'arbre minimal trouvé pour ne pas allourdir ce fichier.**"""
@@ -309,7 +309,7 @@ md"""**Pour la suite, nous allons simplement afficher le poids de l'arbre minima
 md"""Résultats pour le fichier bays29.tsp"""
 
 # ╔═╡ b4d2de40-a79d-4e3d-8553-7b02681b1b92
-image_resultats_bays29 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bays29.png")
+image_resultats_bays29 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bays29.png")
 
 # ╔═╡ 8181620e-fadb-4184-b963-23cd1f438b27
 md"""Poids de l'arbre de recouvrement minimal = 1557"""
@@ -318,7 +318,7 @@ md"""Poids de l'arbre de recouvrement minimal = 1557"""
 md"""Résultats pour le fichier dantzig42.tsp"""
 
 # ╔═╡ 5b71bbae-e5a0-41aa-bcef-e1e8feb417d9
-image_resultats_dantzig42 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/dantzig42.png")
+image_resultats_dantzig42 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/dantzig42.png")
 
 # ╔═╡ 66e1c90a-3716-472f-8951-6da84fad95b3
 md"""Poids de l'arbre de recouvrement minimal = 591"""
@@ -327,7 +327,7 @@ md"""Poids de l'arbre de recouvrement minimal = 591"""
 md"""Résultats pour le fichier gr120.tsp"""
 
 # ╔═╡ 0281f948-9cbe-453d-b948-e3178f6e5cad
-image_resultats_gr120 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr120.png")
+image_resultats_gr120 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/gr120.png")
 
 # ╔═╡ 086a0751-d11a-4e1e-b6ca-49862db69e49
 md"""Poids de l'arbre de recouvrement minimal = 5805"""
@@ -339,7 +339,7 @@ md"""Nous avons également testé notre implémentation sur les fichiers TSP qui
 md"""Résultats pour le fichier brazil58.tsp"""
 
 # ╔═╡ b3429950-152a-48f0-9062-f78f9659690e
-image_resultats_brazil58 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/brazil58.png")
+image_resultats_brazil58 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/brazil58.png")
 
 # ╔═╡ c29b9a14-8154-4619-bed0-c5d0f39f89df
 md"""Poids de l'arbre de recouvrement minimal = 17514"""
@@ -348,7 +348,7 @@ md"""Poids de l'arbre de recouvrement minimal = 17514"""
 md"""Résultats pour le fichier brg180.tsp"""
 
 # ╔═╡ 0c7804d0-5562-481f-9f77-add70eb30e2d
-image_resultats_brg180 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/brg180.png")
+image_resultats_brg180 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/brg180.png")
 
 # ╔═╡ 9b071fa8-482f-4204-8ab6-336da5454188
 md"""Poids de l'arbre de recouvrement minimal = 4470"""
@@ -357,7 +357,7 @@ md"""Poids de l'arbre de recouvrement minimal = 4470"""
 md"""Résultats pour le fichier gr17.tsp"""
 
 # ╔═╡ 8bf63694-d926-41f0-8125-28c80465c21e
-image_resultats_gr17 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr17.png")
+image_resultats_gr17 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/gr17.png")
 
 # ╔═╡ 21c3070c-be2f-4f31-8057-459b50d0328a
 md"""Poids de l'arbre de recouvrement minimal = 1421"""
@@ -366,7 +366,7 @@ md"""Poids de l'arbre de recouvrement minimal = 1421"""
 md"""Résultats pour le fichier gr21.tsp"""
 
 # ╔═╡ 2ffaaa7a-4749-4743-bf76-2db0e0542c52
-image_resultats_gr21 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr21.png")
+image_resultats_gr21 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/gr21.png")
 
 # ╔═╡ 761acdc2-480c-4f5a-a6c2-20db0043a2a4
 md"""Poids de l'arbre de recouvrement minimal = 2161"""
@@ -375,7 +375,7 @@ md"""Poids de l'arbre de recouvrement minimal = 2161"""
 md"""Résultats pour le fichier gr24.tsp"""
 
 # ╔═╡ ce18ed34-6ecd-472f-8af8-8defe46823a7
-image_resultats_gr24 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr24.png")
+image_resultats_gr24 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/gr24.png")
 
 # ╔═╡ 92cf1b76-9c41-4d75-a3fe-d6cf5539ed5c
 md"""Poids de l'arbre de recouvrement minimal = 1011"""
@@ -384,7 +384,7 @@ md"""Poids de l'arbre de recouvrement minimal = 1011"""
 md"""Résultats pour le fichier gr48.tsp"""
 
 # ╔═╡ b473b197-f470-4412-84b3-585d5a9773e6
-image_resultats_gr48 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr48.png")
+image_resultats_gr48 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/gr48.png")
 
 # ╔═╡ ba0f37f8-2721-49ae-aeef-a1d9c60546b2
 md"""Poids de l'arbre de recouvrement minimal = 4082"""
@@ -393,7 +393,7 @@ md"""Poids de l'arbre de recouvrement minimal = 4082"""
 md"""Résultats pour le fichier hk48.tsp"""
 
 # ╔═╡ 35ad570d-8f2f-42c7-b93e-b354d27ccd9c
-image_resultats_hk48 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/hk48.png")
+image_resultats_hk48 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/hk48.png")
 
 # ╔═╡ 0d3df5e4-2611-418f-9a0a-7f4b51922e72
 md"""Poids de l'arbre de recouvrement minimal = 9905"""
@@ -402,7 +402,7 @@ md"""Poids de l'arbre de recouvrement minimal = 9905"""
 md"""Résultats pour le fichier swiss42.tsp"""
 
 # ╔═╡ 599d9591-e0fc-416e-b779-5e14cd1cb500
-image_resultats_swiss42 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/swiss42.png")
+image_resultats_swiss42 = load("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/swiss42.png")
 
 # ╔═╡ 6544d6bc-9913-4292-9467-7015bf437c19
 md"""Poids de l'arbre de recouvrement minimal = 1079"""
@@ -1624,3 +1624,6 @@ version = "17.4.0+2"
 # ╟─6544d6bc-9913-4292-9467-7015bf437c19
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
+
+import Pluto
+Pluto.run()

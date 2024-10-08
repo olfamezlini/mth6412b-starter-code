@@ -196,7 +196,7 @@ function affichage_arbre_minimal(filename::String)
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bayg29.png")
+        #savefig("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bayg29.png")
 
         # Renvoie de la figure
         fig

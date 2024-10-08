@@ -19,7 +19,7 @@ md"""## Giorgi Gamkrelidze - Matricule : 2408995
 ## Projet phase 2"""
 
 # ╔═╡ 35ce874f-0c25-4ea3-ad96-837a7d262806
-md"""#### Lien de la phase 2 sur Github : [https://github.com/olfamezlini/mth6412b-starter-code](https://github.com/olfamezlini/mth6412b-starter-code)"""
+md"""#### Lien de la phase 2 sur Github : ?"""
 
 # ╔═╡ 84284d95-aac1-4816-81db-c61643359868
 md"""#### Étape 1 de la marche à suivre : Choisir et implémenter une structure de données pour les composantes connexes d’un graphe"""
@@ -1624,3 +1624,6 @@ version = "17.4.0+2"
 # ╟─6544d6bc-9913-4292-9467-7015bf437c19
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
+
+import Pluto
+Pluto.run()
