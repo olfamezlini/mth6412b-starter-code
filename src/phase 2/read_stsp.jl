@@ -1,4 +1,5 @@
 using Plots
+using Random
 
 """Analyse un fichier .tsp et renvoie un dictionnaire avec les données de l'entête."""
 function read_header(filename::String)
@@ -94,6 +95,8 @@ end
 function read_edges(header::Dict{String}{String}, filename::String)
 
   edges = []
+  # Définition d'une liste pour stocker les poids
+  edge_weights = []
   edge_weight_format = header["EDGE_WEIGHT_FORMAT"]
   known_edge_weight_formats = ["FULL_MATRIX", "UPPER_ROW", "LOWER_ROW",
   "UPPER_DIAG_ROW", "LOWER_DIAG_ROW", "UPPER_COL", "LOWER_COL",
@@ -101,7 +104,7 @@ function read_edges(header::Dict{String}{String}, filename::String)
 
   if !(edge_weight_format in known_edge_weight_formats)
     @warn "unknown edge weight format" edge_weight_format
-    return edges
+    return edges, edge_weights
   end
 
   file = open(filename, "r")
@@ -128,7 +131,10 @@ function read_edges(header::Dict{String}{String}, filename::String)
         while n_data > 0
           n_on_this_line = min(n_to_read, n_data)
 
+
           for j = start : start + n_on_this_line - 1
+            # Lecture du poids
+            weight = parse(Float64, data[j + 1]) 
             n_edges = n_edges + 1
             if edge_weight_format in ["UPPER_ROW", "LOWER_COL"]
               edge = (k+1, i+k+2)
@@ -144,6 +150,9 @@ function read_edges(header::Dict{String}{String}, filename::String)
               warn("Unknown format - function read_edges")
             end
             push!(edges, edge)
+
+            # Ajout de weight
+            push!(edge_weights, weight)
             i += 1
           end
 
@@ -166,7 +175,7 @@ function read_edges(header::Dict{String}{String}, filename::String)
     end
   end
   close(file)
-  return edges
+  return edges, edge_weights
 end
 
 """Renvoie les noeuds et les arêtes du graphe."""
@@ -182,27 +191,31 @@ function read_stsp(filename::String)
   println("✓")
 
   Base.print("Reading of edges : ")
-  edges_brut = read_edges(header, filename)
-  graph_edges = []
-  for k = 1 : dim
-    edge_list = Int[]
-    push!(graph_edges, edge_list)
+  edges_brut, edge_weights = read_edges(header, filename)
+  graph_edges = [Int[] for _ in 1:dim]
+  edge_weights_dict = Dict{Tuple{Int, Int}, Float64}()
+
+  for (index, edge) in enumerate(edges_brut)
+      weight = edge_weights[index]
+      if weight != 0
+        if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
+            push!(graph_edges[edge[1]], edge[2])
+            edge_weights_dict[(edge[1], edge[2])] = weight
+        else
+            push!(graph_edges[edge[2]], edge[1])
+            edge_weights_dict[(edge[2], edge[1])] = weight
+        end
+      end
   end
 
-  for edge in edges_brut
-    if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
-      push!(graph_edges[edge[1]], edge[2])
-    else
-      push!(graph_edges[edge[2]], edge[1])
-    end
-  end
-
   for k = 1 : dim
-    graph_edges[k] = sort(graph_edges[k])
+      graph_edges[k] = sort(graph_edges[k])
   end
   println("✓")
-  return graph_nodes, graph_edges
+
+  return graph_nodes, graph_edges, edge_weights_dict
 end
+
 
 """Affiche un graphe étant données un ensemble de noeuds et d'arêtes.
 
@@ -213,23 +226,59 @@ Exemple :
     savefig("bayg29.pdf")
 """
 function plot_graph(nodes, edges)
+  
   fig = plot(legend=false)
+  if length(nodes) != 0
 
-  # edge positions
-  for k = 1 : length(edges)
-    for j in edges[k]
-      plot!([nodes[k][1], nodes[j][1]], [nodes[k][2], nodes[j][2]],
-          linewidth=1.5, alpha=0.75, color=:lightgray)
+    # edge positions
+    for k = 1 : length(edges)
+      for j in edges[k]
+        plot!([nodes[k][1], nodes[j][1]], [nodes[k][2], nodes[j][2]],
+            linewidth=1.5, alpha=0.75, color=:lightgray)
+      end
     end
+
+    # node positions
+    xys = values(nodes)
+    x = [xy[1] for xy in xys]
+    y = [xy[2] for xy in xys]
+    scatter!(x, y)
+
+    fig
+  else
+    nodes_ajoutes = Dict{Int64, Tuple{Float64, Float64}}()
+    
+    representation_carre = Int64(floor(sqrt(length(edges))))
+
+    rayon = 1000
+
+    # Génération des coordonnées aléatoires pour chaque nœud
+    for i in 1:length(edges)
+        angle = 2*pi*(i-1)/length(edges)
+        x = rayon*cos(angle)
+        y = rayon*sin(angle)
+        nodes_ajoutes[i] = (x, y)
+    end
+
+    # Tracé des arêtes du graphe
+    for k = 1:length(edges)
+        for j in edges[k]
+            # Assurez-vous que j est un index valide dans nodes_ajoutes
+            if haskey(nodes_ajoutes, j)  # Vérifiez que j est une clé valide
+                plot!([nodes_ajoutes[k][1], nodes_ajoutes[j][1]], 
+                      [nodes_ajoutes[k][2], nodes_ajoutes[j][2]],
+                      linewidth=1.5, alpha=0.75, color=:lightgray)
+            end
+        end
+    end
+
+    # Collecte des coordonnées pour le scatter plot
+    x = [xy[1] for xy in values(nodes_ajoutes)]  # Utilisez values pour obtenir les valeurs
+    y = [xy[2] for xy in values(nodes_ajoutes)]
+    scatter!(x, y)
+
+    fig
   end
-
-  # node positions
-  xys = values(nodes)
-  x = [xy[1] for xy in xys]
-  y = [xy[2] for xy in xys]
-  scatter!(x, y)
-
-  fig
 end
 
 """Fonction de commodité qui lit un fichier stsp et trace le graphe."""
@@ -237,4 +286,3 @@ function plot_graph(filename::String)
   graph_nodes, graph_edges = read_stsp(filename)
   plot_graph(graph_nodes, graph_edges)
 end
-

@@ -3,6 +3,7 @@
 include("node.jl")
 include("edge.jl")
 include("graph.jl")
+include("read_stsp.jl")
 
 # Défintion d'un noeud, il faut que les paramètres data soient de même nature
 

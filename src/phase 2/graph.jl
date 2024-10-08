@@ -1,7 +1,13 @@
 import Base.show
 
+
+# Importation des objets
+
+include("node.jl")
+include("edge.jl")
+
 """Type abstrait dont d'autres types de graphes dériveront."""
-abstract type AbstractGraph{T} end
+abstract type AbstractGraph{T, S} end
 
 """Type representant un graphe comme un ensemble de noeuds.
 
@@ -14,20 +20,28 @@ Exemple :
 
 Attention, tous les noeuds doivent avoir des données de même type.
 """
-mutable struct Graph{T} <: AbstractGraph{T}
+mutable struct Graph{T, S} <: AbstractGraph{T, S}
   name::String
   nodes::Vector{Node{T}}
-  edges::Vector{Edge{T}}
+  edges::Vector{Edge{T, S}}
 end
 
 """Ajoute un noeud au graphe."""
 function add_node!(graph::Graph{T}, node::Node{T}) where T
-  push!(graph.nodes, node)
-  graph
+  boolean = true
+  for node_in in graph.nodes
+    if parse(Int64, node_in.name) == parse(Int64, node.name)
+      boolean = false
+    end
+  end
+  if boolean
+    push!(graph.nodes, node)
+    graph
+  end
 end
 
 """Ajoute un arete au graphe."""
-function add_edge!(graph::Graph{T}, edge::Edge{T}) where T
+function add_edge!(graph::Graph{T}, edge::Edge{T, S}) where {T, S}
   push!(graph.edges, edge)
   graph
 end
