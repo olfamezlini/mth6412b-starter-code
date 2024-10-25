@@ -5,10 +5,6 @@ import Base.show
 
 include("node.jl")
 include("edge.jl")
-include("graph.jl")
-include("read_stsp.jl")
-include("kruskal.jl")
-include("affichage_kruskal.jl")
 
 """Type abstrait dont d'autres types de composantes connexes dériveront."""
 abstract type AbstractCompConnexe end

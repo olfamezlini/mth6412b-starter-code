@@ -41,7 +41,7 @@ graph_nodes, graph_edges = read_stsp("instances/stsp/bayg29.tsp");
 plot_graph(graph_nodes, graph_edges)
 
 # Phase 2
-
+# cd("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/src/phase1")
 # Application pour l'exemple du cours
 affichage_arbre_minimal("instances/stsp/exemple_phase_2.tsp")
 

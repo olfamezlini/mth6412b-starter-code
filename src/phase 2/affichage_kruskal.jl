@@ -5,7 +5,6 @@ include("node.jl")
 include("edge.jl")
 include("graph.jl")
 include("read_stsp.jl")
-include("composantes_connexe.jl")
 include("kruskal.jl")
 
 
@@ -62,7 +61,7 @@ function affichage_arbre_minimal(filename::String)
         scatter!(x, y)
         
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/olfam/mth6412b-starter-code/src/phase 2/exemple_phase_2.png")
+        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/exemple_phase_2.png")
         
         # Renvoie de la figure
         fig
@@ -107,7 +106,7 @@ function affichage_arbre_minimal(filename::String)
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bayg29.png")
+        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bayg29.png")
 
         # Renvoie de la figure
         fig

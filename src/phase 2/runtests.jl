@@ -9,4 +9,4 @@ using Test
   arbre_minimal, poids_minimal = Algortihme_Kruskal(graph_edges, edge_weights_dict);
   @test poids_minimal==37
   @test typeof(arbre_minimal)==Graph{Int64, Int64}
-end
+end 
