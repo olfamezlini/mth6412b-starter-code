@@ -28,25 +28,19 @@ md"""#### Lien de la phase 2 sur Github : [https://github.com/olfamezlini/mth641
 md"""#### Question 1 : Implémentation des deux heuristiques d'accélération"""
 
 # ╔═╡ 9197efc0-8862-42c6-83f2-aa4810712b3f
-md"""Ensuite, le second consiste à obtenir la racine d'un nœud : """
+md""" Nous avons modifié la structure de données des ensembles disjoints pour inclure une implémentation de l’union par le rang. Cette optimisation permet de gérer efficacement les ensembles de nœuds dans un graphe, en particulier pour l'algorithme de Kruskal, afin de maintenir et de fusionner des composantes connexes lors de la construction de l'arbre de recouvrement minimal. """
 
-# ╔═╡ ebf30047-0233-4cde-bb76-d92abbf03bc0
-md"""Un fichier TSP se compose de plusieurs parties :
+# ╔═╡ c5201b63-ff8c-4078-9e07-fa011ab4d82b
+md"""
+##### Explication des modifications
+"""
 
-- **NAME** : Représente le nom du fichier TSP
-- **TYPE** : Type de problème, par exemple un type TSP (Traveler Sales Problem)
-- **COMMENT** : Commentaires éventuels pour décrire le fichier donné
-- **DIMENSION** : Représentant le nombre de noeuds dans le graphe décrit par ce fichier
-- **EDGE\_WEIGHT\_TYPE** : Indique le type de poids des arêtes dans le graphe. Par exemple, "EXPLICIT" signifie que les poids des arêtes sont fournis directement dans le fichier
-- **EDGE\_WEIGHT\_FORMAT** : Indique comment les poids des arêtes sont formatés. Par exemple, "UPPER\_ROW" signifie que les poids des arêtes sont donnés dans une matrice triangulaire supérieure.
-- **DISPLAY\_DATA\_TYPE** : Indique le type de données d'affichage, ici "TWOD_DISPLAY", ce qui signifie que les coordonnées des villes sont fournies en deux dimensions.
-- **EDGE\_WEIGHT\_SECTION** : Décrit les poids des arêtes sous forme de matrice.
-- **DISPLAY\_DATA\_SECTION** (Optionnel) : Contient la position des nœuds afin de représenter le graphe. """
+# ╔═╡ d5aab9da-73ae-44ee-9b67-737e8c080e36
+md"""
+###### Ajout de la structure de rang 
 
-# ╔═╡ e3156390-4bbf-4fd2-a4d4-4847e934e487
-md"""**Remarques :** 
-- Lorsque les arêtes ne sont pas définies, la convention, en regardant les autres fichiers TSP, était de mettre le poids à 0. Ici, la matrice des poids des arêtes est définie de la manière suivante : si on considère une arête reliant le nœud \(i\) (ici, un entier entre 1 et 9) et \(j\) (ici, un entier entre 1 et 9), alors \(a_{i,j}\) (terme de la matrice considérée) correspond au poids de l'arête entre ces deux nœuds. Par conséquent, lorsqu'il n'y a pas d'arêtes existantes, par convention, ce dernier est nul.
-- On a également défini les positions des points pour visualiser le graphe."""
+Nous avons ajouté un dictionnaire rang dans la structure CompConnexe. Ce dictionnaire associe chaque nœud à un entier représentant son rang, initialisé à zéro. Le rang d’un nœud est une estimation de la hauteur de l'arbre qui le représente, c'est-à-dire le nombre de niveaux de nœuds connectés en dessous.
+"""
 
 # ╔═╡ 30082282-7ffd-4976-995a-9a6c629e1160
 md"""
@@ -1269,8 +1263,8 @@ version = "17.4.0+2"
 # ╟─35ce874f-0c25-4ea3-ad96-837a7d262806
 # ╟─84284d95-aac1-4816-81db-c61643359868
 # ╟─9197efc0-8862-42c6-83f2-aa4810712b3f
-# ╟─ebf30047-0233-4cde-bb76-d92abbf03bc0
-# ╟─e3156390-4bbf-4fd2-a4d4-4847e934e487
+# ╟─c5201b63-ff8c-4078-9e07-fa011ab4d82b
+# ╟─d5aab9da-73ae-44ee-9b67-737e8c080e36
 # ╟─30082282-7ffd-4976-995a-9a6c629e1160
 # ╟─cfd1e43e-41b7-4a50-915e-d6d40a1354c4
 # ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
@@ -1279,6 +1273,3 @@ version = "17.4.0+2"
 # ╟─f4aaab29-30a4-442b-8c72-9913f2de00eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
-
-import Pluto
-Pluto.run()

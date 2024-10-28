@@ -115,3 +115,7 @@ function affichage_arbre_minimal(filename::String)
     # Affichage de l'arbre de recouvrement minimal suivant la méthode de la classe Graph
     
 end
+
+
+
+affichage_arbre_minimal("instances/stsp/exemple_phase_2.tsp")

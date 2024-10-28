@@ -35,28 +35,30 @@ show(G)
 
 println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
 
-# Lecture de l'instance de TSP symétrique (ici, bayg29.tsp)
-
-graph_nodes, graph_edges = read_stsp("instances/stsp/bayg29.tsp");
-
-# Affichage de l'instance de TSP symétrique (ici, bayg29.tsp)
-
-plot_graph(graph_nodes, graph_edges)
-
 # Phase 2
 
-# Démarrage du chronomètre
-start_time = time()
+println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
+
+# Lecture de l'instance de TSP symétrique (ici, bayg29.tsp)
+graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/exemple_phase_2.tsp")
+
+# Mesurer le temps CPU pour l'exécution de Algorithme_Kruskal
+result = @timed Algortihme_Kruskal(graph_edges, edge_weights_dict)
+
+# Extraire le temps d'exécution et le résultat
+arbre_minimal, poids_minimal = result[1][1], result[1][2]
+temps_cpu = result[2]
+
+# Afficher le résultat et le temps d'exécution
+println("Arbre de recouvrement minimal : ", arbre_minimal)
+println("Poids minimal : ", poids_minimal)
+println("Temps CPU : ", temps_cpu, " secondes")
 
 # Application pour l'exemple du cours
 affichage_arbre_minimal("instances/stsp/exemple_phase_2.tsp")
 
 # Application pour un autre fichier .TSP
-affichage_arbre_minimal("instances/stsp/bayg29.tsp")
+#affichage_arbre_minimal_kruskal("instances/stsp/bayg29.tsp")
 
-# Fin du chronomètre
-end_time = time()
-
-# Calcul du temps écoulé
-elapsed_time = end_time - start_time
-println("Temps consommé : ", elapsed_time, " secondes")
+# Affichage de l'instance de TSP symétrique (ici, bayg29.tsp)
+#plot_graph(graph_nodes, graph_edges)

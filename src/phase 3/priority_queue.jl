@@ -64,6 +64,8 @@ function popfirst!(q::PriorityQueue)
 end
 
 
-
-
+"""Définition de la méthode de comparaison pour PriorityItem."""
+function Base.isless(a::PriorityItem, b::PriorityItem)
+    return a.weight < b.weight
+end
 

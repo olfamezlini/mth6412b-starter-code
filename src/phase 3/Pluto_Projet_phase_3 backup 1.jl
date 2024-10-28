@@ -7,6 +7,9 @@ using InteractiveUtils
 # ╔═╡ 466b1feb-e208-4738-be70-733511fb3b6a
 using Images
 
+# ╔═╡ 67d0eeaa-dcd6-45ef-8d94-7457d0eabaca
+using LaTeXStrings
+
 # ╔═╡ 7049f94a-0545-4eb9-80e7-86486c335b72
 using Test
 
@@ -16,82 +19,16 @@ md"""#### Importation des modules nécessaires"""
 # ╔═╡ 72ba7e00-8358-11ef-3c2a-73d1b7473118
 md"""## Giorgi Gamkrelidze - Matricule : 2408995
 ## Olfa Mezlini - Matricule : 2327229
-## Projet phase 2"""
+## Projet phase 3"""
 
 # ╔═╡ 35ce874f-0c25-4ea3-ad96-837a7d262806
 md"""#### Lien de la phase 2 sur Github : [https://github.com/olfamezlini/mth6412b-starter-code](https://github.com/olfamezlini/mth6412b-starter-code)"""
 
 # ╔═╡ 84284d95-aac1-4816-81db-c61643359868
-md"""#### Étape 1 de la marche à suivre : Choisir et implémenter une structure de données pour les composantes connexes d’un graphe"""
-
-# ╔═╡ 46d36703-9af5-4886-bfcd-1cf34e3b0f1a
-md"""Nous avons défini une structure de données pour les composantes connexes d'un graphe. La structure est alors la suivante :"""
-
-# ╔═╡ 6ec69e2e-3b06-4141-98e2-9e2ac3173320
-begin
-	"""Type abstrait dont d'autres types de composantes connexes dériveront."""
-	abstract type AbstractCompConnexe end
-	
-	"""Type représentant les composantes connexes d'un graphe.
-	
-	Exemple:
-	
-	        comp_connexes = CompConnexe("James", noeuds)
-	
-	"""
-	mutable struct CompConnexe <: AbstractCompConnexe
-	    name::String
-	    ensemble_comp_connexes::Dict{Int64, Int64}
-	end
-end
-
-# ╔═╡ 8e4b4519-a752-4305-94c7-924a7ed35984
-md"""Cette structure a alors deux attributs, un nom et un dictionnaire représentant l'ensemble des racines de chaque composante connexe. Par conséquent, les nœuds ayant la même racine forme une composante connexe du graphe considéré."""
-
-# ╔═╡ 01b58dfc-4af0-490d-9b14-e0ec22dd7516
-md"""Nous définissons également trois méthodes. Le premier consiste à trouver la racine d'un nœud. On réalise cela de la manière suivante : """
-
-# ╔═╡ 6f5c75f1-2ada-4a20-9efa-c0578dc44744
-begin
-	"""Initialisation des composantes connexes. Au départ, chaque nœud est connexe à lui-même."""
-	initalization(comp_connexes::CompConnexe, graph_edges::Vector{Vector{Int64}}) = 
-	for node = 1:length(graph_edges)
-	    comp_connexes.ensemble_comp_connexes[node] = node
-	end
-end
+md"""#### Question 1 : Implémentation des deux heuristiques d'accélération"""
 
 # ╔═╡ 9197efc0-8862-42c6-83f2-aa4810712b3f
 md"""Ensuite, le second consiste à obtenir la racine d'un nœud : """
-
-# ╔═╡ 69a6c18a-9e43-4118-a056-36efc23a6024
-begin
-	"""Renvoie la racine suivant un nœud présent dans une composante connexe"""
-	get_root(comp_connexes::CompConnexe, node::Int64) = comp_connexes.ensemble_comp_connexes[node]
-end
-
-# ╔═╡ add61353-6cae-4460-90ca-4a1eb6b6a0a2
-md"""Enfin, le dernier consiste à fusionner deux composantes connexes en mettant à jour la racine d'une composante connexe avec la racine de l'autre composante connexe, de manière à ce que les deux composantes connexes n'aient qu'une seule et même racine."""
-
-# ╔═╡ 0b1d6434-4721-4ade-92d9-9fc98f8ce933
-begin
-	"""Met à jour les racines lors de la fusion de deux composantes connexes"""
-	update_comp_connexes(comp_connexes::CompConnexe, root_1::Int64, root_2::Int64) = for (node, parent) in comp_connexes.ensemble_comp_connexes
-	    # Ici, nous mettons à jour tous les noeuds dont le parent est celui du noeud 2,
-	    # car cela signifie qu'ils appartiennent à la même composante connexe.
-	    if parent == root_2
-	        comp_connexes.ensemble_comp_connexes[node] = root_1
-	    end
-	end
-end
-
-# ╔═╡ 104d72c0-e670-41db-8b2d-49960f2c4a1c
-md"""Ensuite, nous avons également défini un fichier .tsp représentant l'exemple du cours dans l'objectif d'appliquer l'algorithme de Kruskal sur ce dernier."""
-
-# ╔═╡ ba3a86eb-278c-4db1-8290-708f7526017b
-exemple_cours = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/arbre_minimal_cours.PNG")
-
-# ╔═╡ b2bfac41-dc5e-42a1-90b9-175a82c14569
-md"""Dans un premier temps, nous avons défini ce graphe comme un fichier TSP. Nous avons donc implémenté une structure de données pour les composantes connexes de ce graphe."""
 
 # ╔═╡ ebf30047-0233-4cde-bb76-d92abbf03bc0
 md"""Un fichier TSP se compose de plusieurs parties :
@@ -106,315 +43,92 @@ md"""Un fichier TSP se compose de plusieurs parties :
 - **EDGE\_WEIGHT\_SECTION** : Décrit les poids des arêtes sous forme de matrice.
 - **DISPLAY\_DATA\_SECTION** (Optionnel) : Contient la position des nœuds afin de représenter le graphe. """
 
-# ╔═╡ 82552fa5-d8e4-4138-8ab0-e576d2dfca1e
-md"""En ayant considéré ces informations, nous avons défini le fichier TSP pour le grpahe du cours."""
-
-# ╔═╡ f9af27f6-8bb6-4ca6-95a6-4caec59439e7
-image_file_cours_2 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/fichier_TSP_exemple.png")
-
 # ╔═╡ e3156390-4bbf-4fd2-a4d4-4847e934e487
 md"""**Remarques :** 
 - Lorsque les arêtes ne sont pas définies, la convention, en regardant les autres fichiers TSP, était de mettre le poids à 0. Ici, la matrice des poids des arêtes est définie de la manière suivante : si on considère une arête reliant le nœud \(i\) (ici, un entier entre 1 et 9) et \(j\) (ici, un entier entre 1 et 9), alors \(a_{i,j}\) (terme de la matrice considérée) correspond au poids de l'arête entre ces deux nœuds. Par conséquent, lorsqu'il n'y a pas d'arêtes existantes, par convention, ce dernier est nul.
 - On a également défini les positions des points pour visualiser le graphe."""
 
-# ╔═╡ 1a3e8163-5161-4ed5-b634-268b11bf79b1
-md"""#### Étape 2 de la marche à suivre : Implémenter l’algorithme de Kruskal et le tester sur l’exemple des notes de cours"""
+# ╔═╡ 30082282-7ffd-4976-995a-9a6c629e1160
+md"""
+#### Suite question 1 : Preuve que le rang d'un nœud est toujours inférieur à $L(|S| - 1)$ et ensuite inférieur à $L(\log_2(|S|))$
 
-# ╔═╡ 83de035d-d961-47ef-8e76-f7d596cad297
-md"""Après avoir défini le graphe de l'exemple du cours, nous avons implémenté l'algorithme de Kruskal. Cet algorithme trouve l'arbre de recouvrement de poids minimal du graphe."""
-
-# ╔═╡ 0ec10fe5-fd7c-4309-a9fa-51b2242b82ff
-md"""La construction de l'algorithme est suivante :
-
-- Entrée : L'ensemble des arêtes, l'ensemble des poids des arêtes
-
-- Initialisation d'un graphe vide. En effet, un arbre est un graphe acyclique connexe et par conséquent, nous pouvons réutiliser la définition de l'objet graphe réalisée dans la phase 1 du projet.
-
-- On effectue le tri suivant le poids par ordre croissant des arêtes.
-
-- On initalise l'ensemble des parents de chaque nœud présent dans le graphe. Au départ, ils sont tous parents d'eux-mêmes.
-
-- On commence à parcourir la liste des arêtes en récupérant bien les poids
-  - On récupère les nœuds de l'arête considérée dans la boucle
-  - On compare leurs nœuds parents. Si leurs nœuds parents ne sont pas les mêmes : 
-    - Alors on peut ajouter l'arête et les nœuds dans l'arbre
-  - Sinon, cela veut dire qu'il y a un cycle et par conséquent, il ne faut rien ajouter
-- On renvoie l'arbre de recouvrement minimal obtenu grâce à l'algorithme de Kruskal"""
-
-# ╔═╡ 9a062414-8e15-4765-a058-08075d195756
-md"""Le code implémenté est alors le suivant : """
-
-# ╔═╡ 5a716e0a-b64e-420e-b7aa-8a342af8b8e8
-begin
-	"""
-    (graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
-	
-	
-	# Arguments
-	- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe considéré
-	- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe considéré
-	
-	
-	applique l'algorithme de Kruskal afin de renvoyer l'arbre de recouvrement minimal et son poids.
-	"""
-	function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
-	
-	    # Définition de l'arbre minimal
-	    arbre_minimal = Graph("Arbre_minimal_Kruskal", Node{Int64}[], Edge{Int64, Int64}[])
-	    # Test du type de l'arbre de recouvrement minimal
-	    @test typeof(arbre_minimal)==Graph{Int64, Int64}
-	
-	    # Obtention des arêtes triées suivant les poids
-	    sorted_edges = sort(collect(edge_weights_dict), by=x -> x[2])
-	    # Test de la longueur de l'ensemble des arêtes triées avec la longueur de l'ensemble des arêtes
-	    @test length(sorted_edges) == length(edge_weights_dict)
-	    
-	    # Initialisation des composantes connexes (chaque nœud est une composante séparée au début)
-	    # On initialise le parent de chaque nœud étant lui-même
-	    Set_comp_connexes = CompConnexe("composantes_connexes", Dict{Int64, Int64}())
-	    initalization(Set_comp_connexes, graph_edges)
-	
-	    # Test si les composantes connexes ont bien été initialisées
-	    @test length(Set_comp_connexes.ensemble_comp_connexes)==length(graph_edges)
-	
-	    # Définition du poids minimal
-	    poids_minimal = 0
-	
-	    for (arete, poids) in sorted_edges
-	        # Obtention du numéro du premier nœud
-	        node1 = arete[1]
-	        # Test du type de node1
-	        @test typeof(node1)==Int64
-	
-	        # Obtention du numéro du deuxième nœud
-	        node2 = arete[2]
-	        # Test du type de node2
-	        @test typeof(node2)==Int64
-	
-	        # Définition du nœud 1
-	        node_1 = Node(string(node1), 0)
-	        # Test du type de de node_1
-	        @test typeof(node_1) == Node{Int64}
-	
-	        # Définition du nœud 2
-	        node_2 = Node(string(node2), 0)
-	        # Test du type de de node_2
-	        @test typeof(node_2) == Node{Int64}
-	
-	        # Obtention du prent du noeud_1
-	        racine_1 = get_root(Set_comp_connexes, node1)
-	        # Test de la racine du noeud_1 obtenue
-	        @test typeof(racine_1)==Int64
-	        # Obtention du prent du noeud_2
-	        racine_2 = get_root(Set_comp_connexes, node2)
-	        # Test de la racine du noeud_2 obtenue
-	        @test typeof(racine_1)==Int64
-	
-	        # S'ils n'ont pas le même parent
-	        if racine_1 != racine_2
-	            # Alors on veut réunir les deux parties connexes et donc on doit mettre à jour
-	            # les parents de l'une des deux parties connexes
-	            update_comp_connexes(Set_comp_connexes, racine_1, racine_2)
-	
-	            # On définit l'arête correspondante si les deux parents sont différents
-	            arete = Edge(string(arete[1])*"---"*string(arete[2]), Int(poids), node_1, node_2)
-	
-	            # On met à jour le poids de notre arbre de recouvrement minimal
-	            poids_minimal += Int(poids)
-	
-	            # On ajoute l'arête dans l'arbre de recouvrement minimal
-	            add_edge!(arbre_minimal, arete)
-	            @test arbre_minimal.edges[end] == arete
-	
-	            # On ajoute le nœud 1 dans l'arbre de recouvrement minimal
-	            add_node!(arbre_minimal, node_1)
-	
-	            # On ajoute le nœud 2 dans l'arbre de recouvrement minimal
-	            add_node!(arbre_minimal, node_2)
-	        end
-	    end
-	    # On retourne l'arbre de recouvrement minimal et son poids correspondant
-	    return arbre_minimal, poids_minimal
-	end
-end
-
-# ╔═╡ 074e6bd2-ed4a-462d-a291-13599e22ce29
-md"""En implémentant cet algorithme, on obtient ce résultat : """
-
-# ╔═╡ d49fb6a4-7e6e-4f47-8ff5-5a5289f87880
-image_resultats_algo = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/exemple_phase_2.png")
-
-# ╔═╡ 2705d4b4-953e-4972-b352-b5719e7ecc6e
-image_cours = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/arbre_minimal_cours.png")
-
-# ╔═╡ c1cf9c22-9e43-4dab-9081-41163fa81cfd
-md"""**Remarque** : On peut alors voir que l'arbre de recouvrement n'est pas exactement le même. En effet, dans l'arbre obtenu à partir de notre algorithme, l'arête bc n'est pas prise mais en contrepartie l'arête ah est prise. Ceci s'explique avec l'ordre dans lequel les arêtes apparaissent après le tri suivant le poids. Si on réalise un tri où les arêtes de mêmes poids ne sont pas prises dans le même ordre, on obtient par exemple : """
-
-# ╔═╡ 0d948819-bc15-44e3-b885-72b78fba566b
-md"""On peut également afficher l'arbre minimal obtenu avec la méthode pour l'objet de type Graph : """
-
-# ╔═╡ ec3a181b-4139-428c-a842-d30905735cd4
-résultat_cours_2 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/résultat_graphe.png")
-
-# ╔═╡ 4ba0929c-5edb-43d1-b86e-115aa64c233f
-md"""Ici, pour simplifier, nous avons décidé de numéroter les nœuds. Par conséquent, pour l'exemple du cours, on obtient : \
-A = 1 \
-B = 2 \
-C = 3 \
-D = 4 \
-E = 5 \
-F = 6 \
-G = 7 \
-H = 8 \
-I = 9 
+Nous allons démontrer que le rang d’un nœud dans une forêt d’ensembles disjoints est inférieur à $L(|S| - 1)$ et, ensuite, qu'il est inférieur à $L(\log_2(|S|))$, en procédant par étapes.
 """
 
-# ╔═╡ 59de2012-e83e-4fe1-9f4e-f8eb9a1904a1
-md"""#### Étape 3 de la marche à suivre : Accompagner votre code de tests unitaires"""
 
-# ╔═╡ c5b0b5fc-3383-4f99-a511-2f814126ffae
-md"""Tout au long de l'implémentation, des tests unitaires ont été définis pour bien s'assurer du bon fonctionnement de nos méthodes. Enfin, dans le fichier runtests.jl, nous avons défini des tests spécifiques à l'exemple de notre cours pour s'assurer du bon fonctionnement de notre algorithme de Kruskal."""
+# ╔═╡ cfd1e43e-41b7-4a50-915e-d6d40a1354c4
+md"""
+##### Rang d’un nœud
 
-# ╔═╡ 395c86dc-ec3d-44f8-a7d9-cf26c66aa72c
-md"""Les tests sont alors les suivants : """
+###### Définition du rang
 
-# ╔═╡ 7381e608-2441-406b-a59c-0e0f948889af
-résultat_test = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/resultats_tests.png")
+Le rang d’un nœud est une approximation de la hauteur maximale de l’arbre qui a ce nœud comme racine. Lorsqu’on effectue une union par le rang, on attache toujours l’arbre de rang inférieur à celui de rang supérieur, ce qui permet de maintenir des arbres relativement peu profonds.
+"""
 
-# ╔═╡ 48cb823d-bce5-48f0-8e5c-4a50bfd22ae8
-nombre_tests = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/result_test.png")
+# ╔═╡ 1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
+md"""
+##### Argument 1 : $L(\text{rank}(n) < |S| - 1)$
 
-# ╔═╡ 47c66d43-c99b-43bf-be55-7649e12d1784
-md"""On remarque alors que le nombre de tests est de 181 et que tous les tests ont été des succès. Les deux tests qui confirment que notre algorithme fonctionne bien sont le test avec le poids minimal ainsi que le test du type de graphe. En effet, dans l'exemple du cours, le poids minimal de l'arbre trouvé avec l'algorithme de Kruskal était de 37. Par ailleurs, le type est bien un Graph{Int64, Int64} ce qui respecte notre structure de graphe."""
+Soit $L(S)$ un ensemble de $L(|S|)$ éléments.
 
-# ╔═╡ 04dea918-df70-4831-a9e6-05a965166e44
-md"""#### Étape 4 de la marche à suivre : Tester votre implémentation sur diverses instances de TSP symétrique dans un programme principal et commenter."""
+Dans le pire des cas, si l'on a un arbre qui est en réalité une chaîne (où chaque nœud a un seul enfant), la hauteur maximale de cet arbre est $L(|S| - 1)$. Dans une telle situation, la racine est le dernier nœud, et les autres nœuds sont tous des enfants directs de la racine.
 
-# ╔═╡ 9aacf14c-fa7f-4d95-bcfe-b22c24905cec
-md"""On a alors pu également tester notre algorithme sur diverses instances de TSP symétrique fournies. Dans la suite, nous n'allons pas afficher. On obtient alors les résultats suivants """
+Ainsi, la valeur maximale que peut atteindre le rang d’un nœud dans cet arbre est $L(|S| - 1)$. Étant donné que les unions par le rang garantissent que l’on attache toujours l’arbre de rang inférieur à celui de rang supérieur, il est donc impossible qu’un nœud ait un rang égal ou supérieur à $L(|S| - 1)$.
 
-# ╔═╡ d9593ecd-c589-48ce-abe8-4ea8c514211f
-md"""Résultats pour le fichier bayg29.tsp"""
+##### Conclusion :
 
-# ╔═╡ 19c75f8b-cd3a-4850-a386-91a75b04c58e
-image_resultats_bayg29 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bayg29.png")
+$L(\text{rank}(n) < |S| - 1)$
+"""
 
-# ╔═╡ a19de5a1-21ea-460b-9c40-2d872cba4bea
-resultat_arbre = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/resultat_big.png")
+# ╔═╡ 2a35258e-a16e-49eb-b391-2cc505b39ad8
+md"""
 
-# ╔═╡ 1704e5d7-440c-4130-8fc8-822d2b85523a
-md"""**Pour la suite, nous allons simplement afficher le poids de l'arbre minimal trouvé pour ne pas allourdir ce fichier.**"""
+##### Argument 2 : $L(\text{rank}(n) < \log_2(|S|))$
 
-# ╔═╡ ebdc8b45-1907-42bd-87cf-a9e4427e84a2
-md"""Résultats pour le fichier bays29.tsp"""
 
-# ╔═╡ b4d2de40-a79d-4e3d-8553-7b02681b1b92
-image_resultats_bays29 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/bays29.png")
+Pour chaque union effectuée, on augmente le rang d’un nœud uniquement lorsqu’on attache un arbre de même rang à un autre arbre de même rang. Cela ne se produit que lorsque deux arbres de taille égale sont unis, ce qui signifie que chaque augmentation de rang indique que l'on a fusionné deux arbres de taille au moins $L(2^k)$ pour un certain $L(k)$.
 
-# ╔═╡ 8181620e-fadb-4184-b963-23cd1f438b27
-md"""Poids de l'arbre de recouvrement minimal = 1557"""
+Si on suppose qu’un nœud a un rang $L(r)$, cela signifie qu'il a été le résultat d'au moins $L(r)$ unions de deux arbres de tailles au moins $L(2^0), L(2^1), \dots, L(2^{r-1})$. Donc, la taille de l’arbre associé à ce nœud est au moins :
+"""
 
-# ╔═╡ 04658b67-3336-4221-895c-b309f842ca78
-md"""Résultats pour le fichier dantzig42.tsp"""
 
-# ╔═╡ 5b71bbae-e5a0-41aa-bcef-e1e8feb417d9
-image_resultats_dantzig42 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/dantzig42.png")
+# ╔═╡ dcb04f03-fbb5-4167-be7b-76dbda92d8fe
+md"""
+Cela donne la taille minimale suivante de l'ensemble :
 
-# ╔═╡ 66e1c90a-3716-472f-8951-6da84fad95b3
-md"""Poids de l'arbre de recouvrement minimal = 591"""
 
-# ╔═╡ 107ce2ab-d563-4e28-9fe6-78415fe9882e
-md"""Résultats pour le fichier gr120.tsp"""
+$L(|S|) \geq 2^{r+1} - 1$
 
-# ╔═╡ 0281f948-9cbe-453d-b948-e3178f6e5cad
-image_resultats_gr120 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr120.png")
 
-# ╔═╡ 086a0751-d11a-4e1e-b6ca-49862db69e49
-md"""Poids de l'arbre de recouvrement minimal = 5805"""
+En négligeant le "-1", on peut dire :
 
-# ╔═╡ 75c28e9d-1ae1-4690-b765-29ad51a5f62c
-md"""Nous avons également testé notre implémentation sur les fichiers TSP qui n'avaient pas de coordonnées spatiales. Nous avons alors défini arbitrairement des coordonnées afin de mettre les nœuds sur un cercle de façon à voir toutes les arêtes."""
 
-# ╔═╡ 0f726bc0-7534-414c-90eb-3f6f3349db40
-md"""Résultats pour le fichier brazil58.tsp"""
+$L(|S|) \geq 2^{r+1}$
+"""
 
-# ╔═╡ b3429950-152a-48f0-9062-f78f9659690e
-image_resultats_brazil58 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/brazil58.png")
 
-# ╔═╡ c29b9a14-8154-4619-bed0-c5d0f39f89df
-md"""Poids de l'arbre de recouvrement minimal = 17514"""
+# ╔═╡ f4aaab29-30a4-442b-8c72-9913f2de00eb
+md"""
+##### Conclusion
 
-# ╔═╡ 93518e84-7e25-471a-aaec-6d6e8dc89880
-md"""Résultats pour le fichier brg180.tsp"""
+Finalement, nous avons montré que :
+ $L(\text{rank}(n) < |S| - 1)$
+ $L(\text{rank}(n) < \log_2(|S|))$
 
-# ╔═╡ 0c7804d0-5562-481f-9f77-add70eb30e2d
-image_resultats_brg180 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/brg180.png")
+Ces résultats montrent comment l'union par le rang contribue à maintenir des arbres peu profonds, améliorant ainsi le temps de recherche dans les ensembles disjoints.
+"""
 
-# ╔═╡ 9b071fa8-482f-4204-8ab6-336da5454188
-md"""Poids de l'arbre de recouvrement minimal = 4470"""
-
-# ╔═╡ 816dead1-6ccc-4904-bceb-845c087ca422
-md"""Résultats pour le fichier gr17.tsp"""
-
-# ╔═╡ 8bf63694-d926-41f0-8125-28c80465c21e
-image_resultats_gr17 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr17.png")
-
-# ╔═╡ 21c3070c-be2f-4f31-8057-459b50d0328a
-md"""Poids de l'arbre de recouvrement minimal = 1421"""
-
-# ╔═╡ 45ba1b59-3c00-4b85-b6ce-f236a1e31e21
-md"""Résultats pour le fichier gr21.tsp"""
-
-# ╔═╡ 2ffaaa7a-4749-4743-bf76-2db0e0542c52
-image_resultats_gr21 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr21.png")
-
-# ╔═╡ 761acdc2-480c-4f5a-a6c2-20db0043a2a4
-md"""Poids de l'arbre de recouvrement minimal = 2161"""
-
-# ╔═╡ 8958dc1f-8c97-4605-b2fc-30441bb70381
-md"""Résultats pour le fichier gr24.tsp"""
-
-# ╔═╡ ce18ed34-6ecd-472f-8af8-8defe46823a7
-image_resultats_gr24 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr24.png")
-
-# ╔═╡ 92cf1b76-9c41-4d75-a3fe-d6cf5539ed5c
-md"""Poids de l'arbre de recouvrement minimal = 1011"""
-
-# ╔═╡ 2f3892af-6b9a-40d7-ae97-e8ef85286c41
-md"""Résultats pour le fichier gr48.tsp"""
-
-# ╔═╡ b473b197-f470-4412-84b3-585d5a9773e6
-image_resultats_gr48 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/gr48.png")
-
-# ╔═╡ ba0f37f8-2721-49ae-aeef-a1d9c60546b2
-md"""Poids de l'arbre de recouvrement minimal = 4082"""
-
-# ╔═╡ c56b49b2-785e-4ff0-ae75-6a147cab6798
-md"""Résultats pour le fichier hk48.tsp"""
-
-# ╔═╡ 35ad570d-8f2f-42c7-b93e-b354d27ccd9c
-image_resultats_hk48 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/hk48.png")
-
-# ╔═╡ 0d3df5e4-2611-418f-9a0a-7f4b51922e72
-md"""Poids de l'arbre de recouvrement minimal = 9905"""
-
-# ╔═╡ c6b53bef-0f77-4b54-97e6-72beb460768b
-md"""Résultats pour le fichier swiss42.tsp"""
-
-# ╔═╡ 599d9591-e0fc-416e-b779-5e14cd1cb500
-image_resultats_swiss42 = load("C:/Users/olfam/mth6412b-starter-code/src/phase 2/swiss42.png")
-
-# ╔═╡ 6544d6bc-9913-4292-9467-7015bf437c19
-md"""Poids de l'arbre de recouvrement minimal = 1079"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 Images = "~0.26.1"
+LaTeXStrings = "~1.3.1"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -423,7 +137,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "8e891571344ac735d5142035e6263e2a947902b2"
+project_hash = "3d9712a710855342b45696cfd8cae0e80aa13636"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -926,6 +640,11 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "bf36f528eec6634efc60d7ec062008f171071434"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
 version = "3.0.0+1"
+
+[[deps.LaTeXStrings]]
+git-tree-sha1 = "50901ebc375ed41dbf8058da26f9de442febbbec"
+uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+version = "1.3.1"
 
 [[deps.LayoutPointers]]
 deps = ["ArrayInterface", "LinearAlgebra", "ManualMemory", "SIMDTypes", "Static", "StaticArrayInterface"]
@@ -1543,86 +1262,23 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─d66ffa51-1c09-43c5-86d5-c00ee61609b1
-# ╠═466b1feb-e208-4738-be70-733511fb3b6a
-# ╠═7049f94a-0545-4eb9-80e7-86486c335b72
+# ╟─466b1feb-e208-4738-be70-733511fb3b6a
+# ╟─67d0eeaa-dcd6-45ef-8d94-7457d0eabaca
+# ╟─7049f94a-0545-4eb9-80e7-86486c335b72
 # ╟─72ba7e00-8358-11ef-3c2a-73d1b7473118
 # ╟─35ce874f-0c25-4ea3-ad96-837a7d262806
 # ╟─84284d95-aac1-4816-81db-c61643359868
-# ╟─46d36703-9af5-4886-bfcd-1cf34e3b0f1a
-# ╠═6ec69e2e-3b06-4141-98e2-9e2ac3173320
-# ╟─8e4b4519-a752-4305-94c7-924a7ed35984
-# ╟─01b58dfc-4af0-490d-9b14-e0ec22dd7516
-# ╠═6f5c75f1-2ada-4a20-9efa-c0578dc44744
 # ╟─9197efc0-8862-42c6-83f2-aa4810712b3f
-# ╠═69a6c18a-9e43-4118-a056-36efc23a6024
-# ╟─add61353-6cae-4460-90ca-4a1eb6b6a0a2
-# ╟─0b1d6434-4721-4ade-92d9-9fc98f8ce933
-# ╟─104d72c0-e670-41db-8b2d-49960f2c4a1c
-# ╟─ba3a86eb-278c-4db1-8290-708f7526017b
-# ╟─b2bfac41-dc5e-42a1-90b9-175a82c14569
 # ╟─ebf30047-0233-4cde-bb76-d92abbf03bc0
-# ╟─82552fa5-d8e4-4138-8ab0-e576d2dfca1e
-# ╟─f9af27f6-8bb6-4ca6-95a6-4caec59439e7
 # ╟─e3156390-4bbf-4fd2-a4d4-4847e934e487
-# ╟─1a3e8163-5161-4ed5-b634-268b11bf79b1
-# ╟─83de035d-d961-47ef-8e76-f7d596cad297
-# ╟─0ec10fe5-fd7c-4309-a9fa-51b2242b82ff
-# ╟─9a062414-8e15-4765-a058-08075d195756
-# ╠═5a716e0a-b64e-420e-b7aa-8a342af8b8e8
-# ╟─074e6bd2-ed4a-462d-a291-13599e22ce29
-# ╟─d49fb6a4-7e6e-4f47-8ff5-5a5289f87880
-# ╟─2705d4b4-953e-4972-b352-b5719e7ecc6e
-# ╟─c1cf9c22-9e43-4dab-9081-41163fa81cfd
-# ╟─0d948819-bc15-44e3-b885-72b78fba566b
-# ╟─ec3a181b-4139-428c-a842-d30905735cd4
-# ╟─4ba0929c-5edb-43d1-b86e-115aa64c233f
-# ╟─59de2012-e83e-4fe1-9f4e-f8eb9a1904a1
-# ╟─c5b0b5fc-3383-4f99-a511-2f814126ffae
-# ╟─395c86dc-ec3d-44f8-a7d9-cf26c66aa72c
-# ╟─7381e608-2441-406b-a59c-0e0f948889af
-# ╟─48cb823d-bce5-48f0-8e5c-4a50bfd22ae8
-# ╟─47c66d43-c99b-43bf-be55-7649e12d1784
-# ╟─04dea918-df70-4831-a9e6-05a965166e44
-# ╟─9aacf14c-fa7f-4d95-bcfe-b22c24905cec
-# ╟─d9593ecd-c589-48ce-abe8-4ea8c514211f
-# ╟─19c75f8b-cd3a-4850-a386-91a75b04c58e
-# ╟─a19de5a1-21ea-460b-9c40-2d872cba4bea
-# ╟─1704e5d7-440c-4130-8fc8-822d2b85523a
-# ╟─ebdc8b45-1907-42bd-87cf-a9e4427e84a2
-# ╟─b4d2de40-a79d-4e3d-8553-7b02681b1b92
-# ╟─8181620e-fadb-4184-b963-23cd1f438b27
-# ╟─04658b67-3336-4221-895c-b309f842ca78
-# ╟─5b71bbae-e5a0-41aa-bcef-e1e8feb417d9
-# ╟─66e1c90a-3716-472f-8951-6da84fad95b3
-# ╟─107ce2ab-d563-4e28-9fe6-78415fe9882e
-# ╟─0281f948-9cbe-453d-b948-e3178f6e5cad
-# ╟─086a0751-d11a-4e1e-b6ca-49862db69e49
-# ╟─75c28e9d-1ae1-4690-b765-29ad51a5f62c
-# ╟─0f726bc0-7534-414c-90eb-3f6f3349db40
-# ╟─b3429950-152a-48f0-9062-f78f9659690e
-# ╟─c29b9a14-8154-4619-bed0-c5d0f39f89df
-# ╟─93518e84-7e25-471a-aaec-6d6e8dc89880
-# ╟─0c7804d0-5562-481f-9f77-add70eb30e2d
-# ╟─9b071fa8-482f-4204-8ab6-336da5454188
-# ╟─816dead1-6ccc-4904-bceb-845c087ca422
-# ╟─8bf63694-d926-41f0-8125-28c80465c21e
-# ╟─21c3070c-be2f-4f31-8057-459b50d0328a
-# ╟─45ba1b59-3c00-4b85-b6ce-f236a1e31e21
-# ╟─2ffaaa7a-4749-4743-bf76-2db0e0542c52
-# ╟─761acdc2-480c-4f5a-a6c2-20db0043a2a4
-# ╟─8958dc1f-8c97-4605-b2fc-30441bb70381
-# ╟─ce18ed34-6ecd-472f-8af8-8defe46823a7
-# ╟─92cf1b76-9c41-4d75-a3fe-d6cf5539ed5c
-# ╟─2f3892af-6b9a-40d7-ae97-e8ef85286c41
-# ╟─b473b197-f470-4412-84b3-585d5a9773e6
-# ╟─ba0f37f8-2721-49ae-aeef-a1d9c60546b2
-# ╟─c56b49b2-785e-4ff0-ae75-6a147cab6798
-# ╟─35ad570d-8f2f-42c7-b93e-b354d27ccd9c
-# ╟─0d3df5e4-2611-418f-9a0a-7f4b51922e72
-# ╟─c6b53bef-0f77-4b54-97e6-72beb460768b
-# ╟─599d9591-e0fc-416e-b779-5e14cd1cb500
-# ╟─6544d6bc-9913-4292-9467-7015bf437c19
+# ╟─30082282-7ffd-4976-995a-9a6c629e1160
+# ╟─cfd1e43e-41b7-4a50-915e-d6d40a1354c4
+# ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
+# ╟─2a35258e-a16e-49eb-b391-2cc505b39ad8
+# ╟─dcb04f03-fbb5-4167-be7b-76dbda92d8fe
+# ╟─f4aaab29-30a4-442b-8c72-9913f2de00eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
- import Pluto
- Pluto.run()
+
+import Pluto
+Pluto.run()
