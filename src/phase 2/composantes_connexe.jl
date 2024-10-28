@@ -1,5 +1,6 @@
 import Base.show
 
+using Revise
 
 # Importation des objets
 

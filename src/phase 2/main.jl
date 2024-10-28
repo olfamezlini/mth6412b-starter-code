@@ -1,8 +1,9 @@
 # Phase 1
 
-# Importation du module Test
-
+# Importation du module Test et Dates
 using Test
+using Dates
+using Revise
 
 # Importation des objets
 
@@ -35,15 +36,27 @@ show(G)
 println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
 
 # Lecture de l'instance de TSP symétrique (ici, bayg29.tsp)
+
 graph_nodes, graph_edges = read_stsp("instances/stsp/bayg29.tsp");
 
 # Affichage de l'instance de TSP symétrique (ici, bayg29.tsp)
+
 plot_graph(graph_nodes, graph_edges)
 
 # Phase 2
-# cd("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/src/phase1")
+
+# Démarrage du chronomètre
+start_time = time()
+
 # Application pour l'exemple du cours
 affichage_arbre_minimal("instances/stsp/exemple_phase_2.tsp")
 
 # Application pour un autre fichier .TSP
 affichage_arbre_minimal("instances/stsp/bayg29.tsp")
+
+# Fin du chronomètre
+end_time = time()
+
+# Calcul du temps écoulé
+elapsed_time = end_time - start_time
+println("Temps consommé : ", elapsed_time, " secondes")
