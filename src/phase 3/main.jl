@@ -38,7 +38,7 @@ show(G)
 println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
 
 # Lecture de l'instance de TSP symétrique (ici, bayg29.tsp)
-graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/exemple_phase_2.tsp")
+graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/swiss42.tsp")
 
 # Mesurer le temps CPU pour l'exécution de Algorithme_Kruskal
 result = @timed Algortihme_Kruskal(graph_edges, edge_weights_dict)
@@ -53,7 +53,7 @@ println("Poids minimal : ", poids_minimal)
 println("Temps CPU : ", temps_cpu, " secondes")
 
 # Application pour l'exemple du cours
-affichage_arbre_minimal_kruskal("instances/stsp/exemple_phase_2.tsp")
+affichage_arbre_minimal_kruskal("instances/stsp/swiss42.tsp")
 
 # Application pour un autre fichier .TSP
 #affichage_arbre_minimal_kruskal("instances/stsp/bayg29.tsp")

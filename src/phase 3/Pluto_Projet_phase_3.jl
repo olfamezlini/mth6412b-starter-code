@@ -32,7 +32,7 @@ md""" Nous avons modifié la structure de données des ensembles disjoints pour 
 
 # ╔═╡ c5201b63-ff8c-4078-9e07-fa011ab4d82b
 md"""
-##### Explication des modifications des composantes connexes
+##### Explication des modifications
 """
 
 # ╔═╡ d5aab9da-73ae-44ee-9b67-737e8c080e36
@@ -42,9 +42,8 @@ md"""
 Nous avons ajouté un dictionnaire rang dans la structure CompConnexe. Ce dictionnaire associe chaque nœud à un entier représentant son rang, initialisé à zéro. Le rang d’un nœud est une estimation de la hauteur de l'arbre qui le représente, c'est-à-dire le nombre de niveaux de nœuds connectés en dessous.
 """
 
-# ╔═╡ ccf9ef4e-cf39-4495-ad9c-b21c55d699b5
+# ╔═╡ 7aff023f-2808-4a0d-8820-f0b6ef754f86
 begin
-	
 	"""Type abstrait dont d'autres types de composantes connexes dériveront."""
 	abstract type AbstractCompConnexe end
 
@@ -57,18 +56,17 @@ begin
 	end
 end
 
-# ╔═╡ 3a0e9c06-4d2b-40e2-92af-ea3915d3e152
+# ╔═╡ 23b20c7c-9254-40d4-ab0c-f9a6542ea187
 md"""
 ###### Fusion par le rang
 
 Lors de la fusion de deux ensembles (ou composantes connexes), nous utilisons le rang pour déterminer lequel des deux arbres doit être la racine de l'autre. Cette technique minimise la profondeur des arbres :
-
-- **Si les deux nœuds racines ont des rangs différents** : l'arbre de plus faible rang est rattaché à celui de rang supérieur.
-- **Si les deux nœuds racines ont des rangs égaux** :l'un des arbres devient la racine et voit son rang incrémenté.
+- **Si les deux nœuds racines ont des rangs différents** :  l'arbre de plus faible rang est rattaché à celui de rang supérieur.
+- **Si les deux nœuds racines ont des rangs égaux** : l'un des arbres devient la racine et voit son rang incrémenté.
 """
 
-# ╔═╡ 593db4d8-8655-45b4-a754-00b7d7fea7d9
-begin
+# ╔═╡ 91b88dd4-e426-400e-a847-6fb0e3a243e5
+begin 
 	# Fusion de deux composantes en utilisant la règle de rang
 	function update_comp_connexes(comp_connexes::CompConnexe, root_1::Int64, root_2::Int64)
     	# Compare les rangs pour déterminer quelle racine devient le parent de l'autre
@@ -83,14 +81,14 @@ begin
 	end
 end
 
-# ╔═╡ c53450fe-2b2a-4a97-80db-3e0a7d7313ff
+# ╔═╡ 83681c01-f108-4026-87dc-249b5a5d847e
 md"""
-###### Compression de chemin 
+###### Compression de chemin
 
 En même temps que nous avons mis en place l'union par le rang, nous avons utilisé la compression de chemin pour optimiser l'opération get_root, qui retourne la racine d'un nœud. Chaque fois qu'un nœud est vérifié pour trouver sa racine, nous le relions directement à la racine de son ensemble. Cela réduit la profondeur de l’arbre et rend les recherches futures plus rapides.
 """
 
-# ╔═╡ 6c7f7e10-303b-4681-bbef-de9fb4d27d0a
+# ╔═╡ d0ef01bd-79b6-452d-9aa9-4e361f24cd05
 begin
 	# Trouve la racine d'un nœud avec compression de chemin
 	function get_root(comp_connexes::CompConnexe, node::Int64)
@@ -102,27 +100,27 @@ begin
 	end
 end
 
-# ╔═╡ 29d82939-9c44-4f51-aae3-5c602a119057
+# ╔═╡ 855f6dab-3688-48ac-9f50-47bedaf0cc07
 md"""
 ##### Modification de l'algoithme de Kruskal
 """
 
-# ╔═╡ 0fadddb5-6acc-49d4-a547-95c2a0389a8f
+# ╔═╡ 59dacde8-4586-4fd9-b01f-4ac19b996b44
 md"""
 ###### Initialisation des composantes connexes :
 
 Au lieu de simplement initialiser chaque nœud comme une composante disjointe, nous avons également mis en place le dictionnaire rang pour suivre le rang de chaque nœud. Cela nous permettra d'utiliser l'union par rang lors de la fusion des composantes.
 
-######  Utilisation de get_root :
+###### Utilisation de get_root :
 
 Lors de l'obtention de la racine d'un nœud, nous avons intégré la méthode qui applique la compression de chemin. Cela permet de rendre la recherche plus efficace en reliant les nœuds directement à la racine de leur composante, réduisant ainsi la profondeur de l'arbre des composantes connexes.
 
 ###### Mise à jour des composantes connexes :
 
-Lors de la fusion de deux ensembles, nous avons modifié la fonction update_comp_connexes pour qu’elle prenne en compte le rang. Au lieu de simplement mettre à jour le parent d’un ensemble, nous vérifions les rangs des racines et fusionnons les arbres en conséquence. Si les rangs sont égaux, nous incrémentons le rang de la nouvelle racine.
+Lors de la fusion de deux ensembles, nous avons modifié la fonction updatecompconnexes pour qu’elle prenne en compte le rang. Au lieu de simplement mettre à jour le parent d’un ensemble, nous vérifions les rangs des racines et fusionnons les arbres en conséquence. Si les rangs sont égaux, nous incrémentons le rang de la nouvelle racine.
 """
 
-# ╔═╡ c1b86873-6f92-4e72-b76b-818b99cd352f
+# ╔═╡ e6675851-61e8-470f-b233-47059215492b
 begin
 		function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, 					edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
     	# Définition de l'arbre minimal
@@ -151,7 +149,7 @@ begin
        	   	@test typeof(node_1) == Node{Int64} && typeof(node_2) == Node{Int64}
 
         	# Trouver les racines des nœuds avec compression de chemin
-        	racine_1 = get_root(Set_comp_connexes, node1)
+			racine_1 = get_root(Set_comp_connexes, node1)
         	racine_2 = get_root(Set_comp_connexes, node2)
         	@test typeof(racine_1) == Int64 && typeof(racine_2) == Int64
 
@@ -184,22 +182,21 @@ begin
 	
 end
 
-# ╔═╡ 1c2b0a8c-d234-4f64-a9cd-bbe8a0d7a35d
+# ╔═╡ 57e27f0f-6e07-49c7-98fa-83d8f6823f90
 md"""
-###### Avantages de ces modifications 
+###### Avantages de ces modifications
 
-En ajoutant l'union par le rang et la compression de chemin 
-Nous réduisons la complexité de l'algorithme.
-Ces techniques diminuent la profondeur des arbres de composantes connexes, accélérant ainsi les opérations sur ces ensembles. Pour mieux visualiser ces avantages nous comparons le CPU time pour chacune des essaies de l'algorithme Kruskal sans et avec heuristiques, vous voyez les résultas dans le tableau ci-dessous.
+En ajoutant l'union par le rang et la compression de chemin Nous réduisons la complexité de l'algorithme. Ces techniques diminuent la profondeur des arbres de composantes connexes, accélérant ainsi les opérations sur ces ensembles. Pour mieux visualiser ces avantages nous comparons le CPU time pour chacune des essaies de l'algorithme Kruskal sans et avec heuristiques, vous voyez les résultas dans le tableau ci-dessous.
+
 """
 
-# ╔═╡ ee9a85cb-f12a-401f-a098-5ab7578fa4b5
+# ╔═╡ c81f4606-42e7-48b3-abfd-52144eeb570e
 md"""
-|                | Kruskal sans heuristiques (CPU Time ms) | Kruskal avec heuristiques (CPU Time ms) |
+|                | Kruskal sans heuristiques (CPU Time) | Kruskal avec heuristiques (CPU Time) |
 |:-------------------------|:----------------------------------------|:----------------------------------------|
-| **Exemple de cours**             | 1000 (150 ms)                           | 600 (90 ms)                             |
-| **Graphe 2**             | 1200 (200 ms)                           | 700 (110 ms)                            |
-| **Graphe 3**             | 1100 (180 ms)                           | 650 (95 ms)                             |
+| **Exemple de cours**             | 0.1038 ms                           | 0.05 ms
+| **Instance bayg29**             | 125,277 ms                           | 3,4326 ms                          |
+| **Instance swiss42**             | 2,7259 ms                          | 0,87695 ms                           |
 
 """
 
@@ -1426,16 +1423,16 @@ version = "17.4.0+2"
 # ╟─9197efc0-8862-42c6-83f2-aa4810712b3f
 # ╟─c5201b63-ff8c-4078-9e07-fa011ab4d82b
 # ╟─d5aab9da-73ae-44ee-9b67-737e8c080e36
-# ╠═ccf9ef4e-cf39-4495-ad9c-b21c55d699b5
-# ╟─3a0e9c06-4d2b-40e2-92af-ea3915d3e152
-# ╠═593db4d8-8655-45b4-a754-00b7d7fea7d9
-# ╟─c53450fe-2b2a-4a97-80db-3e0a7d7313ff
-# ╠═6c7f7e10-303b-4681-bbef-de9fb4d27d0a
-# ╟─29d82939-9c44-4f51-aae3-5c602a119057
-# ╟─0fadddb5-6acc-49d4-a547-95c2a0389a8f
-# ╠═c1b86873-6f92-4e72-b76b-818b99cd352f
-# ╟─1c2b0a8c-d234-4f64-a9cd-bbe8a0d7a35d
-# ╠═ee9a85cb-f12a-401f-a098-5ab7578fa4b5
+# ╠═7aff023f-2808-4a0d-8820-f0b6ef754f86
+# ╟─23b20c7c-9254-40d4-ab0c-f9a6542ea187
+# ╟─91b88dd4-e426-400e-a847-6fb0e3a243e5
+# ╟─83681c01-f108-4026-87dc-249b5a5d847e
+# ╠═d0ef01bd-79b6-452d-9aa9-4e361f24cd05
+# ╟─855f6dab-3688-48ac-9f50-47bedaf0cc07
+# ╟─59dacde8-4586-4fd9-b01f-4ac19b996b44
+# ╠═e6675851-61e8-470f-b233-47059215492b
+# ╟─57e27f0f-6e07-49c7-98fa-83d8f6823f90
+# ╟─c81f4606-42e7-48b3-abfd-52144eeb570e
 # ╟─30082282-7ffd-4976-995a-9a6c629e1160
 # ╟─cfd1e43e-41b7-4a50-915e-d6d40a1354c4
 # ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
