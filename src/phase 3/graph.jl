@@ -27,7 +27,7 @@ mutable struct Graph{T, S} <: AbstractGraph{T, S}
 end
 
 """Ajoute un noeud au graphe."""
-function add_node!(graph::Graph{T}, node::Node{T}) where T
+function add_node!(graph::Graph{T,S}, node::Node{T}) where {T, S}
   boolean = true
   for node_in in graph.nodes
     if parse(Int64, node_in.name) == parse(Int64, node.name)
@@ -41,7 +41,7 @@ function add_node!(graph::Graph{T}, node::Node{T}) where T
 end
 
 """Ajoute un arete au graphe."""
-function add_edge!(graph::Graph{T}, edge::Edge{T, S}) where {T, S}
+function add_edge!(graph::Graph{T, S}, edge::Edge{T, S}) where {T, S}
   push!(graph.edges, edge)
   graph
 end
