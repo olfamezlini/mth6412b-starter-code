@@ -202,74 +202,65 @@ md"""
 
 # ╔═╡ 30082282-7ffd-4976-995a-9a6c629e1160
 md"""
-#### Suite question 1 : Preuve que le rang d'un nœud est toujours inférieur à $L(|S| - 1)$ et ensuite inférieur à $L(\log_2(|S|))$
+#### Suite question 1 : Preuve que le rang d'un nœud est toujours inférieur à $|S| - 1$ et ensuite inférieur à $[\log_2(|S|)]$
 
-Nous allons démontrer que le rang d’un nœud dans une forêt d’ensembles disjoints est inférieur à $L(|S| - 1)$ et, ensuite, qu'il est inférieur à $L(\log_2(|S|))$, en procédant par étapes.
+Nous allons démontrer que le rang d’un nœud dans une forêt d’ensembles disjoints est inférieur à $|S| - 1$ et, ensuite, qu'il est inférieur à $[\log_2(|S|)]$, en procédant par étapes.
 """
 
 
 # ╔═╡ cfd1e43e-41b7-4a50-915e-d6d40a1354c4
 md"""
-##### Rang d’un nœud
 
-###### Définition du rang
+##### Définition du rang
 
-Le rang d’un nœud est une approximation de la hauteur maximale de l’arbre qui a ce nœud comme racine. Lorsqu’on effectue une union par le rang, on attache toujours l’arbre de rang inférieur à celui de rang supérieur, ce qui permet de maintenir des arbres relativement peu profonds.
+Le rang d'un nœud est généralement défini comme la longueur du chemin maximum du nœud à une feuille dans une structure arborescente. Dans une structure d'ensemble de type forêt, le rang d'un nœud 𝑢 représente le nombre d'étapes nécessaires pour atteindre un de ses descendants (ou parents, selon la structure) le plus éloigné.
+
+
 """
 
 # ╔═╡ 1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
 md"""
-##### Argument 1 : $L(\text{rank}(n) < |S| - 1)$
+##### Argument 1 : $\text{Rang} < |S| - 1$
 
-Soit $L(S)$ un ensemble de $L(|S|)$ éléments.
+Étant donné un ensemble 𝑆 de $|S|$ éléments, si nous considérons une structure d'arbres équilibrée, le nombre maximum d'éléments dans le chemin d'un nœud jusqu'à un autre nœud ne peut pas excéder $|S| - 1$
 
-Dans le pire des cas, si l'on a un arbre qui est en réalité une chaîne (où chaque nœud a un seul enfant), la hauteur maximale de cet arbre est $L(|S| - 1)$. Dans une telle situation, la racine est le dernier nœud, et les autres nœuds sont tous des enfants directs de la racine.
+Dans le pire des cas, si l'on a un arbre qui est en réalité une chaîne (où chaque nœud a un seul enfant), la hauteur maximale de cet arbre est $|S| - 1$. Dans une telle situation, la racine est le dernier nœud, et les autres nœuds sont tous des enfants directs de la racine.
 
-Ainsi, la valeur maximale que peut atteindre le rang d’un nœud dans cet arbre est $L(|S| - 1)$. Étant donné que les unions par le rang garantissent que l’on attache toujours l’arbre de rang inférieur à celui de rang supérieur, il est donc impossible qu’un nœud ait un rang égal ou supérieur à $L(|S| - 1)$.
+Ainsi :
 
-##### Conclusion :
+$\text{Rang} < |S| - 1$
 
-$L(\text{rank}(n) < |S| - 1)$
 """
 
 # ╔═╡ 2a35258e-a16e-49eb-b391-2cc505b39ad8
 md"""
 
-##### Argument 2 : $L(\text{rank}(n) < \log_2(|S|))$
+##### Argument 2 : $\text{Rang} < \log_2(|S|)$
 
+Si l’on suppose une structure optimisée (comme les arbres binaires), alors la hauteur maximale d’un arbre contenant $∣𝑆∣$ éléments suit une croissance logarithmique. En effet, dans une structure d'arbre équilibrée, chaque niveau de l'arbre double potentiellement le nombre de nœuds par rapport au niveau précédent. En conséquence, le rang maximal k d’un nœud dans un arbre contenant $∣𝑆∣$ éléments respecte : 
 
-Pour chaque union effectuée, on augmente le rang d’un nœud uniquement lorsqu’on attache un arbre de même rang à un autre arbre de même rang. Cela ne se produit que lorsque deux arbres de taille égale sont unis, ce qui signifie que chaque augmentation de rang indique que l'on a fusionné deux arbres de taille au moins $L(2^k)$ pour un certain $L(k)$.
+$2^{k} \leq ∣𝑆∣$. 
 
-Si on suppose qu’un nœud a un rang $L(r)$, cela signifie qu'il a été le résultat d'au moins $L(r)$ unions de deux arbres de tailles au moins $L(2^0), L(2^1), \dots, L(2^{r-1})$. Donc, la taille de l’arbre associé à ce nœud est au moins :
+En prenant le logarithme en base 2 de chaque côté de cette inégalité, on obtient 
+
+$\text{k} \leq \log_2(|S|)$
+
+Puisque le rang d'un nœud doit être un entier, on prend la partie entière inférieure, ce qui donne :
+
+$\text{rang} \leq [\log_2(|S|)]$
+
+Ainsi, on a montré que le rang d’un nœud est inférieur à $∣𝑆∣ - 1$ et que dans une structure d’arbre équilibrée, ce rang est en fait limité par $[\log_2(|S|)]$.
 """
 
 
-# ╔═╡ dcb04f03-fbb5-4167-be7b-76dbda92d8fe
-md"""
-Cela donne la taille minimale suivante de l'ensemble :
+# ╔═╡ 0be058ad-f74b-4410-bab8-db7621811cb5
+md"""#### Question 2 : Implémentation del'algorithme Prim vu au laboratoire
 
-
-$L(|S|) \geq 2^{r+1} - 1$
-
-
-En négligeant le "-1", on peut dire :
-
-
-$L(|S|) \geq 2^{r+1}$
+L'algorithme Prim commence à partir d'un nœud source choisi, dont le min\_weight est défini à 0. Tous les nœuds sont placés dans une file de priorité, ordonnés par leur min\_weight. À chaque étape, le nœud de plus faible poids est ajouté à l'arbre, et les min_weight et parents de ses voisins non connectés sont mis à jour, assurant ainsi une expansion optimisée de l'arbre de recouvrement minimal.
 """
 
-
-# ╔═╡ f4aaab29-30a4-442b-8c72-9913f2de00eb
-md"""
-##### Conclusion
-
-Finalement, nous avons montré que :
- $L(\text{rank}(n) < |S| - 1)$
- $L(\text{rank}(n) < \log_2(|S|))$
-
-Ces résultats montrent comment l'union par le rang contribue à maintenir des arbres peu profonds, améliorant ainsi le temps de recherche dans les ensembles disjoints.
-"""
-
+# ╔═╡ 99be5fd3-1f23-4f03-9c20-17ab1c277d6f
+md"""#### Question 3 : Test de l'implémentation"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1437,7 +1428,7 @@ version = "17.4.0+2"
 # ╟─cfd1e43e-41b7-4a50-915e-d6d40a1354c4
 # ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
 # ╟─2a35258e-a16e-49eb-b391-2cc505b39ad8
-# ╟─dcb04f03-fbb5-4167-be7b-76dbda92d8fe
-# ╟─f4aaab29-30a4-442b-8c72-9913f2de00eb
+# ╟─0be058ad-f74b-4410-bab8-db7621811cb5
+# ╟─99be5fd3-1f23-4f03-9c20-17ab1c277d6f
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
