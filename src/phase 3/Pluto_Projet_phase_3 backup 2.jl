@@ -105,6 +105,21 @@ md"""
 ##### Modification de l'algoithme de Kruskal
 """
 
+# ╔═╡ 1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
+md"""
+###### Initialisation des composantes connexes :
+
+Au lieu de simplement initialiser chaque nœud comme une composante disjointe, nous avons également mis en place le dictionnaire rang pour suivre le rang de chaque nœud. Cela nous permettra d'utiliser l'union par rang lors de la fusion des composantes.
+
+###### Utilisation de get_root :
+
+Lors de l'obtention de la racine d'un nœud, nous avons intégré la méthode qui applique la compression de chemin. Cela permet de rendre la recherche plus efficace en reliant les nœuds directement à la racine de leur composante, réduisant ainsi la profondeur de l'arbre des composantes connexes.
+
+###### Mise à jour des composantes connexes :
+
+Lors de la fusion de deux ensembles, nous avons modifié la fonction updatecompconnexes pour qu’elle prenne en compte le rang. Au lieu de simplement mettre à jour le parent d’un ensemble, nous vérifions les rangs des racines et fusionnons les arbres en conséquence. Si les rangs sont égaux, nous incrémentons le rang de la nouvelle racine.
+"""
+
 # ╔═╡ e6675851-61e8-470f-b233-47059215492b
 begin
 		function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, 					edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
@@ -244,135 +259,8 @@ md"""#### Question 2 : Implémentation del'algorithme Prim vu au laboratoire
 L'algorithme Prim commence à partir d'un nœud source choisi, dont le min\_weight est défini à 0. Tous les nœuds sont placés dans une file de priorité, ordonnés par leur min\_weight. À chaque étape, le nœud de plus faible poids est ajouté à l'arbre, et les min_weight et parents de ses voisins non connectés sont mis à jour, assurant ainsi une expansion optimisée de l'arbre de recouvrement minimal.
 """
 
-# ╔═╡ 25db5ddf-8413-484b-8a79-1de6377afb93
-begin
-	"""
-# Arguments
-- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
-
-
-# Retourne
-- graph_edges::Vector{Vector{Int64}} contenant l'ensemble des arêtes dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
-"""
-function complete_graph_edges(graph_edges)
-    # Nombre total de nœuds
-    num_nodes = length(graph_edges)
-
-    # Initialise une nouvelle liste pour stocker le voisinage symétrique de chaque nœud
-    symmetric_neighbors = [Set{Int}() for _ in 1:num_nodes]
-
-    # Remplit la liste de voisins symétriques
-    for i in 1:num_nodes
-        for neighbor in graph_edges[i]
-            # Ajouter le voisin pour le nœud `i`
-            push!(symmetric_neighbors[i], neighbor)
-
-            # Ajoute également `i` comme voisin pour `neighbor` (symétrie)
-            if neighbor <= num_nodes  # Assure qu'on reste dans les limites
-                push!(symmetric_neighbors[neighbor], i)
-            end
-        end
-    end
-
-    # Convertit chaque ensemble de voisins en liste triée pour une sortie lisible
-    return [sort(collect(neighbors)) for neighbors in symmetric_neighbors]
-end
-
-"""
-# Arguments
-- `a::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire représentant les poids
-
-
-# Modifie
-- a::Dict{Tuple{Int64, Int64}, Float64} contenant l'ensemble des poids dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
-"""
-function add_symmetry!(a::Dict{Tuple{Int64, Int64}, Float64})
-    # Crée une liste des nouvelles paires inversées à ajouter pour éviter les modifications durant l'itération
-    to_add = Dict{Tuple{Int64, Int64}, Float64}()
-    
-    # Parcourt chaque élément de `a` pour trouver les symétries manquantes
-    for ((x, y), value) in a
-        # Si l'inverse (y, x) n'existe pas, on le stocke dans `to_add`
-        if !haskey(a, (y, x))
-            to_add[(y, x)] = value
-        end
-    end
-    
-    # Ajoute les paires symétriques dans `a`
-    merge!(a, to_add)
-    return a
-end
-end
-
 # ╔═╡ 99be5fd3-1f23-4f03-9c20-17ab1c277d6f
 md"""#### Question 3 : Test de l'implémentation"""
-
-# ╔═╡ 7ae83cd0-b6a2-45d2-ba7d-ebae8078f96e
-md"""
-
-Voici les résultats trouvés avec l'algorithme de Prim appliqué aux exemples de TSP symétriques.
-
-"""
-
-# ╔═╡ 3ecd61be-b9e6-4e50-b872-7520c4cc737a
-md"""###### Exemple du  cours
-"""
-
-# ╔═╡ 50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
-# ╠═╡ disabled = true
-#=╠═╡
-image_resultats_exempleducours = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/exemple_phase_2.png")
-  ╠═╡ =#
-
-# ╔═╡ eeb3b3fe-fa8a-49ea-ab39-fc91e3e9ec14
-md"""
-Poids de l'arbre de recouvrement minimal = 37
-"""
-
-# ╔═╡ 11ca0326-7dcf-454a-bbce-c677d3f812aa
-md"""
-Nous avons également testé notre implémentation sur les fichiers TSP qui n'avaient pas de coordonnées spatiales. Nous avons alors défini arbitrairement des coordonnées afin de mettre les nœuds sur un cercle de façon à voir toutes les arêtes. Les résultats sur les différentes instances de TSP symétriques sont les suivants :
-"""
-
-# ╔═╡ 2424695d-8144-4339-a34e-c2f4d6691a2c
-image_resultats_bayg29 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/bayg29.png")
-
-# ╔═╡ 6127cc66-ef9a-42e2-a089-21772cf1dd29
-md"""
-Poids de l'arbre de recouvrement minimal = 1319
-"""
-
-# ╔═╡ f9d35762-c44e-4f50-a196-1a2389012486
-image_resultats_bays29 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/bays29.png")
-
-# ╔═╡ 9f3787d5-e2f7-4345-929e-d799379ff73c
-md"""
-Poids de l'arbre de recouvrement minimal = 1557
-"""
-
-# ╔═╡ 3c52e30c-4ee4-444e-9189-1698827b01d3
-image_resultats_dantzig42 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/dantzig42.png")
-
-# ╔═╡ 9cd7617a-6c0f-46f3-84d2-086798a972f1
-md"""
-Poids de l'arbre de recouvrement minimal = 591
-"""
-
-# ╔═╡ e461a86e-4ade-4a48-a975-1c58037a9469
-image_resultats_dgr120 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr120.png")
-
-# ╔═╡ 80a21fe1-42f5-470a-aeac-f8258317e12d
-md"""
-Poids de l'arbre de recouvrement minimal = 5805
-"""
-
-# ╔═╡ 123d3547-1012-4b6f-be45-4c3874bbbf38
-image_resultats_brazil58 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/brazil58.png")
-
-# ╔═╡ 93fa0023-ecd7-4dee-915e-5fb57bcc02b6
-md"""
-Poids de l'arbre de recouvrement minimal = 17514
-"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1532,6 +1420,7 @@ version = "17.4.0+2"
 # ╟─83681c01-f108-4026-87dc-249b5a5d847e
 # ╠═d0ef01bd-79b6-452d-9aa9-4e361f24cd05
 # ╟─855f6dab-3688-48ac-9f50-47bedaf0cc07
+# ╟─59dacde8-4586-4fd9-b01f-4ac19b996b44
 # ╠═e6675851-61e8-470f-b233-47059215492b
 # ╟─57e27f0f-6e07-49c7-98fa-83d8f6823f90
 # ╟─c81f4606-42e7-48b3-abfd-52144eeb570e
@@ -1540,22 +1429,6 @@ version = "17.4.0+2"
 # ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
 # ╟─2a35258e-a16e-49eb-b391-2cc505b39ad8
 # ╟─0be058ad-f74b-4410-bab8-db7621811cb5
-# ╠═25db5ddf-8413-484b-8a79-1de6377afb93
 # ╟─99be5fd3-1f23-4f03-9c20-17ab1c277d6f
-# ╠═7ae83cd0-b6a2-45d2-ba7d-ebae8078f96e
-# ╟─3ecd61be-b9e6-4e50-b872-7520c4cc737a
-# ╠═50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
-# ╠═eeb3b3fe-fa8a-49ea-ab39-fc91e3e9ec14
-# ╠═11ca0326-7dcf-454a-bbce-c677d3f812aa
-# ╠═2424695d-8144-4339-a34e-c2f4d6691a2c
-# ╠═6127cc66-ef9a-42e2-a089-21772cf1dd29
-# ╠═f9d35762-c44e-4f50-a196-1a2389012486
-# ╠═9f3787d5-e2f7-4345-929e-d799379ff73c
-# ╠═3c52e30c-4ee4-444e-9189-1698827b01d3
-# ╠═9cd7617a-6c0f-46f3-84d2-086798a972f1
-# ╠═e461a86e-4ade-4a48-a975-1c58037a9469
-# ╟─80a21fe1-42f5-470a-aeac-f8258317e12d
-# ╠═123d3547-1012-4b6f-be45-4c3874bbbf38
-# ╠═93fa0023-ecd7-4dee-915e-5fb57bcc02b6
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -105,6 +105,21 @@ md"""
 ##### Modification de l'algoithme de Kruskal
 """
 
+# ╔═╡ 59dacde8-4586-4fd9-b01f-4ac19b996b44
+md"""
+###### Initialisation des composantes connexes :
+
+Au lieu de simplement initialiser chaque nœud comme une composante disjointe, nous avons également mis en place le dictionnaire rang pour suivre le rang de chaque nœud. Cela nous permettra d'utiliser l'union par rang lors de la fusion des composantes.
+
+###### Utilisation de get_root :
+
+Lors de l'obtention de la racine d'un nœud, nous avons intégré la méthode qui applique la compression de chemin. Cela permet de rendre la recherche plus efficace en reliant les nœuds directement à la racine de leur composante, réduisant ainsi la profondeur de l'arbre des composantes connexes.
+
+###### Mise à jour des composantes connexes :
+
+Lors de la fusion de deux ensembles, nous avons modifié la fonction updatecompconnexes pour qu’elle prenne en compte le rang. Au lieu de simplement mettre à jour le parent d’un ensemble, nous vérifions les rangs des racines et fusionnons les arbres en conséquence. Si les rangs sont égaux, nous incrémentons le rang de la nouvelle racine.
+"""
+
 # ╔═╡ e6675851-61e8-470f-b233-47059215492b
 begin
 		function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, 					edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
@@ -244,134 +259,118 @@ md"""#### Question 2 : Implémentation del'algorithme Prim vu au laboratoire
 L'algorithme Prim commence à partir d'un nœud source choisi, dont le min\_weight est défini à 0. Tous les nœuds sont placés dans une file de priorité, ordonnés par leur min\_weight. À chaque étape, le nœud de plus faible poids est ajouté à l'arbre, et les min_weight et parents de ses voisins non connectés sont mis à jour, assurant ainsi une expansion optimisée de l'arbre de recouvrement minimal.
 """
 
-# ╔═╡ 25db5ddf-8413-484b-8a79-1de6377afb93
-begin
-	"""
-# Arguments
-- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
-
-
-# Retourne
-- graph_edges::Vector{Vector{Int64}} contenant l'ensemble des arêtes dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
-"""
-function complete_graph_edges(graph_edges)
-    # Nombre total de nœuds
-    num_nodes = length(graph_edges)
-
-    # Initialise une nouvelle liste pour stocker le voisinage symétrique de chaque nœud
-    symmetric_neighbors = [Set{Int}() for _ in 1:num_nodes]
-
-    # Remplit la liste de voisins symétriques
-    for i in 1:num_nodes
-        for neighbor in graph_edges[i]
-            # Ajouter le voisin pour le nœud `i`
-            push!(symmetric_neighbors[i], neighbor)
-
-            # Ajoute également `i` comme voisin pour `neighbor` (symétrie)
-            if neighbor <= num_nodes  # Assure qu'on reste dans les limites
-                push!(symmetric_neighbors[neighbor], i)
-            end
-        end
-    end
-
-    # Convertit chaque ensemble de voisins en liste triée pour une sortie lisible
-    return [sort(collect(neighbors)) for neighbors in symmetric_neighbors]
-end
-
-"""
-# Arguments
-- `a::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire représentant les poids
-
-
-# Modifie
-- a::Dict{Tuple{Int64, Int64}, Float64} contenant l'ensemble des poids dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
-"""
-function add_symmetry!(a::Dict{Tuple{Int64, Int64}, Float64})
-    # Crée une liste des nouvelles paires inversées à ajouter pour éviter les modifications durant l'itération
-    to_add = Dict{Tuple{Int64, Int64}, Float64}()
-    
-    # Parcourt chaque élément de `a` pour trouver les symétries manquantes
-    for ((x, y), value) in a
-        # Si l'inverse (y, x) n'existe pas, on le stocke dans `to_add`
-        if !haskey(a, (y, x))
-            to_add[(y, x)] = value
-        end
-    end
-    
-    # Ajoute les paires symétriques dans `a`
-    merge!(a, to_add)
-    return a
-end
-end
-
 # ╔═╡ 99be5fd3-1f23-4f03-9c20-17ab1c277d6f
 md"""#### Question 3 : Test de l'implémentation"""
 
-# ╔═╡ 7ae83cd0-b6a2-45d2-ba7d-ebae8078f96e
+# ╔═╡ 0d59275d-0dec-4fee-8c2f-a0efdb5ca808
 md"""
+##### Résultats"""
 
-Voici les résultats trouvés avec l'algorithme de Prim appliqué aux exemples de TSP symétriques.
+# ╔═╡ 36b88d22-fcd8-4400-bcd6-fda9872d6c65
+md"""Voici les résultats trouvés avec l'algorithme de Prim appliqué aux exemples de TSP symétriques."""
 
-"""
+# ╔═╡ 1f4cb78c-6329-4b95-9858-89ab8a1adf4b
+md"""**Exemple du cours**"""
 
-# ╔═╡ 3ecd61be-b9e6-4e50-b872-7520c4cc737a
-md"""###### Exemple du  cours
-"""
+# ╔═╡ 691f68d1-e8d9-46eb-ae88-b0c34655827f
+md"""En appliquant, l'algorithme de Prim sur l'exemple du cours avec le noeud de départ égale à 1 (tout à gauche), on obtient le résultat suivant : """
 
-# ╔═╡ 50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
-# ╠═╡ disabled = true
-#=╠═╡
-image_resultats_exempleducours = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/exemple_phase_2.png")
-  ╠═╡ =#
+# ╔═╡ e81950c2-c18c-4d1c-b27b-5c456dc15ee9
+exemple_cours_2 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/exemple_phase_2.png")
 
-# ╔═╡ eeb3b3fe-fa8a-49ea-ab39-fc91e3e9ec14
-md"""
-Poids de l'arbre de recouvrement minimal = 37
-"""
+# ╔═╡ 1b39fc48-92f9-4ea2-9aa0-cbe4d53808a0
+md"""Poids de l'arbre de recouvrement minimal = 37"""
 
-# ╔═╡ 11ca0326-7dcf-454a-bbce-c677d3f812aa
-md"""
-Nous avons également testé notre implémentation sur les fichiers TSP qui n'avaient pas de coordonnées spatiales. Nous avons alors défini arbitrairement des coordonnées afin de mettre les nœuds sur un cercle de façon à voir toutes les arêtes. Les résultats sur les différentes instances de TSP symétriques sont les suivants :
-"""
+# ╔═╡ 65935c59-4b8d-4852-9db9-e33984b2a932
+md"""On peut également changer le noeud de départ, par exemple avec le noeud de départ égale à 3, on obtient ceci :"""
 
-# ╔═╡ 2424695d-8144-4339-a34e-c2f4d6691a2c
+# ╔═╡ ed0e7d90-6620-4959-a82d-ef11e688f4b0
+exemple_cours_2_v2 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/exemple_phase_2_v2.png")
+
+# ╔═╡ e5b89c51-cf73-48d3-ae7e-87a01b8bc172
+md"""Poids de l'arbre de recouvrement minimal = 37"""
+
+# ╔═╡ f9f7b273-0eac-4a89-b57c-62eee99ac0d7
+md"""Nous avons également testé notre implémentation sur les fichiers TSP qui n'avaient pas de coordonnées spatiales. Nous avons alors défini arbitrairement des coordonnées afin de mettre les nœuds sur un cercle de façon à voir toutes les arêtes. Les résultats sur les différentes instances de TSP symétriques sont les suivants : """
+
+# ╔═╡ 1359c121-9d38-40d1-99aa-d00468fb77f5
 image_resultats_bayg29 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/bayg29.png")
 
-# ╔═╡ 6127cc66-ef9a-42e2-a089-21772cf1dd29
-md"""
-Poids de l'arbre de recouvrement minimal = 1319
-"""
+# ╔═╡ 567d9f39-980e-495e-8c39-db34f5daa353
+md"""Poids de l'arbre de recouvrement minimal = 1319"""
 
-# ╔═╡ f9d35762-c44e-4f50-a196-1a2389012486
+# ╔═╡ e7157a7e-cff4-48ca-9102-5253a7c47f2d
 image_resultats_bays29 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/bays29.png")
 
-# ╔═╡ 9f3787d5-e2f7-4345-929e-d799379ff73c
-md"""
-Poids de l'arbre de recouvrement minimal = 1557
-"""
+# ╔═╡ e596c852-2f64-409f-bf7c-85dc808c1c45
+md"""Poids de l'arbre de recouvrement minimal = 1557"""
 
-# ╔═╡ 3c52e30c-4ee4-444e-9189-1698827b01d3
+# ╔═╡ 8c9e69ee-16fa-4602-8953-d56bab8accbc
 image_resultats_dantzig42 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/dantzig42.png")
 
-# ╔═╡ 9cd7617a-6c0f-46f3-84d2-086798a972f1
-md"""
-Poids de l'arbre de recouvrement minimal = 591
-"""
+# ╔═╡ 725d6caf-8f62-4ab6-a975-008d88ebc80f
+md"""Poids de l'arbre de recouvrement minimal = 591"""
 
-# ╔═╡ e461a86e-4ade-4a48-a975-1c58037a9469
-image_resultats_dgr120 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr120.png")
+# ╔═╡ 1aa5d1ea-c057-41da-be68-432b94e70453
+image_resultats_gr120 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr120.png")
 
-# ╔═╡ 80a21fe1-42f5-470a-aeac-f8258317e12d
-md"""
-Poids de l'arbre de recouvrement minimal = 5805
-"""
+# ╔═╡ 2e43a349-8688-4227-8c06-33a98c597b09
+md"""Poids de l'arbre de recouvrement minimal = 5805"""
 
-# ╔═╡ 123d3547-1012-4b6f-be45-4c3874bbbf38
+# ╔═╡ 8a640eab-ab85-48f7-80e0-8498db9d9fc6
 image_resultats_brazil58 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/brazil58.png")
 
-# ╔═╡ 93fa0023-ecd7-4dee-915e-5fb57bcc02b6
-md"""
-Poids de l'arbre de recouvrement minimal = 17514
+# ╔═╡ 710bd29a-5e10-4d9c-8e75-9e3be4c35a41
+md"""Poids de l'arbre de recouvrement minimal = 17514"""
+
+# ╔═╡ 27175c07-0cbe-45f0-8158-bf0b39416ac2
+image_resultats_brg180 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/brg180.png")
+
+# ╔═╡ 79140e0a-be9c-405c-ac8f-80e408779bfe
+md"""Poids de l'arbre de recouvrement minimal = 4470"""
+
+# ╔═╡ 41768531-8a0d-4c40-950e-cbe6ca18b0dc
+image_resultats_gr17 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr17.png")
+
+# ╔═╡ 67243729-435c-4f58-a6bf-5926e1b98dd8
+md"""Poids de l'arbre de recouvrement minimal = 1421"""
+
+# ╔═╡ 216832c3-d87b-4f36-883c-34b2e66160c0
+image_resultats_gr21 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr21.png")
+
+# ╔═╡ 9f00800d-25a0-46e4-ba7b-d590566562c5
+md"""Poids de l'arbre de recouvrement minimal = 2161"""
+
+# ╔═╡ a88c3e7f-c2c1-4012-9c53-5edb8b66da6b
+image_resultats_gr24 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr24.png")
+
+# ╔═╡ d3c14a7b-eda8-4947-83aa-cd299b528692
+md"""Poids de l'arbre de recouvrement minimal = 1011
+
+"""
+
+# ╔═╡ 8c6337ef-d16c-4370-b047-813521293d22
+image_resultats_gr48 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/gr48.png")
+
+# ╔═╡ d73fbacb-c700-421c-8b91-cdcb885625c3
+md"""Poids de l'arbre de recouvrement minimal = 4082
+
+"""
+
+# ╔═╡ ddfa6f66-780e-41c9-8ae7-66042696a1b0
+image_resultats_hk48 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/hk48.png")
+
+# ╔═╡ 047b8af6-fcc5-46a0-8b4d-9e8d77fd7d11
+md"""Poids de l'arbre de recouvrement minimal = 9905
+
+"""
+
+# ╔═╡ 8b6d74bd-89f3-479a-b413-fe34ea3e9878
+image_resultats_swiss42 = load("C:/Users/olfam/Desktop/mth6412b-starter-code-Phase-3/pictures/swiss42.png")
+
+# ╔═╡ 37773e51-68fb-4675-95a1-fd0598cb437e
+md"""Poids de l'arbre de recouvrement minimal = 1079
+
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1516,7 +1515,6 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─d66ffa51-1c09-43c5-86d5-c00ee61609b1
 # ╟─466b1feb-e208-4738-be70-733511fb3b6a
 # ╟─67d0eeaa-dcd6-45ef-8d94-7457d0eabaca
 # ╟─7049f94a-0545-4eb9-80e7-86486c335b72
@@ -1526,36 +1524,49 @@ version = "17.4.0+2"
 # ╟─9197efc0-8862-42c6-83f2-aa4810712b3f
 # ╟─c5201b63-ff8c-4078-9e07-fa011ab4d82b
 # ╟─d5aab9da-73ae-44ee-9b67-737e8c080e36
-# ╠═7aff023f-2808-4a0d-8820-f0b6ef754f86
-# ╟─23b20c7c-9254-40d4-ab0c-f9a6542ea187
-# ╟─91b88dd4-e426-400e-a847-6fb0e3a243e5
-# ╟─83681c01-f108-4026-87dc-249b5a5d847e
-# ╠═d0ef01bd-79b6-452d-9aa9-4e361f24cd05
-# ╟─855f6dab-3688-48ac-9f50-47bedaf0cc07
-# ╠═e6675851-61e8-470f-b233-47059215492b
-# ╟─57e27f0f-6e07-49c7-98fa-83d8f6823f90
-# ╟─c81f4606-42e7-48b3-abfd-52144eeb570e
 # ╟─30082282-7ffd-4976-995a-9a6c629e1160
 # ╟─cfd1e43e-41b7-4a50-915e-d6d40a1354c4
 # ╟─1c5a45bb-56cd-4fdd-b0c5-21d3913188d0
 # ╟─2a35258e-a16e-49eb-b391-2cc505b39ad8
-# ╟─0be058ad-f74b-4410-bab8-db7621811cb5
-# ╠═25db5ddf-8413-484b-8a79-1de6377afb93
-# ╟─99be5fd3-1f23-4f03-9c20-17ab1c277d6f
-# ╠═7ae83cd0-b6a2-45d2-ba7d-ebae8078f96e
-# ╟─3ecd61be-b9e6-4e50-b872-7520c4cc737a
-# ╠═50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
-# ╠═eeb3b3fe-fa8a-49ea-ab39-fc91e3e9ec14
-# ╠═11ca0326-7dcf-454a-bbce-c677d3f812aa
-# ╠═2424695d-8144-4339-a34e-c2f4d6691a2c
-# ╠═6127cc66-ef9a-42e2-a089-21772cf1dd29
-# ╠═f9d35762-c44e-4f50-a196-1a2389012486
-# ╠═9f3787d5-e2f7-4345-929e-d799379ff73c
-# ╠═3c52e30c-4ee4-444e-9189-1698827b01d3
-# ╠═9cd7617a-6c0f-46f3-84d2-086798a972f1
-# ╠═e461a86e-4ade-4a48-a975-1c58037a9469
-# ╟─80a21fe1-42f5-470a-aeac-f8258317e12d
-# ╠═123d3547-1012-4b6f-be45-4c3874bbbf38
-# ╠═93fa0023-ecd7-4dee-915e-5fb57bcc02b6
+# ╟─dcb04f03-fbb5-4167-be7b-76dbda92d8fe
+# ╠═f4aaab29-30a4-442b-8c72-9913f2de00eb
+# ╟─0d59275d-0dec-4fee-8c2f-a0efdb5ca808
+# ╟─36b88d22-fcd8-4400-bcd6-fda9872d6c65
+# ╟─1f4cb78c-6329-4b95-9858-89ab8a1adf4b
+# ╟─691f68d1-e8d9-46eb-ae88-b0c34655827f
+# ╟─e81950c2-c18c-4d1c-b27b-5c456dc15ee9
+# ╟─1b39fc48-92f9-4ea2-9aa0-cbe4d53808a0
+# ╟─65935c59-4b8d-4852-9db9-e33984b2a932
+# ╟─ed0e7d90-6620-4959-a82d-ef11e688f4b0
+# ╟─e5b89c51-cf73-48d3-ae7e-87a01b8bc172
+# ╟─f9f7b273-0eac-4a89-b57c-62eee99ac0d7
+# ╟─1359c121-9d38-40d1-99aa-d00468fb77f5
+# ╟─567d9f39-980e-495e-8c39-db34f5daa353
+# ╟─e7157a7e-cff4-48ca-9102-5253a7c47f2d
+# ╟─e596c852-2f64-409f-bf7c-85dc808c1c45
+# ╟─8c9e69ee-16fa-4602-8953-d56bab8accbc
+# ╟─725d6caf-8f62-4ab6-a975-008d88ebc80f
+# ╟─1aa5d1ea-c057-41da-be68-432b94e70453
+# ╟─2e43a349-8688-4227-8c06-33a98c597b09
+# ╟─8a640eab-ab85-48f7-80e0-8498db9d9fc6
+# ╟─710bd29a-5e10-4d9c-8e75-9e3be4c35a41
+# ╟─27175c07-0cbe-45f0-8158-bf0b39416ac2
+# ╟─79140e0a-be9c-405c-ac8f-80e408779bfe
+# ╟─41768531-8a0d-4c40-950e-cbe6ca18b0dc
+# ╟─67243729-435c-4f58-a6bf-5926e1b98dd8
+# ╟─216832c3-d87b-4f36-883c-34b2e66160c0
+# ╟─9f00800d-25a0-46e4-ba7b-d590566562c5
+# ╟─a88c3e7f-c2c1-4012-9c53-5edb8b66da6b
+# ╟─d3c14a7b-eda8-4947-83aa-cd299b528692
+# ╟─8c6337ef-d16c-4370-b047-813521293d22
+# ╟─d73fbacb-c700-421c-8b91-cdcb885625c3
+# ╟─ddfa6f66-780e-41c9-8ae7-66042696a1b0
+# ╟─047b8af6-fcc5-46a0-8b4d-9e8d77fd7d11
+# ╟─8b6d74bd-89f3-479a-b413-fe34ea3e9878
+# ╟─37773e51-68fb-4675-95a1-fd0598cb437e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
+
+
+import Pluto
+Pluto.run()

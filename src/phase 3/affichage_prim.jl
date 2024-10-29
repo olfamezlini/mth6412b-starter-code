@@ -19,11 +19,11 @@ include("prim.jl")
 
 Affiche l'application de l'algorithme de Kruskal en rouge sur le graphe considéré.
 """
-function affichage_arbre_minimal_kruskal(filename::String, start_node::Int64)
+function affichage_arbre_minimal_prim(filename::String, start_node::Int64)
     # Lecture du fichier filename
     graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
     # Application de l'algorithme de Kruskal sur le graphe considéré
-    arbre_minimal, poids_minimal = Algortihme_prim(graph_edges, edge_weights_dict,start_node)
+    arbre_minimal, poids_minimal = Algorithme_Prim(graph_nodes,graph_edges, edge_weights_dict,start_node)
     # Récupération de l'ensemble des arête de l'arbre de recouvrement minimal
     arbre_edges = arbre_minimal.edges
     # Affichage du poids minimal trouvé grâce à l'algorithme de Kruskal
@@ -116,3 +116,4 @@ function affichage_arbre_minimal_kruskal(filename::String, start_node::Int64)
     # Affichage de l'arbre de recouvrement minimal suivant la méthode de la classe Graph
     
 end
+

@@ -8,6 +8,64 @@ include("graph.jl")
 include("priority_queue.jl")
 include("read_stsp.jl")
 
+
+"""
+# Arguments
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+
+
+# Retourne
+- graph_edges::Vector{Vector{Int64}} contenant l'ensemble des arêtes dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
+"""
+function complete_graph_edges(graph_edges)
+    # Nombre total de nœuds
+    num_nodes = length(graph_edges)
+
+    # Initialise une nouvelle liste pour stocker le voisinage symétrique de chaque nœud
+    symmetric_neighbors = [Set{Int}() for _ in 1:num_nodes]
+
+    # Remplit la liste de voisins symétriques
+    for i in 1:num_nodes
+        for neighbor in graph_edges[i]
+            # Ajouter le voisin pour le nœud `i`
+            push!(symmetric_neighbors[i], neighbor)
+
+            # Ajoute également `i` comme voisin pour `neighbor` (symétrie)
+            if neighbor <= num_nodes  # Assure qu'on reste dans les limites
+                push!(symmetric_neighbors[neighbor], i)
+            end
+        end
+    end
+
+    # Convertit chaque ensemble de voisins en liste triée pour une sortie lisible
+    return [sort(collect(neighbors)) for neighbors in symmetric_neighbors]
+end
+
+"""
+# Arguments
+- `a::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire représentant les poids
+
+
+# Modifie
+- a::Dict{Tuple{Int64, Int64}, Float64} contenant l'ensemble des poids dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
+"""
+function add_symmetry!(a::Dict{Tuple{Int64, Int64}, Float64})
+    # Crée une liste des nouvelles paires inversées à ajouter pour éviter les modifications durant l'itération
+    to_add = Dict{Tuple{Int64, Int64}, Float64}()
+    
+    # Parcourt chaque élément de `a` pour trouver les symétries manquantes
+    for ((x, y), value) in a
+        # Si l'inverse (y, x) n'existe pas, on le stocke dans `to_add`
+        if !haskey(a, (y, x))
+            to_add[(y, x)] = value
+        end
+    end
+    
+    # Ajoute les paires symétriques dans `a`
+    merge!(a, to_add)
+    return a
+end
+
 """
     Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64)
 
@@ -21,10 +79,33 @@ Implémente l'algorithme de Prim pour trouver l'arbre de recouvrement minimal d'
 # Retourne
 - Un tuple contenant l'arbre de recouvrement minimal et son poids total.
 """
-function Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64)
-
+function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64)
+    # Vérification si le nœud de départ est dans les nœuds du graphe
+    if !(start_node in keys(graph_nodes))
+        error("Le nœud de départ $start_node ne se trouve pas dans les nœuds du graphe.")
+    end
     # Définition de l'arbre minimal
     arbre_minimal = Graph("Arbre_minimal_Prim", Node{Int64}[], Edge{Int64, Float64}[])
+    graph_edges = complete_graph_edges(graph_edges)
+    # Obtention de tous les poids
+    add_symmetry!(edge_weights_dict)
+
+    # Obtention de tous les noeuds
+    if length(graph_nodes) == 0
+        graph_nodes_keys = Int64[]  # Initialiser comme un tableau vide d'Int64
+        for (a, b) in keys(edge_weights_dict)
+            if !(a in graph_nodes_keys)
+                push!(graph_nodes_keys, a)
+            end
+            if !(b in graph_nodes_keys)
+                push!(graph_nodes_keys, b)
+            end
+        end
+    else
+        graph_nodes_keys = collect(keys(graph_nodes))
+    end    
+
+
 
     # Test du type de l'arbre de recouvrement minimal
     @test typeof(arbre_minimal)==Graph{Int64, Float64}
@@ -33,15 +114,19 @@ function Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::
 
     # Dictionnaire de chaque nœud et de ses voisins 
     NODES = Dict{Int, Vector{Tuple{Int, Int}}}() 
-
     # Parcourir chaque arête et construire le dictionnaire des voisins
-    for i =1:length(graph_edges)
+    for i in graph_nodes_keys
         for node in graph_edges[i]
-            NODES[i] = vcat(get(NODES, i, Tuple{Int, Int}[]), [(i, node)])
+            NODES[i] = get(NODES, i, Tuple{Int, Int}[])
+            if !((i, node) in NODES[i] && (node, i) in NODES[i])
+                NODES[i] = vcat(NODES[i], [(i, node)])
+            end
+            NODES[node] = get(NODES, node, Tuple{Int, Int}[])
+            if !((i, node) in NODES[node] && (node, i) in NODES[node])
+                NODES[node] = vcat(NODES[node], [(i, node)])
+            end
         end
     end
-
-
     # Creation du noeud de depart a partir de start_node
     start_node_type = Node(string(start_node), 0)
 
@@ -55,8 +140,10 @@ function Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::
     pq = PriorityQueue{PriorityItem}()
     for neighbor in NODES[start_node]
         node1, node2 = neighbor
-        weight = edge_weights_dict[(node1, node2)]
-        push!(pq, PriorityItem(weight, node2))
+        if haskey(edge_weights_dict, (node1, node2))
+            weight = edge_weights_dict[(node1, node2)]
+            push!(pq, PriorityItem(weight, node2))
+        end
     end
 
     # Set pour suivre les nœuds visités
@@ -102,10 +189,14 @@ function Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::
         #show(arbre_minimal)
         
         # Ajouter les voisins non visités du nœud courant dans la file de priorité
-        for neighbor in NODES[current_node]
-            node1, node2 = neighbor
-            if node2 ∉ visited_nodes
-                push!(pq, PriorityItem(edge_weights_dict[(node1, node2)], node2))
+        if haskey(NODES, current_node)
+            for neighbor in NODES[current_node]
+                node1, node2 = neighbor
+                if haskey(edge_weights_dict, (node1, node2))
+                    if node2 ∉ visited_nodes
+                        push!(pq, PriorityItem(edge_weights_dict[(node1, node2)], node2))
+                    end
+                end
             end
         end
 
@@ -119,18 +210,3 @@ function Algorithme_Prim(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::
     # On retourne l'arbre de recouvrement minimal et son poids correspondant
     return arbre_minimal, poids_minimal
 end
-
-
-function test_Algorithme_Prim()
-    graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/exemple_phase_2.tsp")
-    # Exécution de l'algorithme
-    arbre_minimal, poids_minimal = Algorithme_Prim(graph_edges, edge_weights_dict, 5)
-    # Affichage des résultats
-    println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)
-    println("Arbre de recouvrement minimal: ")
-    show(arbre_minimal)
-    
-end
-
-# Appeler la fonction de test
-test_Algorithme_Prim()
