@@ -1,0 +1,4 @@
+name = "STSP"
+uuid = "d953652b-3ac9-478d-9952-07431794b3c6"
+authors = ["olfamezlini <olfa.mezlini@etudiant-enit.utm.tn>"]
+version = "0.1.0"

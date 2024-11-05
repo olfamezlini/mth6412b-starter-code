@@ -1,4 +1,4 @@
-using Test
+using STSP, Test
 
 @testset "fake tests" begin
   @test 1==1
@@ -8,3 +8,7 @@ using Test
   @test Bool(true + false) == true
   
 end
+
+noeud = Node("Lars", 2)
+@test noeud.name=="Lars"
+@test noeud.data==2
