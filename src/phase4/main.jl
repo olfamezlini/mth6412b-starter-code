@@ -1,20 +1,4 @@
-# Phase 1
-
-# Importation du module Test et Dates
-using Test
-using Dates
-
-# Importation des objets
-include("node.jl")
-include("edge.jl")
-include("graph.jl")
-include("read_stsp.jl")
-include("composantes_connexe.jl")
-include("kruskal.jl")
-include("affichage_kruskal.jl")
-include("prim.jl")
-include("affichage_prim.jl")
-include("priority_queue.jl")
+using STSP
 
 # phase 1
 
@@ -58,7 +42,7 @@ temps_cpu = result[2]
 # Phase 3
 
 # Application de l'algorithme de prim
-affichage_arbre_minimal_prim("instances/stsp/swiss42.tsp", 1)
+affichage_arbre_minimal_prim("instances/stsp/dantzig42.tsp", 1)
 
 # Application de l'algorithme de prim
-affichage_arbre_minimal_prim("instances/stsp/exemple_phase_2.tsp", 1)
+affichage_arbre_minimal_prim("instances/stsp/brazil58.tsp", 1)

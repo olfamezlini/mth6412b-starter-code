@@ -1,10 +1,6 @@
-import Base.show
+using STSP
 
-
-# Importation des objets
-
-include("node.jl")
-include("edge.jl")
+export Graph, add_node!, add_edge!, name, nodes, nb_nodes, edges, nb_edges, show
 
 """Type abstrait dont d'autres types de graphes dériveront."""
 abstract type AbstractGraph{T, S} end

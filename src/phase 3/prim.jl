@@ -80,10 +80,7 @@ Implémente l'algorithme de Prim pour trouver l'arbre de recouvrement minimal d'
 - Un tuple contenant l'arbre de recouvrement minimal et son poids total.
 """
 function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64)
-    # Vérification si le nœud de départ est dans les nœuds du graphe
-    if !(start_node in keys(graph_nodes))
-        error("Le nœud de départ $start_node ne se trouve pas dans les nœuds du graphe.")
-    end
+    
     # Définition de l'arbre minimal
     arbre_minimal = Graph("Arbre_minimal_Prim", Node{Int64}[], Edge{Int64, Float64}[])
     graph_edges = complete_graph_edges(graph_edges)

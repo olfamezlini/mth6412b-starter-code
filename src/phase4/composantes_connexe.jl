@@ -1,10 +1,6 @@
-import Base.show
+using STSP
 
-using Revise
-
-# Importation des objets
-include("node.jl")
-include("edge.jl")
+export CompConnexe, initalization, get_root, update_comp_connexes
 
 """Type abstrait dont d'autres types de composantes connexes dériveront."""
 abstract type AbstractCompConnexe end

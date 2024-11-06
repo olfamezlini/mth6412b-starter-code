@@ -1,13 +1,6 @@
+using STSP
 
-# Importation des objets
-
-include("node.jl")
-include("edge.jl")
-include("graph.jl")
-
-include("read_stsp.jl")
-include("kruskal.jl")
-
+export affichage_arbre_minimal_kruskal
 
 """
     (filename::String)

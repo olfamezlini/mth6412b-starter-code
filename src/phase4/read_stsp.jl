@@ -1,6 +1,8 @@
 using Plots
 using Random
 
+export read_header, read_nodes, n_nodes_to_read, read_edges, read_stsp, plot_graph
+
 """Analyse un fichier .tsp et renvoie un dictionnaire avec les données de l'entête."""
 function read_header(filename::String)
 

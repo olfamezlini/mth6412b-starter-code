@@ -1,9 +1,6 @@
-import Base.show
+using STSP
 
-
-# Importation des objets
-
-include("node.jl")
+export Edge, noeud_1, noeud_2, name, data, show
 
 """Type abstrait dont d'autres types d'arêtes dériveront."""
 abstract type AbstractEdge{T,S} end

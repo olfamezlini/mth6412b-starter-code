@@ -1,5 +1,4 @@
-import Base.length, Base.push!, Base.popfirst!, Base.show
-import Base.maximum
+export popfirst!, is_empty, length, show, Queue, PriorityItem, PriorityQueue
 
 """Type abstrait dont d'autres types de files dériveront."""
 abstract type AbstractQueue{T} end
@@ -63,9 +62,7 @@ function popfirst!(q::PriorityQueue)
     return lowest
 end
 
-
 """Définition de la méthode de comparaison pour PriorityItem."""
 function Base.isless(a::PriorityItem, b::PriorityItem)
     return a.weight < b.weight
 end
-

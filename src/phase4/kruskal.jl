@@ -1,14 +1,6 @@
-using Test
+using STSP, Test
 
-# Importation des objets
-
-include("node.jl")
-include("edge.jl")
-include("graph.jl")
-include("read_stsp.jl")
-include("composantes_connexe.jl")
-
-
+export Algortihme_Kruskal
 
 """
     (graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
