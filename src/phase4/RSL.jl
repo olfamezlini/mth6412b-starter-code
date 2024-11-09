@@ -2,9 +2,6 @@
 using STSP, Test
 export parcours_preordre, Algorithme_RSL
 
-
-
-
 """
     parcours_preordre(tree::Dict{Int64, Vector{Int64}}, node::Int64, visited::Vector{Int64})
 
@@ -17,8 +14,6 @@ export parcours_preordre, Algorithme_RSL
 - `visited::Vector{Int64}`:  Ce vecteur est mis à jour à chaque appel récursif et contient l'ordre final des nœuds pour la tournée en préordre.
 
 """
-
-# Fonction de parcours en préordre
 function parcours_preordre(tree::Dict{Int64, Vector{Int64}}, node::Int64, visited::Vector{Int64})
     push!(visited, node)  # Ajouter le nœud actuel à l'ordre de visite
     for neighbor in tree[node]  # Parcourir les voisins
@@ -32,7 +27,7 @@ end
 """
     Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
 
-Implémente l'algorithme de de Rosenkrantz, Stearns et Lewis fournit une tournée dont le poids est inférieur à 2 fois le poids d'une tournée optimale a prtir d'un arbre de recouvrement minimal.
+Implémente l'algorithme de Rosenkrantz, Stearns et Lewis fournissant une tournée dont le poids est inférieur à 2 fois le poids d'une tournée optimale a prtir d'un arbre de recouvrement minimal.
 
 # Arguments
 - `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
@@ -56,7 +51,6 @@ function Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::D
 
     # Initialiser le dictionnaire où chaque nœud aura une liste de ses voisins
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
-
     # Parcourir chaque arête
     for edge in edges(Arbre_minimal)
         # Extraire les deux nœuds connectés par l'arête
@@ -89,20 +83,19 @@ function Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::D
         # Ajouter le poids de l'arête entre node1 et node2
         if (node1, node2) in keys(edge_weights_dict)
             Poids_tournee += edge_weights_dict[(node1, node2)]
-        end
-        if (node2, node1) in keys(edge_weights_dict)
+        elseif (node2, node1) in keys(edge_weights_dict)
             Poids_tournee += edge_weights_dict[(node2, node1)]
+        else
+            error("Le graphe n'est pas complet !")
         end
     end
-    println("Ordre de la tournée RSL : ", visited)
     Tournee_RSL = Graph("Tournee_RSL", Node{Int64}[], Edge{Int64, Float64}[])
     graph_edges = complete_graph_edges(graph_edges)
-
+    
     # Obtention de tous les poids
     add_symmetry!(edge_weights_dict)
 
     # Creation du graph
-
     for i in 1:(length(visited) - 1)
         weight = edge_weights_dict[(visited[i], visited[i+1])]
         node1 = string(visited[i])

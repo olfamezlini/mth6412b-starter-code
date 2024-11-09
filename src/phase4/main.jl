@@ -38,7 +38,7 @@ temps_cpu = result[2]
 #println("Temps CPU : ", temps_cpu, " secondes")
 
 # Application de l'algorithme de kruskal
-affichage_arbre_minimal_kruskal("instances/stsp/bayg29.tsp")
+affichage_arbre_minimal_kruskal("instances/stsp/exemple_phase_4.tsp")
 
 # Phase 3
 
@@ -56,8 +56,8 @@ affichage_arbre_minimal_kruskal("instances/stsp/bayg29.tsp")
 
 # Lecture de l'instance de TSP symétrique (ici, exemple_phase_2.tsp)
 
-graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/dantzig42.tsp")
+#graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/exemple_phase_2.tsp")
 
-Algorithme_RSL(graph_edges, edge_weights_dict, 7, 1)
+#Algorithme_RSL(graph_edges, edge_weights_dict, 7, 1)
 
-affichage_RSL("instances/stsp/dantzig42.tsp", 7, 1)
+affichage_RSL("instances/stsp/exemple_phase_4.tsp", 2, 1)

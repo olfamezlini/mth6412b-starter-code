@@ -17,7 +17,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
     # Lecture du fichier filename
     graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
     # Application de l'algorithme de RSL sur le graphe considéré
-    Tournee_RSL, poids_minimal = Algorithme_RSL(graph_edges, edge_weights_dict,start_node, algo_Arbre_minimal)
+    Tournee_RSL, poids_minimal = Algorithme_RSL(graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal)
     # Récupération de l'ensemble des arête de la tournée
     arbre_edges = Tournee_RSL.edges
     # Affichage du poids de la tournée trouvé grâce à l'algorithme de RSL

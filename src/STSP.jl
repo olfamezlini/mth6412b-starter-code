@@ -16,6 +16,6 @@ include("phase4/priority_queue.jl")
 include("phase4/read_stsp.jl")
 include("phase4/RSL.jl")
 include("phase4/instances_weights.jl")
-include("affichage_RSL")
+include("phase4/affichage_RSL.jl")
 
 end # module STSP
