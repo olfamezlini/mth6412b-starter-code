@@ -1,0 +1,178 @@
+using STSP, Test
+export Algorithme_HK, get_one_tree, decalage
+
+"""
+    decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+
+Réalise un décalage d'indice pour trouver un sous arbre de recouvrement minimal
+
+# Arguments
+- `removed_node_dict`: Dictionnaire contenant le sous graphe sans le noeud racine.
+- `removed_edge_vec`: Vecteur contenant les arêtes sans les arêtes avec le noeud racine.
+- `removed_weights_dict`: Dictionnaire contenant les poids des arêtes du sous graphe.
+- `racine::Int64`: Le nœud de départ.
+
+# Retourne
+- `removed_node_dict_copy` : Dictionnaire du sous graphe mais avec les indices décalées de 1.
+- `removed_edge_vec_copy` : Vecteur du sous graphe mais avec les indices décalées de 1.
+- `removed_weights_dict_copy` : Dictionanire du sous graphe mais avec les indices des arêtes décalées de 1.
+"""
+function decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+
+    removed_edge_vec_copy = map(edge -> map(x -> x > racine ? x - 1 : x, edge), removed_edge_vec)
+
+    removed_node_dict_copy = Dict{Int64, Vector{Float64}}()
+
+    for key in collect(keys(removed_node_dict))
+        if key > racine 
+            removed_node_dict_copy[key-1] = removed_node_dict[key]
+        else
+            removed_node_dict_copy[key] = removed_node_dict[key]
+        end
+    end
+    removed_node_dict = removed_node_dict_copy
+
+    removed_weights_dict_copy = Dict{Tuple{Int64, Int64}, Float64}()
+
+    for (a, b) in collect(keys(removed_weights_dict))
+        if a > racine
+            if b > racine
+                removed_weights_dict_copy[(a-1, b-1)] = removed_weights_dict[(a, b)]
+            else
+                removed_weights_dict_copy[(a-1, b)] = removed_weights_dict[(a, b)]
+            end
+        else
+            if b > racine
+                removed_weights_dict_copy[(a, b-1)] = removed_weights_dict[(a, b)]
+            else
+                removed_weights_dict_copy[(a, b)] = removed_weights_dict[(a, b)]
+            end
+        end
+    end
+
+    removed_weights_dict = removed_weights_dict_copy
+
+    return removed_node_dict_copy, removed_edge_vec_copy, removed_weights_dict_copy
+end
+
+"""Décalage pour les noeuds"""
+function increment_nodes(nodes::Vector{Node{T}}, racine) where T
+    incremented_nodes = Node{T}[]  # Liste pour stocker les nouveaux nœuds
+
+    for node in nodes
+        # Convertir le nom du nœud en entier pour comparer avec la racine
+        node_value = parse(Int, node.name)
+
+        if node_value >= racine
+            # Incrémenter le nom du nœud s'il est supérieur à la racine
+            new_name = string(node_value + 1)
+            push!(incremented_nodes, Node{T}(new_name, node.data))
+        else
+            # Garder le nom du nœud inchangé si c'est la racine
+            push!(incremented_nodes, node)
+        end
+    end
+
+    return incremented_nodes
+end
+
+"""Décalage pour les arêtes"""
+function increment_edges(edges::Vector{Edge{T, S}}, racine) where {T, S}
+    incremented_edges = Edge{T, S}[]  # Liste pour stocker les nouvelles arêtes
+    poids_minimal_sous_arbre = 0
+    for edge in edges
+        # Incrémenter les noms des nœuds si leur valeur est supérieure à la racine
+        new_node1 = if parse(Int, edge.node_1.name) >= racine
+            Node{T}(string(parse(Int, edge.node_1.name) + 1), edge.node_1.data)
+        else
+            edge.node_1
+        end
+
+        new_node2 = if parse(Int, edge.node_2.name) >= racine
+            Node{T}(string(parse(Int, edge.node_2.name) + 1), edge.node_2.data)
+        else
+            edge.node_2
+        end
+
+        # Créer le nouveau nom de l'arête basé sur les nouveaux noms des nœuds
+        new_edge_name = new_node1.name * "---" * new_node2.name
+        # Ajouter la nouvelle arête à la liste
+        push!(incremented_edges, Edge{T, S}(new_edge_name, edge.data, new_node1, new_node2))
+        poids_minimal_sous_arbre += edge.data
+    end
+
+    return incremented_edges, poids_minimal_sous_arbre
+end
+
+"""
+    get_one_tree(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+
+Implémente la méthode pour trouver un 1-tree minimum avec la racine racine
+
+# Arguments
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+- `racine::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+
+# Retourne
+- Un 1-tree minimum avec la racine racine
+"""
+function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+    
+    removed_node_dict = Dict(key => graph_nodes[key] for key in keys(graph_nodes) if key != racine)
+    removed_edge_vec = [[i for i in graph_edges[k] if i != racine] for k in 1:length(graph_edges) if k != racine]
+    removed_weights_dict = Dict((i, j) => edge_weights_dict[(i, j)] for i in 1:length(graph_edges) for j in graph_edges[i] if i != racine && j != racine)
+    
+    #removed_node_dict, removed_edge_vec, removed_weights_dict = decalage!(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+    removed_node_dict, removed_edge_vec, removed_weights_dict = decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+
+    if algo_Arbre_minimal  ==1
+        arbre_minimal, poids_minimal =Algortihme_Kruskal(removed_edge_vec, removed_weights_dict)
+    elseif  algo_Arbre_minimal ==2
+        arbre_minimal, poids_minimal=Algorithme_Prim(removed_node_dict, removed_edge_vec, removed_weights_dict, 1)
+    else 
+        error("Choix de l'algorithme non valide.")
+    end
+    incremented_nodes = increment_nodes(nodes(arbre_minimal), racine)
+    push!(incremented_nodes, Node(string(racine), 0))
+    incremented_edges, poids_minimal_sous_arbre = increment_edges(edges(arbre_minimal), racine)
+    one_tree = Graph("one_tree", incremented_nodes, incremented_edges)
+    arete_min_1 = nothing
+    weight_min_1 = Inf
+    arete_min_2 = nothing
+    weight_min_2 = Inf
+    for i in graph_edges[racine]
+        if edge_weights_dict[(i, racine)] < weight_min_1
+            weight_min_1 = edge_weights_dict[(i, racine)]
+            arete_min_1 = Edge(string(i)*"---"*string(racine), weight_min_1, Node("i",0), Node(string(racine),0))
+        elseif edge_weights_dict[(i, racine)] < weight_min_2
+            weight_min_2 = edge_weights_dict[(i, racine)]
+            arete_min_2 = Edge(string(i)*"---"*string(racine), edge_weights_dict[(i, racine)], Node("i",0), Node(string(racine),0))
+        end
+    end
+    add_node!(one_tree, Node(string(racine),0))
+    add_edge!(one_tree, arete_min_1)
+    add_edge!(one_tree, arete_min_2)
+    poids_minimal_one_tree = poids_minimal_sous_arbre + data(arete_min_1) + data(arete_min_2)
+
+    return one_tree, poids_minimal_one_tree
+end
+
+"""
+    Algorithme_HK(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+
+Implémente l'algorithme de Keld Helsgaun.
+
+# Arguments
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+- `racine::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+
+# Retourne
+- Une liste contenant la tournée minimal du graphe du départ
+"""
+function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+    one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+end

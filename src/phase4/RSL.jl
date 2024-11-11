@@ -32,14 +32,14 @@ Implémente l'algorithme de Rosenkrantz, Stearns et Lewis fournissant une tourn�
 # Arguments
 - `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
 - `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
-- `start_node::Int64`: Le nœud de départ de l'algorithme de Prim.
-- `algo_Arbre_minimal`: Un entier qui indique le choix de l'algorithme qui pour trouver l'arbre de recouvrement minimal d'un graphe, choix 1 pour l'algorithme kruskale, choix 2 pour l'algorithme Prim.
+- `start_node::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`:Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
 
 # Retourne
-- Une liste contenant la tournée minimal du graph du départ
+- Une liste contenant la tournée minimal du graphe du départ
 """
 
-function Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
+function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
     if algo_Arbre_minimal ==1
         Arbre_minimal=Algortihme_Kruskal(graph_edges, edge_weights_dict)[1]
     elseif  algo_Arbre_minimal ==2
@@ -48,7 +48,7 @@ function Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::D
         error("Choix de l'algorithme non valide.")
     end
     # Construire le dictionnaire Arbre_minimal_dict à partir des arêtes du Arbre_minimal
-
+    show(Arbre_minimal)
     # Initialiser le dictionnaire où chaque nœud aura une liste de ses voisins
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
     # Parcourir chaque arête

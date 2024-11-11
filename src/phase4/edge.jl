@@ -1,6 +1,6 @@
 using STSP
 
-export Edge, noeud_1, noeud_2, name, data, show
+export Edge, noeud_1, noeud_2, name, data, show, ==, in, symetric
 
 """Type abstrait dont d'autres types d'arêtes dériveront."""
 abstract type AbstractEdge{T,S} end
@@ -37,4 +37,19 @@ data(edge::AbstractEdge) = edge.data
 """Affiche un arête."""
 function show(edge::AbstractEdge)
   println("\nArete : ", name(edge), ", data : ", data(edge), ", noeud_1 : ", noeud_1(edge), ", noeud_2 : ", noeud_2(edge))
+end
+
+"""Surcharge de l'égalité"""
+function Base.:(==)(edge1::Edge, edge2::Edge)
+  return edge1.name == edge1.name && edge1.data == edge2.data && edge1.node_1 == edge2.node_1 && edge1.node_2 == edge2.node_2
+end
+
+"""Dit si une arête appartient à un ensemble d'arêtes"""
+function Base.:(in)(edge::Edge, edges::Vector)
+  return edge1.name == edge1.name && edge1.data == edge2.data && edge1.node_1 == edge2.node_1 && edge1.node_2 == edge2.node_2
+end
+
+"""Dit si deux arêtes sont symétriques"""
+function symetric(edge1::Edge, edge2::Edge)
+  return edge1.name == edge1.name && edge1.data == edge2.data && edge1.node_1 == edge2.node_2 && edge1.node_2 == edge2.node_1
 end

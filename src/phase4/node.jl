@@ -1,6 +1,6 @@
 using STSP
 
-export name, data, show, Node
+export name, data, show, Node, ==
 
 """Type abstrait dont d'autres types de noeuds dériveront."""
 abstract type AbstractNode{T} end
@@ -31,4 +31,9 @@ data(node::AbstractNode) = node.data
 """Affiche un noeud."""
 function show(node::AbstractNode)
   println("Node ", name(node), ", data: ", data(node))
+end
+
+"""Surcharge de l'égalité"""
+function Base.:(==)(node1::Node, node2::Node)
+  return node1.name == node2.name && node1.data == node2.data
 end
