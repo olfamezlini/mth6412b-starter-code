@@ -1,4 +1,4 @@
-using Revise, STSP, Test
+using STSP, Test
 
 function test_Algorithme_Prim()
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/swiss42.tsp")
