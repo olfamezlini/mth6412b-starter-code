@@ -1,6 +1,6 @@
 using STSP
 
-export Graph, add_node!, remove_node!, add_edge!, remove_edge!, name, nodes, nb_nodes, edges, nb_edges, show, one_tree!
+export Graph, add_node!, remove_node!, add_edge!, remove_edge!, name, nodes, nb_nodes, edges, nb_edges, show, one_tree!, get_degree
 
 """Type abstrait dont d'autres types de graphes dériveront."""
 abstract type AbstractGraph{T, S} end
@@ -69,6 +69,11 @@ edges(graph::AbstractGraph) = graph.edges
 
 """Renvoie le nombre de aretes du graphe."""
 nb_edges(graph::AbstractGraph) = length(graph.edges)
+
+"""Renvoie le degré d'un noeud"""
+function get_degree(node::Node, graph::Graph)
+  return sum([1 for edge in edges(graph) if name(node) == name(noeud_1(edge)) || name(node) == name(noeud_2(edge))])
+end
 
 """Affiche un graphe"""
 function show(graph::Graph)
