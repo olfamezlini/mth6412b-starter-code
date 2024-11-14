@@ -182,7 +182,7 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
 
     one_tree_k = Graph("one_tree_k", Node{Int64}[], Edge{Int64, Int64}[])
 
-    while k < 500
+    while k < 1000
         if k == 0
             one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
         else
@@ -193,18 +193,19 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
 
         W = max(W,w_pi_k)
 
-        d_k = [get_degree(node, one_tree) for node in nodes(one_tree)]
+        d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
 
-        v_k = d_k-ones(Int, nb_nodes(one_tree))*2;
+        v_k = d_k-ones(Int, nb_nodes(one_tree_k))*2;
 
-        if v_k == 0
-            return one_tree
+        if v_k == zeros(Int,nb_nodes(one_tree_k))
+            break
         end
 
         pi += pi + pas*v_k;
 
         i = 1;
-        for edge in edges(one_tree)
+        
+        for edge in edges(one_tree_k)
             couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
             couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
             if haskey(edge_weights_dict, couple_1)
@@ -219,6 +220,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
         k += 1 ;
 
     end
-    println("k = ", k)
+    
     return one_tree_k, poids_minimal_one_tree
 end
