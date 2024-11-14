@@ -145,10 +145,10 @@ function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Ve
     for i in graph_edges[racine]
         if edge_weights_dict[(i, racine)] < weight_min_1
             weight_min_1 = edge_weights_dict[(i, racine)]
-            arete_min_1 = Edge(string(i)*"---"*string(racine), weight_min_1, Node("i",0), Node(string(racine),0))
+            arete_min_1 = Edge(string(i)*"---"*string(racine), weight_min_1, Node(string(i),0), Node(string(racine),0))
         elseif edge_weights_dict[(i, racine)] < weight_min_2
             weight_min_2 = edge_weights_dict[(i, racine)]
-            arete_min_2 = Edge(string(i)*"---"*string(racine), edge_weights_dict[(i, racine)], Node("i",0), Node(string(racine),0))
+            arete_min_2 = Edge(string(i)*"---"*string(racine), edge_weights_dict[(i, racine)], Node(string(i),0), Node(string(racine),0))
         end
     end
     add_node!(one_tree, Node(string(racine),0))
@@ -173,6 +173,53 @@ Implémente l'algorithme de Keld Helsgaun.
 # Retourne
 - Une liste contenant la tournée minimal du graphe du départ
 """
-function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64)
+    
     one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+    k = 0
+    pi = zeros(Float64, nb_edges(one_tree));
+    W = -Inf
+
+    one_tree_k = Graph("one_tree_k", Node{Int64}[], Edge{Int64, Int64}[])
+
+    while k < 1000
+        if k == 0
+            one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
+        else
+            one_tree_k, poids_minimal_one_tree_k = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+        end
+
+        w_pi_k = poids_minimal_one_tree - 2 * sum(pi)
+
+        W = max(W,w_pi_k)
+
+        d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
+
+        v_k = d_k-ones(Int, nb_nodes(one_tree_k))*2;
+
+        if v_k == zeros(Int,nb_nodes(one_tree_k))
+            break
+        end
+
+        pi += pi + pas*v_k;
+
+        i = 1;
+        
+        for edge in edges(one_tree_k)
+            couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
+            couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
+            if haskey(edge_weights_dict, couple_1)
+                edge_weights_dict[couple_1] += pi[i]
+            end
+            if haskey(edge_weights_dict, couple_2)
+                edge_weights_dict[couple_2] += pi[i]
+            end
+            i += 1
+        end
+
+        k += 1 ;
+
+    end
+    
+    return one_tree_k, poids_minimal_one_tree
 end
