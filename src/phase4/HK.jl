@@ -170,7 +170,7 @@ Implémente l'algorithme de Keld Helsgaun.
 - `racine::Int64`: Le nœud de départ.
 - `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
 
-# Retourne
+# Renvoie
 - Une liste contenant la tournée minimal du graphe du départ
 """
 function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64)
