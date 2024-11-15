@@ -23,12 +23,12 @@ show(G)
 remove_edge!(G, edge)
 show(G)
 
-graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/exemple_phase_4.tsp")
+graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/bayg29.tsp")
 les_noeuds = [Node(string(i), i) for i in collect(keys(graph_nodes))];
 # Vérifie que 'graph_edges' est un dictionnaire ou une structure valide.
 les_aretes = [Edge(string(i) * "---" * string(j), edge_weights_dict[(i, j)], Node(string(i), 0), Node(string(j),0)) for i in 1:length(graph_edges) for j in graph_edges[i]];
 graph = Graph("exemple_phase_4", les_noeuds, les_aretes);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 2, 1.0);
+one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 2, 1.0, 150);
 println("poids minimal du one tree = ", poids_minimal_one_tree)
 show(one_tree)
 
@@ -78,4 +78,4 @@ affichage_arbre_minimal_prim("../instances/stsp/exemple_phase_4.tsp", 2)
 
 #Algorithme_RSL(graph_edges, edge_weights_dict, 7, 1)
 
-affichage_RSL("../instances/stsp/exemple_phase_4.tsp", 2, 2)
+affichage_RSL("../instances/stsp/bays29.tsp", 2, 2)
