@@ -1,7 +1,7 @@
 
 using STSP
 
-export affichage_RSL
+export affichage_HK
 
 """
     (filename::String)
@@ -13,18 +13,18 @@ export affichage_RSL
 
 Affiche l'application de l'algorithme de Kruskal en rouge sur le graphe considéré.
 """
-function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::Int64)
+function affichage_HK(filename::String, start_node::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64, limite::Int64)
     # Lecture du fichier filename
     graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
-    
     # Application de l'algorithme de RSL sur le graphe considéré
-    Tournee_RSL, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal)
+    Tournee_HK, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal, pas, compteur_max, limite)
+    
     # Récupération de l'ensemble des arête de la tournée
-    arbre_edges = Tournee_RSL.edges
+    arbre_edges = Tournee_HK.edges
     # Affichage du poids de la tournée trouvé grâce à l'algorithme de RSL
     println("poids de la tournée trouvé : ", poids_minimal)
     # Affichage de l'arbre de la tournée
-    show(Tournee_RSL)
+    show(Tournee_HK)
     # Définition d'une figure
     fig = plot(legend=false)
 

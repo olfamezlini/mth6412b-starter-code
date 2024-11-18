@@ -115,7 +115,8 @@ const instance_weights = Dict(
     "ulysses22" => 7013,
     "usa13509" => 19982859,
     "vm1084" => 239297,
-    "vm1748" => 336556
+    "vm1748" => 336556,
+    "exemple_phase_4" => 16
 )
 
 

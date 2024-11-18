@@ -13,10 +13,10 @@ export Algortihme_Kruskal
 
 applique l'algorithme de Kruskal afin de renvoyer l'arbre de recouvrement minimal et son poids.
 """
-function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64})
+function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, BigFloat})
     # Définition de l'arbre minimal
-    arbre_minimal = Graph("Arbre_minimal_Kruskal", Node{Int64}[], Edge{Int64, Int64}[])
-    @test typeof(arbre_minimal) == Graph{Int64, Int64}
+    arbre_minimal =  Graph("Arbre_minimal_kruskal", Node{Int64}[], Edge{Int64, BigFloat}[])
+    @test typeof(arbre_minimal) == Graph{Int64, BigFloat}
 
     # Obtention des arêtes triées par poids
     sorted_edges = sort(collect(edge_weights_dict), by=x -> x[2])
@@ -50,8 +50,8 @@ function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, edge_weights_dic
             update_comp_connexes(Set_comp_connexes, racine_1, racine_2)
 
             # Définition de l'arête et mise à jour du poids
-            edge = Edge(string(node1) * "---" * string(node2), Int(poids), node_1, node_2)
-            poids_minimal += Int(poids)
+            edge = Edge(string(node1) * "---" * string(node2), BigFloat(poids), node_1, node_2)
+            poids_minimal += BigFloat(poids)
 
             # Ajout de l'arête et des nœuds dans l'arbre de recouvrement minimal
             add_edge!(arbre_minimal, edge)

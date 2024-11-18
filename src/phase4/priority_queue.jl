@@ -33,7 +33,7 @@ abstract type AbstractPriorityItem end
 
 """Type représentant un élément de priorité (mutable)."""
 mutable struct PriorityItem <: AbstractPriorityItem
-    weight::Float64
+    weight::BigFloat
     node::Int64
 end
 

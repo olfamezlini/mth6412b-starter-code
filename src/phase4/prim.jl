@@ -44,9 +44,9 @@ end
 # Modifie
 - a::Dict{Tuple{Int64, Int64}, Float64} contenant l'ensemble des poids dans le graphe en prenant en compte les matrices adjacentes supérieures ou inférieures
 """
-function add_symmetry!(a::Dict{Tuple{Int64, Int64}, Float64})
+function add_symmetry!(a::Dict{Tuple{Int64, Int64}, BigFloat})
     # Crée une liste des nouvelles paires inversées à ajouter pour éviter les modifications durant l'itération
-    to_add = Dict{Tuple{Int64, Int64}, Float64}()
+    to_add = Dict{Tuple{Int64, Int64}, BigFloat}()
     
     # Parcourt chaque élément de `a` pour trouver les symétries manquantes
     for ((x, y), value) in a
@@ -74,11 +74,11 @@ Implémente l'algorithme de Prim pour trouver l'arbre de recouvrement minimal d'
 # Retourne
 - Un tuple contenant l'arbre de recouvrement minimal et son poids total.
 """
-function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64)
+function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, BigFloat}, start_node::Int64)
     # Vérification si le nœud de départ est dans les nœuds du graphe
     
     # Définition de l'arbre minimal
-    arbre_minimal = Graph("Arbre_minimal_Prim", Node{Int64}[], Edge{Int64, Float64}[])
+    arbre_minimal = Graph("Arbre_minimal_Prim", Node{Int64}[], Edge{Int64, BigFloat}[])
     graph_edges = complete_graph_edges(graph_edges)
     # Obtention de tous les poids
     add_symmetry!(edge_weights_dict)
@@ -101,7 +101,7 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
 
 
     # Test du type de l'arbre de recouvrement minimal
-    @test typeof(arbre_minimal)==Graph{Int64, Float64}
+    @test typeof(arbre_minimal)==Graph{Int64, BigFloat}
 
     poids_minimal = 0.0  # Poids total de l'arbre de recouvrement minimal
 
@@ -135,6 +135,9 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
         node1, node2 = neighbor
         if haskey(edge_weights_dict, (node1, node2))
             weight = edge_weights_dict[(node1, node2)]
+            # println("typeof(weight) = ", typeof(weight))
+            # println("type = ", typeof(PriorityItem))
+            item = PriorityItem(BigFloat(1.0), Int64(2))
             push!(pq, PriorityItem(weight, node2))
         end
     end

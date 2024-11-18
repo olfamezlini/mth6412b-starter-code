@@ -32,7 +32,7 @@ function decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, rac
     end
     removed_node_dict = removed_node_dict_copy
 
-    removed_weights_dict_copy = Dict{Tuple{Int64, Int64}, Float64}()
+    removed_weights_dict_copy = Dict{Tuple{Int64, Int64}, BigFloat}()
 
     for (a, b) in collect(keys(removed_weights_dict))
         if a > racine
@@ -118,7 +118,7 @@ Implémente la méthode pour trouver un 1-tree minimum avec la racine racine
 # Retourne
 - Un 1-tree minimum avec la racine racine
 """
-function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, BigFloat}, racine::Int64, algo_Arbre_minimal::Int64)
     
     removed_node_dict = Dict(key => graph_nodes[key] for key in keys(graph_nodes) if key != racine)
     removed_edge_vec = [[i for i in graph_edges[k] if i != racine] for k in 1:length(graph_edges) if k != racine]
@@ -134,6 +134,7 @@ function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Ve
     else 
         error("Choix de l'algorithme non valide.")
     end
+    @test typeof(arbre_minimal)==Graph{Int64, BigFloat}
     incremented_nodes = increment_nodes(nodes(arbre_minimal), racine)
     push!(incremented_nodes, Node(string(racine), 0))
     incremented_edges, poids_minimal_sous_arbre = increment_edges(edges(arbre_minimal), racine)
@@ -173,13 +174,22 @@ Implémente l'algorithme de Keld Helsgaun.
 # Renvoie
 - Une liste contenant la tournée minimal du graphe du départ
 """
-function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64)
+function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64, limite::Int64)
     
-    edge_weights_dict_copy = edge_weights_dict ; 
+    edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+    add_symmetry!(edge_weights_dict)
+    edge_weights_dict_copy = copy(edge_weights_dict) ; 
+
+    # println("keys(edge_weights_dict_copy) = ", keys(edge_weights_dict_copy))
+
+    period = floor(Int, length(graph_edges) / 2)
+
+    graph_edges = complete_graph_edges(graph_edges)
+
     one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
     k = 0
-    pi = zeros(Float64, nb_edges(one_tree));
-    W = -Inf
+    pi_k = ones(BigFloat, nb_edges(one_tree));
+    W = poids_minimal_one_tree - 2 * sum(pi_k)
 
     one_tree_k = Graph("one_tree_k", Node{Int64}[], Edge{Int64, Int64}[])
 
@@ -187,25 +197,42 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     v_k_et = d_k-ones(Int, nb_nodes(one_tree))*2;
     one_tree_et = one_tree;
     poids_minimal_one_tree_et = poids_minimal_one_tree;
+    
+    v_k_1 = d_k-ones(Int, nb_nodes(one_tree))*2;
 
     compteur = 0;
+    compteur_period = 0;
 
-    while k < 1000
+    while k < limite
+        if k % 500 == 0
+            println("avancement : $(k)/$(limite)")
+        end
+
+        if compteur_period > period
+            pas /= 2
+            period = floor(Int, length(period) / 2)
+        end
+
         if k == 0
             one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
         else
             one_tree_k, poids_minimal_one_tree_k = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
         end
 
-        w_pi_k = poids_minimal_one_tree - 2 * sum(pi)
-
+        w_pi_k = poids_minimal_one_tree_k - 2 * sum(pi_k)
+        
         W = max(W,w_pi_k)
 
-        d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
+        if compteur_period == period && w_pi_k == W
+            period = 2*period
+        end
 
+        d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
+        
         v_k = d_k-ones(Int, nb_nodes(one_tree_k))*2;
 
-        if sum(v_k) < sum(v_k_et)
+
+        if sum(abs.(v_k)) < sum(abs.(v_k_et))
             one_tree_et = one_tree_k;
             poids_minimal_one_tree_et = poids_minimal_one_tree_k;
             v_k_et = v_k;
@@ -214,11 +241,13 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             compteur += 1
         end
 
-        if v_k == zeros(Int,nb_nodes(one_tree_k)) || compteur > compteur_max
+        if v_k == zeros(Int,nb_nodes(one_tree_k)) || compteur > compteur_max || pas == 0.0 || period == 0
             break
         end
 
-        pi += pi + pas*v_k;
+        pi_k += pas*(0.7*v_k+0.3*v_k_1);
+
+        v_k_1 = v_k
 
         i = 1;
         
@@ -226,15 +255,16 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
             couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
             if haskey(edge_weights_dict, couple_1)
-                edge_weights_dict[couple_1] += pi[i]
+                edge_weights_dict[couple_1] += pi_k[i]
             end
             if haskey(edge_weights_dict, couple_2)
-                edge_weights_dict[couple_2] += pi[i]
+                edge_weights_dict[couple_2] += pi_k[i]
             end
             i += 1
         end
 
         k += 1 ;
+        compteur_period += 1
 
     end
     
@@ -263,12 +293,13 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     push!(visited, racine)
 
     Poids_tournee = 0.0  # Initialiser le poids total de la tournée
-    
+
     # Parcourir les nœuds de la tournée dans 'visited' et additionner les poids des arêtes
     for i in 1:(length(visited) - 1)
         node1 = visited[i]
         node2 = visited[i + 1]
-        
+        # println("(node1, node2) = ", (node1, node2))
+        # println("edge_weights_dict_copy = ", edge_weights_dict_copy[(node1, node2)])
         # Ajouter le poids de l'arête entre node1 et node2
         if (node1, node2) in keys(edge_weights_dict_copy)
             Poids_tournee += edge_weights_dict_copy[(node1, node2)]
@@ -278,28 +309,35 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             error("Le graphe n'est pas complet !")
         end
     end
-    Tournee_RSL = Graph("Tournee_RSL", Node{Int64}[], Edge{Int64, Float64}[])
+    Tournee_HK = Graph("Tournee_HK", Node{Int64}[], Edge{Int64, BigFloat}[])
     graph_edges = complete_graph_edges(graph_edges)
-    
-    # Obtention de tous les poids
-    add_symmetry!(edge_weights_dict_copy)
 
-    # Creation du graph
+    # Creation du graphe
     for i in 1:(length(visited) - 1)
         weight = edge_weights_dict_copy[(visited[i], visited[i+1])]
         node1 = string(visited[i])
         node2 = string(visited[i+1])
         # Ajout du nœud1 dans l'arbre
-        add_node!(Tournee_RSL, Node(node1, 0))
+        add_node!(Tournee_HK, Node(node1, 0))
         # Ajout de l'arete dans l'arbre
         arete = Edge(node1*"--->"*node2, weight, Node(node1, 0), Node(node2, 0))
-        add_edge!(Tournee_RSL, arete)
+        add_edge!(Tournee_HK, arete)
         # Ajout du nœud2 dans l'arbre
-        add_node!(Tournee_RSL, Node(node2, 0))
+        add_node!(Tournee_HK, Node(node2, 0))
 
     end
 
-    println("Ordre de la tournée RSL : ", visited)
+    if algo_Arbre_minimal == 1
+        println(" ")
+        println("Avec la méthode Kruskal !")
+    end
+    
+    if algo_Arbre_minimal == 2
+        println(" ")
+        println("Avec la méthode Prim !")
+    end
 
-    return one_tree_et, poids_minimal_one_tree_et
+    println("Ordre de la tournée HK : ", visited)
+
+    return Tournee_HK, Poids_tournee
 end
