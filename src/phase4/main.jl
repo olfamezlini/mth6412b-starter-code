@@ -110,6 +110,6 @@ affichage_arbre_minimal_prim("../instances/stsp/exemple_phase_4.tsp", 2)
 
 #Algorithme_RSL(graph_edges, edge_weights_dict, 7, 1)
 
-affichage_RSL("../instances/stsp/simple.tsp", 2, 2)
+affichage_RSL("../instances/stsp/exemple_phase_4.tsp", 2, 2)
 
-comparaison_all()
+comparaison_all_RSL()

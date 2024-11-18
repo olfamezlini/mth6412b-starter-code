@@ -1,8 +1,8 @@
 using STSP 
 
-export comparaison, comparaison_all
+export comparaison, comparaison_all_HK, comparaison_all_RSL
 
-function comparaison(filename::String, valeur_comp::Int64)
+function comparaison_HK(filename::String, valeur_comp::Int64)
     
     graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
 
@@ -86,9 +86,9 @@ function comparaison(filename::String, valeur_comp::Int64)
 
 end
 
-function comparaison_all()
+function comparaison_all_HK()
     best_parameters  = Dict()
-    resultats = comparaison("exemple_phase_4", 1)
+    resultats = comparaison_HK("exemple_phase_4", 1)
     best_parameters["exemple_phase_4"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -96,7 +96,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("gr17", 150)
+    resultats = comparaison_HK("gr17", 150)
     best_parameters["gr17"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -104,7 +104,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("gr21", 150)
+    resultats = comparaison_HK("gr21", 150)
     best_parameters["gr21"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -112,15 +112,15 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("gr24", 150)
+    resultats = comparaison_HK("gr24", 150)
     best_parameters["gr24"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
-        for (key, value) in best_parameters
+        for (key, v1alue) in best_parameters
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("fri26", 150)
+    resultats = comparaison_HK("fri26", 150)
     best_parameters["fri26"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -128,7 +128,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("dantzig42", 300)
+    resultats = comparaison_HK("dantzig42", 300)
     best_parameters["dantzig42"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -136,7 +136,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("swiss42", 300)
+    resultats = comparaison_HK("swiss42", 300)
     best_parameters["swiss42"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -144,7 +144,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("gr48", 2000)
+    resultats = comparaison_HK("gr48", 2000)
     best_parameters["gr48"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -152,7 +152,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("hk48", 2700)
+    resultats = comparaison_HK("hk48", 2700)
     best_parameters["hk48"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -160,7 +160,7 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("bayg29", 300)
+    resultats = comparaison_HK("bayg29", 300)
     best_parameters["bayg29"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
@@ -168,10 +168,190 @@ function comparaison_all()
             println(file, "$key: $value")
         end
     end
-    resultats = comparaison("bays29", 300)
+    resultats = comparaison_HK("bays29", 300)
     best_parameters["bays29"] = Dict("prim" => resultats[1:3], "kruskal" => resultats[4:6])
     # Ouvrir un fichier et écrire
     open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    return best_parameters
+end
+
+function comparaison_RSL(filename::String, valeur_comp::Int64)
+    
+    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
+
+    # Initialisation
+    start_node_vec = collect(1:length(graph_edges))  # Liste des nœuds de départ
+    dif_val_tournee_prim = Vector{Float64}(undef, length(start_node_vec))  # Vecteur pour stocker les différences
+    stsp_weight = get_instance_weight(filename)  # Poids STSP de référence
+
+    best_i_prim = nothing
+    best_poids_prim = Inf
+
+    # Calcul des poids minimaux pour chaque nœud de départ
+    for (i, start_node) in enumerate(start_node_vec)
+        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 2)
+        println("poids_minimal = ", poids_minimal)
+        println("stsp_weight = ", stsp_weight)
+
+        # Calcul de la différence
+        dif_val_tournee_prim[i] = poids_minimal - stsp_weight
+
+        # Mise à jour du meilleur poids
+        if poids_minimal < best_poids_prim
+            best_i_prim = i
+            best_poids_prim = poids_minimal
+        end
+    end
+
+    
+    # Création de l'histogramme
+    bar(
+        [i for i in 1:length(dif_val_tournee_prim)],                   # Indices des nœuds en abscisse
+        dif_val_tournee_prim,             # Valeurs des différences en ordonnée
+        xlabel="Nœud de départ",         # Nom de l'axe X
+        ylabel="Différence (RSL - STSP)", # Nom de l'axe Y
+        title="Différences de poids (RSL - STSP) avec Prim", # Titre
+        legend=false,
+        color=:blue                       # Couleur des barres
+    )
+
+    println("Meilleur nœud de départ (Prim): ", best_i_prim)
+    println("Poids minimal obtenu: ", best_poids_prim)
+
+    savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/"*filename*"_prim_histo_RSL.png")
+    
+    println("best_i = ", best_i_prim)
+    println("best_poids = ", best_poids_prim)
+
+    dif_val_tournee_kruskal = Vector{Float64}(undef, length(start_node_vec))  # Vecteur pour stocker les différences
+    best_i_kruskal = nothing
+    best_poids_kruskal = Inf
+
+    for (i, start_node) in enumerate(start_node_vec)
+        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 1)
+        dif_val_tournee_kruskal[i] = poids_minimal - stsp_weight
+        if poids_minimal < best_poids_kruskal
+            best_i_kruskal = i 
+            best_poids_kruskal = poids_minimal
+        end
+    end
+    bar(
+        [i for i in 1:length(dif_val_tournee_kruskal)],                   # Indices des nœuds en abscisse
+        dif_val_tournee_kruskal,             # Valeurs des différences en ordonnée
+        xlabel="Nœud de départ",         # Nom de l'axe X
+        ylabel="Différence (RSL - STSP)", # Nom de l'axe Y
+        title="Différences de poids (RSL - STSP) avec Kruskal", # Titre
+        legend=false,
+        color=:blue                       # Couleur des barres
+    )
+
+    savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/"*filename*"_kruskal_histo_RSL.png")
+
+    println("best_i = ", best_i_kruskal)
+    println("best_poids = ", best_poids_kruskal)
+
+    return best_i_prim, best_poids_prim, best_i_kruskal, best_poids_kruskal
+
+end
+
+function comparaison_all_RSL()
+    best_parameters  = Dict()
+    resultats = comparaison_RSL("exemple_phase_4",1)
+    best_parameters["exemple_phase_4"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("gr17", 350)
+    best_parameters["gr17"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("gr21", 500)
+    best_parameters["gr21"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("gr24", 150)
+    best_parameters["gr24"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("fri26", 150)
+    best_parameters["fri26"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("dantzig42", 300)
+    best_parameters["dantzig42"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("swiss42", 300)
+    best_parameters["swiss42"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("gr48", 2000)
+    best_parameters["gr48"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("hk48", 2700)
+    best_parameters["hk48"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("bayg29", 300)
+    best_parameters["bayg29"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("bays29", 300)
+    best_parameters["bays29"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
+        for (key, value) in best_parameters
+            println(file, "$key: $value")
+        end
+    end
+    resultats = comparaison_RSL("brazil58", 300)
+    best_parameters["brazil58"] = Dict("prim" => resultats[1:2], "kruskal" => resultats[3:4])
+    # Ouvrir un fichier et écrire
+    open("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/best_parameters_RSL.txt", "w") do file
         for (key, value) in best_parameters
             println(file, "$key: $value")
         end

@@ -39,7 +39,7 @@ Implémente l'algorithme de Rosenkrantz, Stearns et Lewis fournissant une tourn�
 - Une liste contenant la tournée minimal du graphe du départ
 """
 
-function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, BigFloat}, start_node::Int64, algo_Arbre_minimal::Int64)
+function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
     
     edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
     if algo_Arbre_minimal ==1
@@ -50,7 +50,7 @@ function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_we
         error("Choix de l'algorithme non valide.")
     end
     # Construire le dictionnaire Arbre_minimal_dict à partir des arêtes du Arbre_minimal
-    show(Arbre_minimal)
+    # show(Arbre_minimal)
     # Initialiser le dictionnaire où chaque nœud aura une liste de ses voisins
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
     # Parcourir chaque arête
