@@ -1,4 +1,4 @@
-using STSP, Test
+using STSP
 export Algorithme_HK, get_one_tree, decalage
 
 """
@@ -55,7 +55,18 @@ function decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, rac
     return removed_node_dict_copy, removed_edge_vec_copy, removed_weights_dict_copy
 end
 
-"""Décalage pour les noeuds"""
+"""
+    increment_nodes(nodes::Vector{Node{T}}, racine::Int64)
+
+Réalise le décalage pour le nom des noeuds en les augmentant par rapport à la racine afin de permettre l'utilisation des méthodes comme  l'algorithme de Kruskal ou de Prim.
+
+# Arguments
+- `nodes::Vector{Node{T}}`: Vecteur représentant les noeuds dans le graphe.
+- `racine::Int64`: Noeud de départ.
+
+# Retourne
+- incremented_nodes : vecteur des noeuds mis à jour.
+"""
 function increment_nodes(nodes::Vector{Node{T}}, racine) where T
     incremented_nodes = Node{T}[]  # Liste pour stocker les nouveaux nœuds
 
@@ -76,7 +87,19 @@ function increment_nodes(nodes::Vector{Node{T}}, racine) where T
     return incremented_nodes
 end
 
-"""Décalage pour les arêtes"""
+"""
+    increment_edges(edges::Vector{Edge{T, S}}, racine::Int64)
+
+Réalise le décalage en augmentant les indices par rapport à la racine afin de permettre l'utilisation des méthodes comme  l'algorithme de Kruskal ou de Prim.
+
+# Arguments
+- `edges::Vector{Edge{T, S}}`: Vecteur représentant les arêtes dans le graphe.
+- `racine::Int64`: Noeud de départ.
+
+# Retourne
+- incremented_edges : vecteur modifié avec les bonnes valeurs des arêtes
+- poids_minimal_sous_arbre : poids du sous arbre considéré
+"""
 function increment_edges(edges::Vector{Edge{T, S}}, racine) where {T, S}
     incremented_edges = Edge{T, S}[]  # Liste pour stocker les nouvelles arêtes
     poids_minimal_sous_arbre = 0
@@ -113,10 +136,10 @@ Implémente la méthode pour trouver un 1-tree minimum avec la racine racine
 - `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
 - `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
 - `racine::Int64`: Le nœud de départ.
-- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+- `algo_Arbre_minimal::Int64`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
 
 # Retourne
-- Un 1-tree minimum avec la racine racine
+- Un 1-tree minimum avec la racine
 """
 function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, BigFloat}, racine::Int64, algo_Arbre_minimal::Int64)
     
@@ -134,7 +157,7 @@ function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Ve
     else 
         error("Choix de l'algorithme non valide.")
     end
-    @test typeof(arbre_minimal)==Graph{Int64, BigFloat}
+
     incremented_nodes = increment_nodes(nodes(arbre_minimal), racine)
     push!(incremented_nodes, Node(string(racine), 0))
     incremented_edges, poids_minimal_sous_arbre = increment_edges(edges(arbre_minimal), racine)
@@ -163,7 +186,7 @@ end
 """
     Algorithme_HK(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
 
-Implémente l'algorithme de Keld Helsgaun.
+Implémente l'algorithme HK.
 
 # Arguments
 - `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
@@ -176,62 +199,76 @@ Implémente l'algorithme de Keld Helsgaun.
 """
 function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64, limite::Int64)
     
+    # Conversion du dictionnaire en nombre BigFloat pour mieux gérer les grands nombres
     edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+    # Ajoute les symétries dans les poids du dictionnaire pour que la méthode soient fonctionnelle pour les instances données
     add_symmetry!(edge_weights_dict)
+
+    # Copie du dictionnaire car ce dernier va être modifié avec la pénalisation
     edge_weights_dict_copy = copy(edge_weights_dict) ; 
 
-    # println("keys(edge_weights_dict_copy) = ", keys(edge_weights_dict_copy))
-
+    # Définition d'une période considérée
     period = floor(Int, length(graph_edges) / 2)
 
+    # On complète graph_edges pour avoir l'ensemble des arêtes et que la méthode soit fonctionnelle pour l'ensemble des instances.
     graph_edges = complete_graph_edges(graph_edges)
 
+    # Initialisation du 1-tree et des autres paramètres
     one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
     k = 0
     pi_k = ones(BigFloat, nb_edges(one_tree));
     W = poids_minimal_one_tree - 2 * sum(pi_k)
 
+    # Initialisation du 1-tree qui va varier
     one_tree_k = Graph("one_tree_k", Node{Int64}[], Edge{Int64, Int64}[])
 
+    # Initialisation du gradient
     d_k = [get_degree(node, one_tree) for node in nodes(one_tree)]
     v_k_et = d_k-ones(Int, nb_nodes(one_tree))*2;
     one_tree_et = one_tree;
     poids_minimal_one_tree_et = poids_minimal_one_tree;
     
+    # Initialisation du gradient à deux étapes précédentes
     v_k_1 = d_k-ones(Int, nb_nodes(one_tree))*2;
 
+    # Initialisation des variables de gestion de la recherche
     compteur = 0;
     compteur_period = 0;
 
     while k < limite
-        if k % 500 == 0
-            println("avancement : $(k)/$(limite)")
-        end
 
+        # On limite la recherche si la recherche a durée plus longtemps qu'une certaine période
         if compteur_period > period
             pas /= 2
             period = floor(Int, length(period) / 2)
         end
 
+        # Mis à jour du 1-tree et de son poids pendant la boucle
         if k == 0
             one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
         else
             one_tree_k, poids_minimal_one_tree_k = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
         end
 
+        # Calcul du poids décalé à cause des pénalités
         w_pi_k = poids_minimal_one_tree_k - 2 * sum(pi_k)
         
+        # Obtention du max des poids décalé
         W = max(W,w_pi_k)
 
+        # S'il le poids décalé a évolué à la dernière étape, alors, on double la période
         if compteur_period == period && w_pi_k == W
             period = 2*period
         end
-
+        
+        # Calcul du degré des noeuds du 1-tree considéré
         d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
         
+        # Calcul du gradient
         v_k = d_k-ones(Int, nb_nodes(one_tree_k))*2;
 
-
+        # Si la somme en valeur absolu est meilleur que celle déjà connue, alors on met à jour
         if sum(abs.(v_k)) < sum(abs.(v_k_et))
             one_tree_et = one_tree_k;
             poids_minimal_one_tree_et = poids_minimal_one_tree_k;
@@ -241,16 +278,20 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             compteur += 1
         end
 
+        # Conditions d'arrêt
         if v_k == zeros(Int,nb_nodes(one_tree_k)) || compteur > compteur_max || pas == 0.0 || period == 0
             break
         end
 
+        # Mis à jour des pénalités
         pi_k += pas*(0.7*v_k+0.3*v_k_1);
 
+        # Retenu du gradient précédent
         v_k_1 = v_k
 
         i = 1;
         
+        # On met à jour le dictionnaire des poids suivant la pénalité
         for edge in edges(one_tree_k)
             couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
             couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
@@ -267,7 +308,8 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
         compteur_period += 1
 
     end
-    
+
+    # Ici on reprend la même méthode que dans l'algorithme RSL    
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
     # Parcourir chaque arête
     for edge in edges(one_tree_et)

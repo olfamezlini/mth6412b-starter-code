@@ -1,5 +1,4 @@
-# Importation du module Test et STSP
-using STSP, Test
+using STSP
 export parcours_preordre, Algorithme_RSL
 
 """
@@ -50,7 +49,7 @@ function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_we
         error("Choix de l'algorithme non valide.")
     end
     # Construire le dictionnaire Arbre_minimal_dict à partir des arêtes du Arbre_minimal
-    # show(Arbre_minimal)
+    
     # Initialiser le dictionnaire où chaque nœud aura une liste de ses voisins
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
     # Parcourir chaque arête
@@ -81,7 +80,6 @@ function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_we
     for i in 1:(length(visited) - 1)
         node1 = visited[i]
         node2 = visited[i + 1]
-        print("(node1, node2) = ", (node1, node2))
         # Ajouter le poids de l'arête entre node1 et node2
         if (node1, node2) in keys(edge_weights_dict)
             Poids_tournee += edge_weights_dict[(node1, node2)]

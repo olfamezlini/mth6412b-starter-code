@@ -20,5 +20,6 @@ include("phase4/instances_weights.jl")
 include("phase4/affichage_RSL.jl")
 include("phase4/affichage_HK.jl")
 include("phase4/recherche_param_opt.jl")
+include("phase4/affichage_resultats.jl")
 
 end # module STSP

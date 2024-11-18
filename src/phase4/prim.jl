@@ -1,6 +1,4 @@
-
-# Importation du module Test
-using STSP, Test
+using STSP
 
 export complete_graph_edges, add_symmetry!, Algorithme_Prim
 
@@ -96,12 +94,7 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
         end
     else
         graph_nodes_keys = collect(keys(graph_nodes))
-    end    
-
-
-
-    # Test du type de l'arbre de recouvrement minimal
-    @test typeof(arbre_minimal)==Graph{Int64, BigFloat}
+    end
 
     poids_minimal = 0.0  # Poids total de l'arbre de recouvrement minimal
 
@@ -123,9 +116,6 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
     # Creation du noeud de depart a partir de start_node
     start_node_type = Node(string(start_node), 0)
 
-    # Test du type de de start_node_type
-    @test typeof(start_node_type) == Node{Int64}
-
     # Ajout du nœud de départ dans l'arbre
     add_node!(arbre_minimal, start_node_type)
 
@@ -135,9 +125,6 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
         node1, node2 = neighbor
         if haskey(edge_weights_dict, (node1, node2))
             weight = edge_weights_dict[(node1, node2)]
-            # println("typeof(weight) = ", typeof(weight))
-            # println("type = ", typeof(PriorityItem))
-            item = PriorityItem(BigFloat(1.0), Int64(2))
             push!(pq, PriorityItem(weight, node2))
         end
     end
@@ -151,9 +138,6 @@ function Algorithme_Prim(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges:
         current_item = popfirst!(pq)
         current_node = current_item.node
         current_node_type = Node(string(current_node), 0)
-
-        # Test du type de de start_node_type
-        @test typeof(current_node_type) == Node{Int64}
 
         # Si le nœud est déjà visité, passer à l'itération suivante
         if current_node in visited_nodes
