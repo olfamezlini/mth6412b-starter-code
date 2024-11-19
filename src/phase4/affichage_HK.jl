@@ -15,7 +15,7 @@ Affiche l'application de l'algorithme de Kruskal en rouge sur le graphe considé
 """
 function affichage_HK(filename::String, start_node::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64, limite::Int64)
     # Lecture du fichier filename
-    graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
     # Application de l'algorithme de RSL sur le graphe considéré
     Tournee_HK, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal, pas, compteur_max, limite)
     
@@ -55,7 +55,7 @@ function affichage_HK(filename::String, start_node::Int64, algo_Arbre_minimal::I
         scatter!(x, y)
         
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/exemple_phase_2.png")
+        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
         
         # Renvoie de la figure
         fig
@@ -100,7 +100,7 @@ function affichage_HK(filename::String, start_node::Int64, algo_Arbre_minimal::I
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bayg29.png")
+        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
 
         # Renvoie de la figure
         fig
