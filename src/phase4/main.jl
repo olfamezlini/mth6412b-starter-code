@@ -23,64 +23,19 @@ show(G)
 remove_edge!(G, edge)
 show(G)
 
-graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/exemple_phase_4.tsp")
-les_noeuds = [Node(string(i), i) for i in collect(keys(graph_nodes))];
-# Vérifie que 'graph_edges' est un dictionnaire ou une structure valide.
-les_aretes = [Edge(string(i) * "---" * string(j), edge_weights_dict[(i, j)], Node(string(i), 0), Node(string(j),0)) for i in 1:length(graph_edges) for j in graph_edges[i]];
-graph = Graph("exemple_phase_4", les_noeuds, les_aretes);
-affichage_HK("../instances/stsp/exemple_phase_4.tsp", 2, 2, 1.5, 2500, 1000000)
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 2, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 3, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 4, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 5, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 6, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 7, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 8, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 9, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 10, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 11, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 12, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 13, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 14, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 15, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 16, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 17, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 18, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 19, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 20, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 21, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 22, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 23, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 24, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 25, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 26, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 27, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 28, 2, 1.2, 2500, 1000000);
-one_tree, poids_minimal_one_tree = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 29, 2, 1.2, 2500, 1000000);
-affichage_RSL("../instances/stsp/bays29.tsp", 1, 1)
-println("poids minimal du one tree = ", poids_minimal_one_tree)
-show(one_tree)
-
-println("poids = ", edge_weights_dict[(1,7)])
-
-#one_tree_phase_4 = one_tree!(graph, arbre_minimal, Node("1", 0));
-#show(one_tree_phase_4)
-
 # Phase 2
 
 #println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
 
 # Lecture de l'instance de TSP symétrique (ici, bayg29.tsp)
-graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/exemple_phase_2.tsp")
+graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/bayg29.tsp")
 
 # Mesurer le temps CPU pour l'exécution de Algorithme_Kruskal
-result = @timed Algortihme_Kruskal(graph_edges, edge_weights_dict)
+# result = @timed Algortihme_Kruskal(graph_edges, edge_weights_dict)
 
 # Extraire le temps d'exécution et le résultat
 arbre_minimal, poids_minimal = result[1][1], result[1][2]
 temps_cpu = result[2]
-#show(result[1][1])
 
 # Afficher le résultat et le temps d'exécution
 #println("Arbre de recouvrement minimal : ", arbre_minimal)
@@ -100,16 +55,36 @@ affichage_arbre_minimal_prim("../instances/stsp/exemple_phase_4.tsp", 2)
 
 
 # Phase 4
-# Application de l'algorithme RSL
 
-#println("N'oubliez pas d'indiquer l'emplacement du fichier .tsp correspondant.")
+# Tracer des résultats optimaux obtenus
+affichage_RSL("../instances/stsp/exemple_phase_4.tsp", 1, 1)
+affichage_RSL("../instances/stsp/bayg29.tsp", 17, 1)
+affichage_RSL("../instances/stsp/bays29.tsp", 14, 1)
+affichage_RSL("../instances/stsp/dantzig42.tsp",21, 2)
+affichage_RSL("../instances/stsp/fri26.tsp",12, 1)
+affichage_RSL("../instances/stsp/gr17.tsp", 7, 1)
+affichage_RSL("../instances/stsp/gr21.tsp", 14, 1)
+affichage_RSL("../instances/stsp/gr24.tsp", 24, 1)
+affichage_RSL("../instances/stsp/gr48.tsp", 4, 2)
+affichage_RSL("../instances/stsp/swiss42.tsp", 32, 1)
 
-# Lecture de l'instance de TSP symétrique (ici, exemple_phase_2.tsp)
+# Permet d'afficher la tournée avec la méthode RSL à partir d'un noeud de départ
+affichage_HK("../instances/stsp/exemple_phase_4.tsp", 1, 1, 0.1, 2500, 100000)
+affichage_HK("../instances/stsp/bayg29.tsp",16, 2, 1.2, 2500, 100000)
+affichage_HK("../instances/stsp/bays29.tsp", 16, 2, 1.6, 2500, 100000)
+affichage_HK("../instances/stsp/dantzig42.tsp", 30, 2, 0.6, 2500, 100000)
+affichage_HK("../instances/stsp/fri26.tsp", 2, 1, 0.1, 2500, 100000)
+affichage_HK("../instances/stsp/gr17.tsp",  4, 2, 0.2, 2500, 100000)
+affichage_HK("../instances/stsp/gr21.tsp",  13, 1, 10.0, 2500, 100000)
+affichage_HK("../instances/stsp/gr24.tsp",23, 1, 10.0, 2500, 100000)
+affichage_HK("../instances/stsp/gr48.tsp", 26, 2, 1.4, 2500, 100000)
+affichage_HK("../instances/stsp/swiss42.tsp", 39, 1, 0.1, 2500, 100000)
 
-#graph_nodes, graph_edges, edge_weights_dict = read_stsp("instances/stsp/exemple_phase_2.tsp")
+# Ces fonctions ont été utilisées pour trouver les paramètres optimaux
+# Exemple avec le fichier gr17 (Cela prend environ une minute pour les deux méthodes)
+a = comparaison_HK("gr17", 150)
+b = comparaison_RSL("gr17")
 
-#Algorithme_RSL(graph_edges, edge_weights_dict, 7, 1)
-
-affichage_RSL("../instances/stsp/exemple_phase_4.tsp", 2, 2)
-
-comparaison_all_RSL()
+# Comparaison des résultats entre les valeurs optimales, les résultats de RSL et de HK
+# Ceci met environ 30 seconde à terminer
+affichage_resultats_param_opt()
