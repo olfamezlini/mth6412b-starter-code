@@ -82,8 +82,8 @@ affichage_HK("swiss42", 39, 1, 0.1, 2500, 100000)
 
 # Ces fonctions ont été utilisées pour trouver les paramètres optimaux
 # Exemple avec le fichier gr17 (Cela prend environ une minute pour les deux méthodes)
-a = comparaison_HK("gr17", 150)
-b = comparaison_RSL("gr17")
+comparaison_HK("gr17", 150)
+comparaison_RSL("gr17")
 
 # Comparaison des résultats entre les valeurs optimales, les résultats de RSL et de HK
 # Ceci met environ 30 seconde à terminer
