@@ -41,7 +41,8 @@ md"""#### Question 1 : Implémenter l’algorithme de Rosenkrantz, Stearns et Le
 	- `algo_Arbre_minimal`:Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
 	
 	# Retourne
-	- Une liste contenant la tournée minimal du graphe du départ
+	- `Tournee_RSL::Graph("Tournee_RSL", Node{Int64}[], Edge{Int64, BigFloat}[])`:Un graph contenant la tournée minimale trouvée.
+	- `Poids_tournee::BigFloat`: Un nombre réelle qui retourne le poids total de la tournée. 
 	"""
 begin	
 	function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
@@ -128,27 +129,191 @@ md"""
 """
 
 # ╔═╡ 3ecd61be-b9e6-4e50-b872-7520c4cc737a
-md"""###### Exemple du  cours
+md"""###### Exemple simple
+"""
+
+# ╔═╡ cda23dde-a296-4778-bbff-57667e8151a4
+md"""
+Afin de tester notre algorithme RSL sur un exemple simple, nous avons créer ce graph complet avec tous ces données affichées dans la figure suivante.
 """
 
 # ╔═╡ 50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
 exemple_phase4 = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase4.png")
 
+# ╔═╡ 9d3a6631-476e-4096-9adf-73b4665631d5
+md"""
+D'après le calcul manuel, on a trouvé que la trournée minimal correspond a un poids égale à 16. 
+"""
+
 # ╔═╡ e75ca447-a81d-4bc3-9fbf-a12d78469e0b
-md"""###### Tournée trouvée de l'exemple du  cours avec RSL
+md"""###### Tournée trouvée de l'exemple avec RSL en prenont le choix de l'algorithme Prim comme paramètre .
 """
 
 # ╔═╡ 31ff1d04-cab4-4c40-8a95-2a4ada100a70
 exemple_phase4_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase4_RSL.png")
 
+# ╔═╡ a66b6a24-0b7f-4b16-ae4e-8ed585a176f8
+md"""
+L'algorithme RSL dépend de deux paramètre : Le choix de l'algorithme et le choix du noeud de départ. Afin d'évaluer l'influence de choix de ces paramètre on a créer une fonction qui compare les performances de l'algorithme RSL appliqué avec deux choix d'algorithmes (Prim et Kruskal) et explore l'impact du choix du nœud de départ pour résoudre des instances du problème STSP.  
+"""
+
+# ╔═╡ f56e4aec-8d17-4dfc-a952-ca2f7c69e0df
+exemple_phase_4_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_prim_histo_RSL.png")
+
+# ╔═╡ 89457b73-043c-49f8-8f06-985191c11dc1
+md"""
+En fixant le paramètre de choix de l'algorithme Prim et en variant le choix de noeud de départ on a toujours une solution optimale, la différence RSL-STSP est toujours nulle."
+"""
+
+# ╔═╡ fc7bbb3c-adbe-4c2c-99dd-ec045ef60d29
+exemple_phase_4_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_kruskal_histo_RSL.png")
+
+# ╔═╡ f4e892a9-7764-4a2d-b17c-b72a27b4054b
+md"""
+En fixant le paramètre de choix de l'algorithme Kruskal et en variant le choix de noeud de départ, on a trouvé que pour le choix du noeud 4 comme noeud de départ on trouve une différence RSL-STSP=8 qui présente une erreure relative = 50%."
+"""
+
+# ╔═╡ 4b6afeb3-e834-40a1-9775-983fa7330bec
+md"""###### Instances STSP
+"""
+
 # ╔═╡ ee426cc2-2b73-4ff4-86e6-071dc615163f
-bayg29_RS = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_RSL.png")
+bayg29_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_RSL.png")
+
+# ╔═╡ 54919676-4761-4687-b689-f65fe3f84f43
+bayg29_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_kruskal_histo_RSL.png")
+
+# ╔═╡ a83a761e-48b7-4a22-9780-65aa8bb4c01a
+bayg29_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_prim_histo_RSL.png")
+
+# ╔═╡ 79e37672-c88c-406c-b21d-86547f5ab012
+bays29_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_RSL.png")
+
+# ╔═╡ 2169a82e-e4ee-47e7-99c4-fdba5a108a34
+bays29_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_kruskal_histo_RSL.png")
+
+# ╔═╡ 89299ea7-20c7-4142-ae81-a449e5364135
+bays29_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_prim_histo_RSL.png")
+
+# ╔═╡ 2bee2172-fd45-40e5-988d-918b8bd776c3
+fri26_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_RSL.png")
+
+# ╔═╡ bdf51e54-4832-4b49-98f3-5c30da28e445
+fri26_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_kruskal_histo_RSL.png")
+
+# ╔═╡ 9640e7d6-3652-4742-9718-53546370d797
+fri26_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_prim_histo_RSL.png")
+
+# ╔═╡ a0751eed-f813-45af-b0d3-3b9e7650f1f6
+dantzig42_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_RSL.png")
+
+# ╔═╡ a28072f8-f33c-4f8a-9fec-de5093dfa4e5
+dantzig42_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_kruskal_histo_RSL.png")
+
+# ╔═╡ 8f2ea57f-463a-4ad3-9af3-d177c5c03f15
+dantzig42_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_prim_histo_RSL.png")
 
 # ╔═╡ f2891a2c-51e3-40c8-a977-822d9150015e
 swiss42_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_RSL.png")
 
-# ╔═╡ a0751eed-f813-45af-b0d3-3b9e7650f1f6
-dantzig42_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_RSL.png")
+# ╔═╡ 20c133b4-dee4-4af3-a590-c52d80fbed88
+swiss42_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_kruskal_histo_RSL.png")
+
+# ╔═╡ 0ea3e45e-6690-465d-a1dd-72c5327a1a77
+swiss42_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_prim_histo_RSL.png")
+
+# ╔═╡ f8591f9e-1486-4c16-af0a-752d275716c2
+gr48_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_RSL.png")
+
+# ╔═╡ b79a46c2-3eb3-43c5-955f-1115ddc62498
+gr48_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_kruskal_histo_RSL.png")
+
+# ╔═╡ 5e1680d4-309d-4399-8d83-969eb14e86ee
+gr48_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_prim_histo_RSL.png")
+
+# ╔═╡ bc1820e4-3b33-4f89-be3b-bc375b2d9177
+hk48_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_RSL.png")
+
+# ╔═╡ c049166c-48d0-460f-a738-9eca00943651
+hk48_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_kruskal_histo_RSL.png")
+
+# ╔═╡ c2235155-8b6a-4a43-a091-57b2ef402eb9
+hk48_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_prim_histo_RSL.png")
+
+# ╔═╡ 0a0ef835-5fe2-4686-a0f7-a5eccf179d43
+gr21_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_RSL.png")
+
+# ╔═╡ 6b48cf6d-838d-4d5b-9a6c-a695cd366272
+gr21_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_kruskal_histo_RSL.png")
+
+# ╔═╡ fa01fff0-d73a-4a99-bb7d-34f09cf5462f
+gr21_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_prim_histo_RSL.png")
+
+# ╔═╡ dc6c9142-e14e-4ed0-9776-94ea9fcd39f3
+gr24_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_RSL.png")
+
+# ╔═╡ 9be1ae70-946d-4d17-b531-b4bd3baff722
+gr24_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_kruskal_histo_RSL.png")
+
+# ╔═╡ a83d43d7-450f-4304-b49c-d471214e426d
+gr24_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_prim_histo_RSL.png")
+
+# ╔═╡ 74013101-1fd2-423d-b16e-eb8345bcc4f4
+brazil58_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_RSL.png")
+
+# ╔═╡ f3051fa3-4be2-44cd-b990-a29fee60452d
+brazil58_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_kruskal_histo_RSL.png")
+
+# ╔═╡ f74aa454-3951-4572-9e6d-05faa1748876
+brazil58_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_prim_histo_RSL.png")
+
+# ╔═╡ 9ed02d84-1a68-47ef-afe7-4047c901dc78
+gr17_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_RSL.png")
+
+# ╔═╡ e2197aba-03ad-4cc5-beb7-9240f5070511
+gr17_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_kruskal_histo_RSL.png")
+
+# ╔═╡ 01fa5e56-74c3-4ead-a743-6443f3f64ab0
+gr17_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_prim_histo_RSL.png")
+
+# ╔═╡ 8bcb8920-d7e0-40e0-9b14-d9bdb4dd7d87
+md"""
+À partir de ces histogrammes et des comparaisons effectuées, nous avons identifié les meilleures combinaisons de paramètres qui produisent la tournée la plus proche de l'optimale, c'est-à-dire celle avec l'écart relatif minimal.
+
+Voici un récapitulatif des résultats dans le tableau suivant :
+"""
+
+# ╔═╡ 08821c58-86d9-4d0d-be95-55ecd08cd983
+md"""
+| Instance              | Choix des paramètres(Kruskal OU Prim, Noeude de départ)   | Meilleure tournée trouvée (Poids) | Erreur relative (%) |
+|:----------------------|:-----------------------:|:---------------------------------:|:-------------------:|
+| **Exemple simple**    | (Kruskal,1)            | 16.0                             | 0.00                   |
+| **Exemple simple**    | (Prim,1)               | 16.0                             | 0.00                   |
+| **bayg29**            | (Kruskal,17)           | 2014.0                           | 25.09                  |
+| **bayg29**            | (Prim,17)              | 2014.0                           | 25.09                  |
+| **bays29**            | (Kruskal,14)           | 2265.0                           | 12.12                   |
+| **bays29**            | (Prim,14)              | 2265.0                           | 12.12                   |
+| **fri26**             | (Kruskal,12)           | 1102.0                           | 17.60                   |
+| **fri26**             | (Prim,12)              | 1102.0                           | 17.60                   |
+| **dantzig42**         | (Kruskal,29)           | 872.0                            | 24.74                |
+| **dantzig42**         | (Prim,21)              | 864.0                            | 23.60                   |
+| **swiss42**           | (Kruskal,32)           | 1591.0                           | 24.98                   |
+| **swiss42**           | (Prim,32)              | 1591.0                           | 24.98                   |
+| **gr48**              | (Kruskal,4)            | 6702.0                           | 32.81                |
+| **gr48**              | (Prim,4)               | 6450.0                           | 27.82                   |
+| **hk48**              | (Kruskal,20)           | 13939.0                          | 21.62                   |
+| **hk48**              | (Prim,20)              | 13939.0                          | 21.62                   |
+| **gr21**              | (Kruskal,14)           | 2998.0                           | 10.74                   |
+| **gr21**              | (Prim,14)              | 2998.0                           | 10.74                   |
+| **gr24**              | (Kruskal,24)           | 1571.0                           | 23.50                   |
+| **gr24**              | (Prim,24)              | 1571.0                           | 23.50                   |
+| **brazil58**          | (Kruskal,36)           | 28380.0                          | 11.75                   |
+| **brazil58**          | (Prim,36)              | 28380.0                          | 11.75                   |
+| **gr17**              | (Kruskal,7)            | 2210.0                           | 5.99                   |
+| **gr17**              | (Prim,7)               | 2210.0                           | 5.99                   |
+
+
+"""
 
 # ╔═╡ 0be058ad-f74b-4410-bab8-db7621811cb5
 md"""#### Question 2 : implémenter l’algorithme de montée de Held et Karp (HK) 
@@ -156,12 +321,120 @@ md"""#### Question 2 : implémenter l’algorithme de montée de Held et Karp (H
 
 """
 
+# ╔═╡ a63dad12-696c-49d4-8aff-880e0386b793
+"""
+    get_one_tree(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+
+Implémente la méthode pour trouver un 1-tree minimum avec la racine racine
+
+# Arguments
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+- `racine::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+
+# Retourne
+- Un 1-tree minimum avec la racine racine
+"""
+begin
+	function get_one_tree(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+	    
+	    removed_node_dict = Dict(key => graph_nodes[key] for key in keys(graph_nodes) if key != racine)
+	    removed_edge_vec = [[i for i in graph_edges[k] if i != racine] for k in 1:length(graph_edges) if k != racine]
+	    removed_weights_dict = Dict((i, j) => edge_weights_dict[(i, j)] for i in 1:length(graph_edges) for j in graph_edges[i] if i != racine && j != racine)
+	    
+	    #removed_node_dict, removed_edge_vec, removed_weights_dict = decalage!(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+	    removed_node_dict, removed_edge_vec, removed_weights_dict = decalage(removed_node_dict, removed_edge_vec, removed_weights_dict, racine)
+	
+	    if algo_Arbre_minimal  ==1
+	        arbre_minimal, poids_minimal =Algortihme_Kruskal(removed_edge_vec, removed_weights_dict)
+	    elseif  algo_Arbre_minimal ==2
+	        arbre_minimal, poids_minimal=Algorithme_Prim(removed_node_dict, removed_edge_vec, removed_weights_dict, 1)
+	    else 
+	        error("Choix de l'algorithme non valide.")
+	    end
+	    incremented_nodes = increment_nodes(nodes(arbre_minimal), racine)
+	    push!(incremented_nodes, Node(string(racine), 0))
+	    incremented_edges, poids_minimal_sous_arbre = increment_edges(edges(arbre_minimal), racine)
+	    one_tree = Graph("one_tree", incremented_nodes, incremented_edges)
+	    arete_min_1 = nothing
+	    weight_min_1 = Inf
+	    arete_min_2 = nothing
+	    weight_min_2 = Inf
+	    for i in graph_edges[racine]
+	        if edge_weights_dict[(i, racine)] < weight_min_1
+	            weight_min_1 = edge_weights_dict[(i, racine)]
+	            arete_min_1 = Edge(string(i)*"---"*string(racine), weight_min_1, Node("i",0), Node(string(racine),0))
+	        elseif edge_weights_dict[(i, racine)] < weight_min_2
+	            weight_min_2 = edge_weights_dict[(i, racine)]
+	            arete_min_2 = Edge(string(i)*"---"*string(racine), edge_weights_dict[(i, racine)], Node("i",0), Node(string(racine),0))
+	        end
+	    end
+	    add_node!(one_tree, Node(string(racine),0))
+	    add_edge!(one_tree, arete_min_1)
+	    add_edge!(one_tree, arete_min_2)
+	    poids_minimal_one_tree = poids_minimal_sous_arbre + data(arete_min_1) + data(arete_min_2)
+	
+	    return one_tree, poids_minimal_one_tree
+	end
+end
+
+# ╔═╡ f19af153-7fbc-41fc-abec-b267adc7b6aa
+"""
+    Algorithme_HK(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+
+Implémente l'algorithme de Keld Helsgaun.
+
+# Arguments
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+- `racine::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+
+# Retourne
+- Une liste contenant la tournée minimal du graphe du départ
+"""
+begin
+	function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+	    one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+	end
+end
+
 # ╔═╡ 99be5fd3-1f23-4f03-9c20-17ab1c277d6f
 md"""#### Question 3 : Test de l'implémentation"""
 
+# ╔═╡ e51967b6-7b31-42be-ac11-e288c7e135dc
+md"""
+La fonction comparaison compare les performances de l'algorithme HK appliqué avec deux stratégies (Prim et Kruskal) pour résoudre des instances du problème STSP. Elle génère des cartes thermiques pour visualiser les différences de poids entre les solutions obtenues et la solution optimale, identifie les meilleurs paramètres pour chaque stratégie, et sauvegarde les résultats.
+"""
+
 # ╔═╡ 6127cc66-ef9a-42e2-a089-21772cf1dd29
 md"""
-Poids de l'arbre de recouvrement minimal = 1319
+| Instance              | Choix des paramètres(Kruskal OU Prim, Noeud de départ, Pas)   | Meilleure tournée trouvée (Poids) | Erreur relative (%) |
+|:----------------------|:-----------------------:|:-----------------------------:|:-------------------:|
+| **Exemple simple**  | (Kruskal, 1, 0.1)                 | 16.0                       | 0
+| **Exemple simple**  | (Prim, 1, 0.1)                 | 16.0                       | 0
+| **bayg29**           | (Kruskal, 16, 1.2)                | 1682.0                      | 4.47
+| **bayg29**           | (Prim, 23, 0.4)                  | 1750.0                      | 8.69
+| **bays29**           | (Kruskal, 16, 1.6)                | 2174.0                      | 9.35
+| **bays29**           | (Prim, 5, 1.1)                   | 2209.0                      | 9.35
+| **fri26**            | (Kruskal, 11, 0.3)                | 1010.0                      | 7.79
+| **fri26**            | (Prim, 2, 0.1)                   | 986.0                       | 5.22
+| **gr17**             | (Kruskal, 4, 0.2)                 | 2152.0                      | 3.21
+| **gr17**             | (Prim, 16, 0.8)                  | 2203.0                      | 5.65
+| **dantzig42**        | (Kruskal, 30, 0.6)                | 781.0                       | 11.73
+| **dantzig42**        | (Prim, 10, 0.6)                  | 791.0                       | 13.16
+| **swiss42**          | (Kruskal, 30, 0.8)                | 1482.0                      | 16.41
+| **swiss42**          | (Prim, 39, 0.1)                  | 1459.0                      | 14.61
+| **gr48**             | (Kruskal, 26, 1.4)                | 5777.0                      | 14.48
+| **gr48**             | (Prim, 40, 0.2)                  | 6048.0                      | 19.85
+| **gr21**             | (Kruskal, 21, 7.0)                | 2834.0                      | 4.69
+| **gr21**             | (Prim, 13, 10.0)                  | 2823.0                      | 4.28
+| **gr24**             | (Kruskal, 13, 0.6)                | 1435.0                      | 12.81
+| **gr24**             | (Prim, 23, 10.0)                  | 1299.0                      | 2.12
+                 |
+
+
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1313,17 +1586,60 @@ version = "17.4.0+2"
 # ╟─72ba7e00-8358-11ef-3c2a-73d1b7473118
 # ╟─35ce874f-0c25-4ea3-ad96-837a7d262806
 # ╟─84284d95-aac1-4816-81db-c61643359868
-# ╠═7aff023f-2808-4a0d-8820-f0b6ef754f86
+# ╟─7aff023f-2808-4a0d-8820-f0b6ef754f86
 # ╟─855f6dab-3688-48ac-9f50-47bedaf0cc07
 # ╟─3ecd61be-b9e6-4e50-b872-7520c4cc737a
+# ╟─cda23dde-a296-4778-bbff-57667e8151a4
 # ╟─50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
+# ╟─9d3a6631-476e-4096-9adf-73b4665631d5
 # ╟─e75ca447-a81d-4bc3-9fbf-a12d78469e0b
 # ╟─31ff1d04-cab4-4c40-8a95-2a4ada100a70
+# ╟─a66b6a24-0b7f-4b16-ae4e-8ed585a176f8
+# ╟─f56e4aec-8d17-4dfc-a952-ca2f7c69e0df
+# ╟─89457b73-043c-49f8-8f06-985191c11dc1
+# ╟─fc7bbb3c-adbe-4c2c-99dd-ec045ef60d29
+# ╟─f4e892a9-7764-4a2d-b17c-b72a27b4054b
+# ╟─4b6afeb3-e834-40a1-9775-983fa7330bec
 # ╟─ee426cc2-2b73-4ff4-86e6-071dc615163f
-# ╟─f2891a2c-51e3-40c8-a977-822d9150015e
+# ╟─54919676-4761-4687-b689-f65fe3f84f43
+# ╟─a83a761e-48b7-4a22-9780-65aa8bb4c01a
+# ╟─79e37672-c88c-406c-b21d-86547f5ab012
+# ╟─2169a82e-e4ee-47e7-99c4-fdba5a108a34
+# ╟─89299ea7-20c7-4142-ae81-a449e5364135
+# ╟─2bee2172-fd45-40e5-988d-918b8bd776c3
+# ╟─bdf51e54-4832-4b49-98f3-5c30da28e445
+# ╟─9640e7d6-3652-4742-9718-53546370d797
 # ╟─a0751eed-f813-45af-b0d3-3b9e7650f1f6
+# ╟─a28072f8-f33c-4f8a-9fec-de5093dfa4e5
+# ╟─8f2ea57f-463a-4ad3-9af3-d177c5c03f15
+# ╟─f2891a2c-51e3-40c8-a977-822d9150015e
+# ╟─20c133b4-dee4-4af3-a590-c52d80fbed88
+# ╟─0ea3e45e-6690-465d-a1dd-72c5327a1a77
+# ╟─f8591f9e-1486-4c16-af0a-752d275716c2
+# ╟─b79a46c2-3eb3-43c5-955f-1115ddc62498
+# ╟─5e1680d4-309d-4399-8d83-969eb14e86ee
+# ╟─bc1820e4-3b33-4f89-be3b-bc375b2d9177
+# ╟─c049166c-48d0-460f-a738-9eca00943651
+# ╟─c2235155-8b6a-4a43-a091-57b2ef402eb9
+# ╟─0a0ef835-5fe2-4686-a0f7-a5eccf179d43
+# ╟─6b48cf6d-838d-4d5b-9a6c-a695cd366272
+# ╟─fa01fff0-d73a-4a99-bb7d-34f09cf5462f
+# ╟─dc6c9142-e14e-4ed0-9776-94ea9fcd39f3
+# ╟─9be1ae70-946d-4d17-b531-b4bd3baff722
+# ╟─a83d43d7-450f-4304-b49c-d471214e426d
+# ╟─74013101-1fd2-423d-b16e-eb8345bcc4f4
+# ╟─f3051fa3-4be2-44cd-b990-a29fee60452d
+# ╟─f74aa454-3951-4572-9e6d-05faa1748876
+# ╟─9ed02d84-1a68-47ef-afe7-4047c901dc78
+# ╟─e2197aba-03ad-4cc5-beb7-9240f5070511
+# ╟─01fa5e56-74c3-4ead-a743-6443f3f64ab0
+# ╟─8bcb8920-d7e0-40e0-9b14-d9bdb4dd7d87
+# ╟─08821c58-86d9-4d0d-be95-55ecd08cd983
 # ╟─0be058ad-f74b-4410-bab8-db7621811cb5
+# ╟─f19af153-7fbc-41fc-abec-b267adc7b6aa
+# ╟─a63dad12-696c-49d4-8aff-880e0386b793
 # ╟─99be5fd3-1f23-4f03-9c20-17ab1c277d6f
-# ╠═6127cc66-ef9a-42e2-a089-21772cf1dd29
+# ╟─e51967b6-7b31-42be-ac11-e288c7e135dc
+# ╟─6127cc66-ef9a-42e2-a089-21772cf1dd29
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
