@@ -1,7 +1,6 @@
-
 using STSP
 
-export affichage_RSL
+export affichage_arbre_minimal_prim
 
 """
     (filename::String)
@@ -13,21 +12,22 @@ export affichage_RSL
 
 Affiche l'application de l'algorithme de Kruskal en rouge sur le graphe considéré.
 """
-function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::Int64)
+function affichage_arbre_minimal_prim(filename::String, start_node::Int64)
     # Lecture du fichier filename
-    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
-    
-    # Application de l'algorithme de RSL sur le graphe considéré
-    Tournee_RSL, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal)
-    # Récupération de l'ensemble des arête de la tournée
-    arbre_edges = Tournee_RSL.edges
-    # Affichage du poids de la tournée trouvé grâce à l'algorithme de RSL
-    println("poids de la tournée trouvé : ", poids_minimal)
-    # Affichage de l'arbre de la tournée
-    show(Tournee_RSL)
+    graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+    # Application de l'algorithme de Kruskal sur le graphe considéré
+    arbre_minimal, poids_minimal = Algorithme_Prim(graph_nodes,graph_edges, edge_weights_dict,start_node)
+    # Récupération de l'ensemble des arête de l'arbre de recouvrement minimal
+    arbre_edges = arbre_minimal.edges
+    # Affichage du poids minimal trouvé grâce à l'algorithme de Kruskal
+    println("poids minimal trouvé : ", poids_minimal)
+    # Affichage de l'arbre de recouvrement minimal
+    show(arbre_minimal)
     # Définition d'une figure
     fig = plot(legend=false)
 
+    # On va alors afficher le graphe et par dessus, son arbre de recouvrement minimal trouvé grâce à 
+    # l'algorithme de Kruskal.
 
     # S'il y a des positions indiquées pour les noeuds du graphe du fichier filename
     if length(graph_nodes) !=0
@@ -40,7 +40,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
             end
         end
 
-        # On affiche les arêtes de la rournée en rouge
+        # On affiche les arêtes de l'arbre de recouvrement minimal en rouge
         for arete in arbre_edges
             noeud_1_arete = parse(Int,name(noeud_1(arete)))
             noeud_2_arete = parse(Int,name(noeud_2(arete)))
@@ -55,7 +55,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
         
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/exemple_phase_2.png")
         
         # Renvoie de la figure
         fig
@@ -100,13 +100,13 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/mth6412b-starter-code/bayg29.png")
 
         # Renvoie de la figure
         fig
 
     end
-    # Affichage de la tournée suivant la méthode de la classe Graph
+    # Affichage de l'arbre de recouvrement minimal suivant la méthode de la classe Graph
     
 end
 

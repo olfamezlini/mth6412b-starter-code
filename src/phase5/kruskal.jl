@@ -29,6 +29,7 @@ function Algortihme_Kruskal(graph_edges::Vector{Vector{Int64}}, edge_weights_dic
 
     # Définition du poids minimal
     poids_minimal = 0
+
     for (arete, poids) in sorted_edges
         node1, node2 = arete
         @test typeof(node1) == Int64 && typeof(node2) == Int64

@@ -215,9 +215,7 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     graph_edges = complete_graph_edges(graph_edges)
 
     # Initialisation du 1-tree et des autres paramètres
-    println("1")
     one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
-    println("fin 1")
     k = 0
     pi_k = ones(BigFloat, nb_edges(one_tree));
     W = poids_minimal_one_tree - 2 * sum(pi_k)
@@ -237,7 +235,7 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     # Initialisation des variables de gestion de la recherche
     compteur = 0;
     compteur_period = 0;
-    println(2)
+
     while k < limite
 
         # On limite la recherche si la recherche a durée plus longtemps qu'une certaine période
@@ -245,14 +243,13 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             pas /= 2
             period = floor(Int, length(period) / 2)
         end
-        println(3)
+
         # Mis à jour du 1-tree et de son poids pendant la boucle
         if k == 0
             one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
         else
             one_tree_k, poids_minimal_one_tree_k = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
         end
-        println("fin 3")
 
         # Calcul du poids décalé à cause des pénalités
         w_pi_k = poids_minimal_one_tree_k - 2 * sum(pi_k)
@@ -295,7 +292,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
         i = 1;
         
         # On met à jour le dictionnaire des poids suivant la pénalité
-        println("4")
         for edge in edges(one_tree_k)
             couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
             couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
@@ -307,7 +303,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             end
             i += 1
         end
-        println("fin 4")
 
         k += 1 ;
         compteur_period += 1
@@ -317,7 +312,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     # Ici on reprend la même méthode que dans l'algorithme RSL    
     Arbre_minimal_dict = Dict{Int, Vector{Int}}()
     # Parcourir chaque arête
-    println("5")
     for edge in edges(one_tree_et)
         # Extraire les deux nœuds connectés par l'arête
         node1 = parse(Int, edge.node_1.name)
@@ -335,7 +329,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
         end
         push!(Arbre_minimal_dict[node2], node1)
     end
-    println("fin 5")
 
     visited::Vector{Int64} = []
     parcours_preordre(Arbre_minimal_dict, racine, visited)
@@ -344,7 +337,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
     Poids_tournee = 0.0  # Initialiser le poids total de la tournée
 
     # Parcourir les nœuds de la tournée dans 'visited' et additionner les poids des arêtes
-    println("6")
     for i in 1:(length(visited) - 1)
         node1 = visited[i]
         node2 = visited[i + 1]
@@ -359,12 +351,10 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
             error("Le graphe n'est pas complet !")
         end
     end
-    println("fin 6")
     Tournee_HK = Graph("Tournee_HK", Node{Int64}[], Edge{Int64, BigFloat}[])
     graph_edges = complete_graph_edges(graph_edges)
 
     # Creation du graphe
-    println("7")
     for i in 1:(length(visited) - 1)
         weight = edge_weights_dict_copy[(visited[i], visited[i+1])]
         node1 = string(visited[i])
@@ -378,7 +368,6 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
         add_node!(Tournee_HK, Node(node2, 0))
 
     end
-    println("fin 7")
 
     if algo_Arbre_minimal == 1
         println(" ")

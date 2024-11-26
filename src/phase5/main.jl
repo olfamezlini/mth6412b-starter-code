@@ -88,3 +88,28 @@ comparaison_RSL("gr17")
 # Comparaison des résultats entre les valeurs optimales, les résultats de RSL et de HK
 # Ceci met environ 30 seconde à terminer
 affichage_resultats_param_opt()
+
+# Phase 5
+
+
+# phase 5 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp("../shredder-julia/tsp/instances/abstract-light-painting.tsp")
+
+println("graph_nodes = ", graph_nodes)
+println("graph_edges = ", graph_edges)
+println("edge_weights_dict = ", edge_weights_dict)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+# Obtention de tous les poids
+print(typeof(edge_weights_dict))
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+add_symmetry!(edge_weights_dict)
+
+print(edge_weights_dict)
+
+Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 2, 2)
+
+Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 545, 1, 10.0, 10, 100000)

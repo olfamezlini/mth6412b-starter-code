@@ -1,0 +1,2322 @@
+### A Pluto.jl notebook ###
+# v0.19.46
+
+using Markdown
+using InteractiveUtils
+
+# ╔═╡ 466b1feb-e208-4738-be70-733511fb3b6a
+using Images
+
+# ╔═╡ 67d0eeaa-dcd6-45ef-8d94-7457d0eabaca
+using LaTeXStrings
+
+# ╔═╡ 7049f94a-0545-4eb9-80e7-86486c335b72
+using Test
+
+# ╔═╡ d66ffa51-1c09-43c5-86d5-c00ee61609b1
+md"""#### Importation des modules nécessaires"""
+
+# ╔═╡ 72ba7e00-8358-11ef-3c2a-73d1b7473118
+md"""## Giorgi Gamkrelidze - Matricule : 2408995
+## Olfa Mezlini - Matricule : 2327229
+## Projet phase 4"""
+
+# ╔═╡ 35ce874f-0c25-4ea3-ad96-837a7d262806
+md"""#### Lien de la phase 4 sur Github : [https://github.com/olfamezlini/mth6412b-starter-code](https://github.com/olfamezlini/mth6412b-starter-code)"""
+
+# ╔═╡ 84284d95-aac1-4816-81db-c61643359868
+md"""#### Question 1 : Implémenter l’algorithme de Rosenkrantz, Stearns et Lewis"""
+
+# ╔═╡ 7aff023f-2808-4a0d-8820-f0b6ef754f86
+
+	"""
+	    Algorithme_RSL(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
+	
+	Implémente l'algorithme de Rosenkrantz, Stearns et Lewis fournissant une tournée dont le poids est inférieur à 2 fois le poids d'une tournée optimale a prtir d'un arbre de recouvrement minimal.
+	
+	# Arguments
+	- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+	- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+	- `start_node::Int64`: Le nœud de départ.
+	- `algo_Arbre_minimal`:Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+	
+	# Retourne
+	- `Tournee_RSL::Graph("Tournee_RSL", Node{Int64}[], Edge{Int64, BigFloat}[])`:Un graph contenant la tournée minimale trouvée.
+	- `Poids_tournee::BigFloat`: Un nombre réelle qui retourne le poids total de la tournée. 
+	"""
+begin	
+	function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, start_node::Int64, algo_Arbre_minimal::Int64)
+	    if algo_Arbre_minimal ==1
+	        Arbre_minimal=Algortihme_Kruskal(graph_edges, edge_weights_dict)[1]
+	    elseif  algo_Arbre_minimal ==2
+	        Arbre_minimal=Algorithme_Prim(graph_nodes, graph_edges, edge_weights_dict, start_node)[1] 
+	    else
+	        error("Choix de l'algorithme non valide.")
+	    end
+	    # Construire le dictionnaire Arbre_minimal_dict à partir des arêtes du Arbre_minimal
+	    show(Arbre_minimal)
+	    # Initialiser le dictionnaire où chaque nœud aura une liste de ses voisins
+	    Arbre_minimal_dict = Dict{Int, Vector{Int}}()
+	    # Parcourir chaque arête
+	    for edge in edges(Arbre_minimal)
+	        # Extraire les deux nœuds connectés par l'arête
+	        node1 = parse(Int, edge.node_1.name)
+	        node2 = parse(Int, edge.node_2.name)
+	
+	        # Ajouter node2 comme voisin de node1
+	        if !haskey(Arbre_minimal_dict, node1)
+	            Arbre_minimal_dict[node1] = []
+	        end
+	        push!(Arbre_minimal_dict[node1], node2)
+	
+	        # Ajouter node1 comme voisin de node2
+	        if !haskey(Arbre_minimal_dict, node2)
+	            Arbre_minimal_dict[node2] = []
+	        end
+	        push!(Arbre_minimal_dict[node2], node1)
+	    end
+	    visited::Vector{Int64} = []
+	    parcours_preordre(Arbre_minimal_dict, start_node, visited)
+	    push!(visited, start_node)
+	
+	    Poids_tournee = 0.0  # Initialiser le poids total de la tournée
+	    
+	    # Parcourir les nœuds de la tournée dans 'visited' et additionner les poids des arêtes
+	    for i in 1:(length(visited) - 1)
+	        node1 = visited[i]
+	        node2 = visited[i + 1]
+	        
+	        # Ajouter le poids de l'arête entre node1 et node2
+	        if (node1, node2) in keys(edge_weights_dict)
+	            Poids_tournee += edge_weights_dict[(node1, node2)]
+	        elseif (node2, node1) in keys(edge_weights_dict)
+	            Poids_tournee += edge_weights_dict[(node2, node1)]
+	        else
+	            error("Le graphe n'est pas complet !")
+	        end
+	    end
+	    Tournee_RSL = Graph("Tournee_RSL", Node{Int64}[], Edge{Int64, Float64}[])
+	    graph_edges = complete_graph_edges(graph_edges)
+	    
+	    # Obtention de tous les poids
+	    add_symmetry!(edge_weights_dict)
+	
+	    # Creation du graph
+	    for i in 1:(length(visited) - 1)
+	        weight = edge_weights_dict[(visited[i], visited[i+1])]
+	        node1 = string(visited[i])
+	        node2 = string(visited[i+1])
+	        # Ajout du nœud1 dans l'arbre
+	        add_node!(Tournee_RSL, Node(node1, 0))
+	        # Ajout de l'arete dans l'arbre
+	        arete = Edge(node1*"--->"*node2, weight, Node(node1, 0), Node(node2, 0))
+	        add_edge!(Tournee_RSL, arete)
+	        # Ajout du nœud2 dans l'arbre
+	        add_node!(Tournee_RSL, Node(node2, 0))
+	
+	    end
+	
+	    println("Ordre de la tournée RSL : ", visited)
+	    return Tournee_RSL, Poids_tournee
+	
+	end
+	
+end
+
+# ╔═╡ 855f6dab-3688-48ac-9f50-47bedaf0cc07
+md"""
+##### Test de l'implémentation de l'algorithme RSL
+"""
+
+# ╔═╡ 3ecd61be-b9e6-4e50-b872-7520c4cc737a
+md"""###### Exemple simple
+"""
+
+# ╔═╡ cda23dde-a296-4778-bbff-57667e8151a4
+md"""
+Afin de tester notre algorithme RSL sur un exemple simple, nous avons créer ce graph complet avec toutes ces données affichées dans la figure suivante.
+"""
+
+# ╔═╡ 50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
+exemple_phase4 = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase4.png")
+
+# ╔═╡ 9d3a6631-476e-4096-9adf-73b4665631d5
+md"""
+D'après le calcul manuel, on a trouvé que la trournée minimale correspondant à un poids égale à 16. 
+"""
+
+# ╔═╡ e75ca447-a81d-4bc3-9fbf-a12d78469e0b
+md"""###### Tournée trouvée de l'exemple avec RSL en prenant le choix de l'algorithme Prim comme paramètre .
+"""
+
+# ╔═╡ 31ff1d04-cab4-4c40-8a95-2a4ada100a70
+exemple_phase4_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase4_RSL.png")
+
+# ╔═╡ 71b5390d-9040-4bcb-8008-052dd7b53671
+md"""
+Poids de la tournée = 16
+"""
+
+# ╔═╡ a66b6a24-0b7f-4b16-ae4e-8ed585a176f8
+md"""
+L'algorithme RSL dépend de deux paramètres : Le choix de l'algorithme et le choix du noeud de départ. Afin d'évaluer l'influence de choix de ces paramètres on a créé une fonction qui compare les performances de l'algorithme RSL obtenu avec deux choix d'algorithmes (Prim et Kruskal) et explore l'impact du choix du nœud de départ pour résoudre des instances du problème STSP.  
+"""
+
+# ╔═╡ 4438102c-0225-44b2-9f4f-d1b15752f1fa
+"""
+    comparaison_RSL(filename::String)
+
+# Arguments
+- `filename::String`: Nom de l'instance considéré.
+
+# Permet d'appliquer la méhtode RSL suivant le paramètre du noeud de départ et de la méthode utilisée pour réaliser une recherche d'optimale et renvoie:
+- `best_i_prim`: Meilleur noeud trouvé avec la méthode de Prim
+- `best_poids_prim` : Meilleur poids trouvé avec la méthode de Prim
+- `best_i_kruskal` : Meilleur noeud trouvé avec la méthode de Kruskal
+- `best_poids_kruskal`: Meilleur poids trouvé avec la méthode de Kruskal
+"""
+begin
+	function comparaison_RSL(filename::String)
+	    
+	    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
+	
+	    # Initialisation
+	    start_node_vec = collect(1:length(graph_edges))  # Liste des nœuds de départ
+	    dif_val_tournee_prim = Vector{Float64}(undef, length(start_node_vec))  # Vecteur pour stocker les différences
+	    stsp_weight = get_instance_weight(filename)  # Poids STSP de référence
+	
+	    best_i_prim = nothing
+	    best_poids_prim = Inf
+	
+	    # Calcul des poids minimaux pour chaque nœud de départ
+	    for (i, start_node) in enumerate(start_node_vec)
+	        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 2)
+	        println("poids_minimal = ", poids_minimal)
+	
+	        # Calcul de la différence
+	        dif_val_tournee_prim[i] = poids_minimal - stsp_weight
+	
+	        # Mise à jour du meilleur poids
+	        if poids_minimal < best_poids_prim
+	            best_i_prim = i
+	            best_poids_prim = poids_minimal
+	        end
+	    end
+	
+	    # Création de l'histogramme
+	    bar(
+	        [i for i in 1:length(dif_val_tournee_prim)],                   # Indices des nœuds en abscisse
+	        dif_val_tournee_prim,             # Valeurs des différences en ordonnée
+	        xlabel="Nœud de départ",         # Nom de l'axe X
+	        ylabel="Différence (RSL - STSP)", # Nom de l'axe Y
+	        title="Différences de poids (RSL - STSP) avec Prim", # Titre
+	        legend=false,
+	        color=:blue                       # Couleur des barres
+	    )
+	
+	    println("Meilleur nœud de départ (Prim): ", best_i_prim)
+	    println("Poids minimal obtenu: ", best_poids_prim)
+	    
+	  
+	
+	    # Initialisation
+	    dif_val_tournee_kruskal = Vector{Float64}(undef, length(start_node_vec))  # Vecteur pour stocker les différences
+	    best_i_kruskal = nothing
+	    best_poids_kruskal = Inf
+	
+	    # Calcul des poids minimaux pour chaque nœud de départ
+	    for (i, start_node) in enumerate(start_node_vec)
+	        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 1)
+	        println("poids_minimal = ", poids_minimal)
+	
+	        # Calcul de la différence        
+	        dif_val_tournee_kruskal[i] = poids_minimal - stsp_weight
+	        
+	        # Mise à jour du meilleur poids
+	        if poids_minimal < best_poids_kruskal
+	            best_i_kruskal = i 
+	            best_poids_kruskal = poids_minimal
+	        end
+	    end
+	    
+	    # Création de l'histogramme
+	    bar(
+	        [i for i in 1:length(dif_val_tournee_kruskal)],                   # Indices des nœuds en abscisse
+	        dif_val_tournee_kruskal,             # Valeurs des différences en ordonnée
+	        xlabel="Nœud de départ",         # Nom de l'axe X
+	        ylabel="Différence (RSL - STSP)", # Nom de l'axe Y
+	        title="Différences de poids (RSL - STSP) avec Kruskal", # Titre
+	        legend=false,
+	        color=:blue                       # Couleur des barres
+	    )
+	
+	    # Enregistrement de l'histogramme
+	    #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/"*filename*"_kruskal_histo_RSL.png")
+	
+	    println("Meilleur nœud de départ (Kruskal): = ", best_i_kruskal)
+	    println("Poids minimal obtenu = ", best_poids_kruskal)
+	
+	    return best_i_prim, best_poids_prim, best_i_kruskal, best_poids_kruskal
+	
+	end
+
+end
+
+# ╔═╡ f56e4aec-8d17-4dfc-a952-ca2f7c69e0df
+exemple_phase_4_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_prim_histo_RSL.png")
+
+# ╔═╡ 89457b73-043c-49f8-8f06-985191c11dc1
+md"""
+En fixant le paramètre de choix de l'algorithme Prim et en variant le choix de noeud de départ on a toujours une solution optimale, la différence RSL-STSP est toujours nulle.
+"""
+
+# ╔═╡ fc7bbb3c-adbe-4c2c-99dd-ec045ef60d29
+exemple_phase_4_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_kruskal_histo_RSL.png")
+
+# ╔═╡ f4e892a9-7764-4a2d-b17c-b72a27b4054b
+md"""
+En fixant le paramètre de choix de l'algorithme Kruskal et en variant le choix de noeud de départ, on a trouvé que pour le choix du noeud 4 comme noeud de départ on trouve une différence RSL-STSP=8 qui présente une erreure relative = 50%."
+"""
+
+# ╔═╡ 4b6afeb3-e834-40a1-9775-983fa7330bec
+md"""###### Instances STSP
+"""
+
+# ╔═╡ ec374865-aaed-42ed-84b5-d792fdc030e6
+md"""
+Nous avons appliqué ces tests sur différentes instances du STSP. Les tournées affichées représentent les meilleures solutions obtenues. Pour chaque instance, nous avons également calculé et présenté les écarts entre le poids de la tournée trouvée et la valeur optimale, en tenant compte de chaque choix de nœud de départ. Ces écarts sont visualisés sous forme d'histogrammes, où chaque barre correspond à un choix de nœud de départ et sa hauteur représente l'écart relatif. Cette représentation graphique permet de comparer facilement l'influence des choix de départ sur la qualité des solutions et d'identifier les configurations optimales.
+"""
+
+# ╔═╡ ee426cc2-2b73-4ff4-86e6-071dc615163f
+bayg29_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_RSL.png")
+
+# ╔═╡ abae1ef0-ede4-46b6-b89b-62be456d0b43
+md"""
+Poids de la tournée = 2014
+"""
+
+# ╔═╡ 54919676-4761-4687-b689-f65fe3f84f43
+bayg29_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_kruskal_histo_RSL.png")
+
+# ╔═╡ a83a761e-48b7-4a22-9780-65aa8bb4c01a
+bayg29_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_prim_histo_RSL.png")
+
+# ╔═╡ 79e37672-c88c-406c-b21d-86547f5ab012
+bays29_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_RSL.png")
+
+# ╔═╡ 2555ad63-c985-473a-aeaa-2345779dd12c
+md"""
+Poids de la tournée = 2265
+"""
+
+# ╔═╡ 2169a82e-e4ee-47e7-99c4-fdba5a108a34
+bays29_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_kruskal_histo_RSL.png")
+
+# ╔═╡ 89299ea7-20c7-4142-ae81-a449e5364135
+bays29_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_prim_histo_RSL.png")
+
+# ╔═╡ 2bee2172-fd45-40e5-988d-918b8bd776c3
+fri26_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_RSL.png")
+
+# ╔═╡ 34d6d69e-e3d0-49a2-ae0a-aa42756c54df
+md"""
+Poids de la tournée =  = 1102
+"""
+
+# ╔═╡ bdf51e54-4832-4b49-98f3-5c30da28e445
+fri26_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_kruskal_histo_RSL.png")
+
+# ╔═╡ 9640e7d6-3652-4742-9718-53546370d797
+fri26_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_prim_histo_RSL.png")
+
+# ╔═╡ a0751eed-f813-45af-b0d3-3b9e7650f1f6
+dantzig42_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_RSL.png")
+
+# ╔═╡ 52a49af2-699b-466a-9a75-97b493ea3454
+md"""
+Poids de la tournée = 864
+"""
+
+# ╔═╡ a28072f8-f33c-4f8a-9fec-de5093dfa4e5
+dantzig42_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_kruskal_histo_RSL.png")
+
+# ╔═╡ 8f2ea57f-463a-4ad3-9af3-d177c5c03f15
+dantzig42_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_prim_histo_RSL.png")
+
+# ╔═╡ f2891a2c-51e3-40c8-a977-822d9150015e
+swiss42_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_RSL.png")
+
+# ╔═╡ 9d9a3e63-1a84-4990-81e1-e95e946a74fc
+md"""
+Poids de la tournée = 1591
+"""
+
+# ╔═╡ 20c133b4-dee4-4af3-a590-c52d80fbed88
+swiss42_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_kruskal_histo_RSL.png")
+
+# ╔═╡ 0ea3e45e-6690-465d-a1dd-72c5327a1a77
+swiss42_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_prim_histo_RSL.png")
+
+# ╔═╡ f8591f9e-1486-4c16-af0a-752d275716c2
+gr48_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_RSL.png")
+
+# ╔═╡ ab6b1d5b-33b8-4781-b95c-10dcfc7fddf4
+md"""
+Poids de la tournée = 6450
+"""
+
+# ╔═╡ b79a46c2-3eb3-43c5-955f-1115ddc62498
+gr48_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_kruskal_histo_RSL.png")
+
+# ╔═╡ 5e1680d4-309d-4399-8d83-969eb14e86ee
+gr48_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_prim_histo_RSL.png")
+
+# ╔═╡ bc1820e4-3b33-4f89-be3b-bc375b2d9177
+hk48_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_RSL.png")
+
+# ╔═╡ 4d2451fa-8ad1-4ae9-8563-3bddce6d1831
+md"""
+Poids de la tournée = 13939
+"""
+
+# ╔═╡ c049166c-48d0-460f-a738-9eca00943651
+hk48_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_kruskal_histo_RSL.png")
+
+# ╔═╡ c2235155-8b6a-4a43-a091-57b2ef402eb9
+hk48_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/hk48_prim_histo_RSL.png")
+
+# ╔═╡ 0a0ef835-5fe2-4686-a0f7-a5eccf179d43
+gr21_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_RSL.png")
+
+# ╔═╡ 3ec4ce98-bba6-4ff5-b3b1-531caf8d0a64
+md"""
+Poids de la tournée = 2998
+"""
+
+# ╔═╡ 6b48cf6d-838d-4d5b-9a6c-a695cd366272
+gr21_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_kruskal_histo_RSL.png")
+
+# ╔═╡ fa01fff0-d73a-4a99-bb7d-34f09cf5462f
+gr21_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_prim_histo_RSL.png")
+
+# ╔═╡ dc6c9142-e14e-4ed0-9776-94ea9fcd39f3
+gr24_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_RSL.png")
+
+# ╔═╡ 72ff33b5-e237-4446-be08-a4907c24afc3
+md"""
+Poids de la tournée = 1571
+"""
+
+# ╔═╡ 9be1ae70-946d-4d17-b531-b4bd3baff722
+gr24_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_kruskal_histo_RSL.png")
+
+# ╔═╡ a83d43d7-450f-4304-b49c-d471214e426d
+gr24_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_prim_histo_RSL.png")
+
+# ╔═╡ 74013101-1fd2-423d-b16e-eb8345bcc4f4
+brazil58_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_RSL.png")
+
+# ╔═╡ 4c1be493-351c-40b4-816d-26f05e908e3b
+md"""
+Poids de la tournée = 28380
+"""
+
+# ╔═╡ f3051fa3-4be2-44cd-b990-a29fee60452d
+brazil58_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_kruskal_histo_RSL.png")
+
+# ╔═╡ f74aa454-3951-4572-9e6d-05faa1748876
+brazil58_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/brazil58_prim_histo_RSL.png")
+
+# ╔═╡ 9ed02d84-1a68-47ef-afe7-4047c901dc78
+gr17_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_RSL.png")
+
+# ╔═╡ 4331354b-8066-4d66-b116-0bdc02a78277
+md"""
+Poids de la tournée = 2210
+"""
+
+# ╔═╡ e2197aba-03ad-4cc5-beb7-9240f5070511
+gr17_kruskal_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_kruskal_histo_RSL.png")
+
+# ╔═╡ 01fa5e56-74c3-4ead-a743-6443f3f64ab0
+gr17_prim_histo_RSL = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_prim_histo_RSL.png")
+
+# ╔═╡ 8bcb8920-d7e0-40e0-9b14-d9bdb4dd7d87
+md"""
+À partir de ces histogrammes et des comparaisons effectuées avec la fonction implémentée, nous avons identifié les meilleures combinaisons de paramètres qui produisent la tournée la plus proche de l'optimale, c'est-à-dire celle avec l'écart relatif minimal.
+
+Voici un récapitulatif des résultats dans le tableau suivant :
+"""
+
+# ╔═╡ 08821c58-86d9-4d0d-be95-55ecd08cd983
+md"""
+| Instance              | Choix des paramètres(Kruskal OU Prim, Noeude de départ)   | Meilleure tournée trouvée (Poids) | Erreur relative (%) |
+|:----------------------|:-----------------------:|:---------------------------------:|:-------------------:|
+| **Exemple simple**    | (Kruskal,1)            | 16.0                             | 0.00                   |
+|     | (Prim,1)               | 16.0                             | 0.00                   |
+| **bayg29**            | (Kruskal,17)           | 2014.0                           | 25.09                  |
+|            | (Prim,17)              | 2014.0                           | 25.09                  |
+| **bays29**            | (Kruskal,14)           | 2265.0                           | 12.12                   |
+|           | (Prim,14)              | 2265.0                           | 12.12                   |
+| **fri26**             | (Kruskal,12)           | 1102.0                           | 17.60                   |
+|             | (Prim,12)              | 1102.0                           | 17.60                   |
+| **dantzig42**         | (Kruskal,29)           | 872.0                            | 24.74                |
+|          | (Prim,21)              | 864.0                            | 23.60                   |
+| **swiss42**           | (Kruskal,32)           | 1591.0                           | 24.98                   |
+|            | (Prim,32)              | 1591.0                           | 24.98                   |
+| **gr48**              | (Kruskal,4)            | 6702.0                           | 32.81                |
+|               | (Prim,4)               | 6450.0                           | 27.82                   |
+| **hk48**              | (Kruskal,20)           | 13939.0                          | 21.62                   |
+|               | (Prim,20)              | 13939.0                          | 21.62                   |
+| **gr21**              | (Kruskal,14)           | 2998.0                           | 10.74                   |
+|               | (Prim,14)              | 2998.0                           | 10.74                   |
+| **gr24**              | (Kruskal,24)           | 1571.0                           | 23.50                   |
+|              | (Prim,24)              | 1571.0                           | 23.50                   |
+| **brazil58**          | (Kruskal,36)           | 28380.0                          | 11.75                   |
+|           | (Prim,36)              | 28380.0                          | 11.75                   |
+| **gr17**              | (Kruskal,7)            | 2210.0                           | 5.99                   |
+|               | (Prim,7)               | 2210.0                           | 5.99                   |
+
+
+"""
+
+# ╔═╡ 0be058ad-f74b-4410-bab8-db7621811cb5
+md"""#### Question 2 : implémenter l’algorithme de montée de Held et Karp (HK) 
+
+
+"""
+
+# ╔═╡ d0afedd2-5f0b-4327-8000-61f20d5f447f
+md""" L’algorithme de Held et Karp (HK) a été inspiré de l’algorithme de trouvant dans l’article "An Effective Implementation of the Lin-Kernighan Traveling Salesman Heuristic" à la page 25. Ce dernier détermine une tournée proche de la tournée optimale et prend en argument, le fichier tsp et les paramètres comme le noeud de départ, le pas, un compteur (compteur_max) et une limite sur le nombre d’itérations.
+
+On applique alors un algorithme permettant de trouver un sous arbre minimal sur le graphe considéré privé du noeud de depart. Les deux méthodes utilisées ici étaient la méthode de Kruskal et la méthode de Prim. À la fin de ceci, nous obtenons un 1-tree.
+
+Ensuite, on génère des pénalités pour chaque arête. On calcule également le gradient grâce aux dégrées des noeuds.
+
+Puis, on calcule le poids du 1-tree considéré. 
+
+Ensuite, on réalise une méthode de montée de gradient pour maximiser le poids décalé avec les pénalités. Pour ensuite itérer de la même manière en régénérant un one tree et en gardant à chaque itération le meilleur 1-tree trouvé.
+
+Le noeud de départ représente le noeud sur lequel la tournée se finit, le pas représente le pas du gradient, le compteur représente un contrôle sur l’amélioration de la recherche et limite représente le nombre d’itérations maximale effectuée par l’algorithme HK que nous avons implémenté.
+
+De plus, nous avons également implémenté la manière dont les paramètres sont modifiés pour permettre une recherche efficace décrite dans l’article à la page 26. Ceci permet de concentrer la recherche sur des moments privilégiés pour permettre l’obtention de meilleurs résultats.
+
+Enfin nous avons testé notre algorithme sur les différentes instances de TSP montrant à chaque fois de meilleurs résultats qu’avec la méthode de RSL.
+
+"""
+
+# ╔═╡ f19af153-7fbc-41fc-abec-b267adc7b6aa
+"""
+    Algorithme_HK(graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64)
+
+Implémente l'algorithme HK.
+
+# Arguments
+- `graph_nodes::Dict{Int64, Vector{Float64}}`: Vecteur représentant les noeuds dans le graphe.
+- `graph_edges::Vector{Vector{Int64}}`: Vecteur représentant les arêtes dans le graphe.
+- `edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}`: Dictionnaire stockant les poids des arêtes du graphe.
+- `racine::Int64`: Le nœud de départ.
+- `algo_Arbre_minimal`: Un entier (1:Kruskal, 2:Prim) qui indique la méthode pour trouver l'arbre de recouvrement minimal d'un graphe.
+- `pas::Float64`: Le pas de HK
+- `compteur_max::Int64`: Un compteur qui indique qu'il faur arrêter Hk si un valeur n'a pas été modifié pendant cette période. 
+- `limite::Int64`: Une limite sur le nombre d'itération.
+# Renvoie
+- La tournée minimal du graphe du départ et son poids
+"""
+begin
+	function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::Vector{Vector{Int64}}, edge_weights_dict::Dict{Tuple{Int64, Int64}, Float64}, racine::Int64, algo_Arbre_minimal::Int64, pas::Float64, compteur_max::Int64, limite::Int64)
+	    
+	    # Conversion du dictionnaire en nombre BigFloat pour mieux gérer les grands nombres
+	    edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+	
+	    # Ajoute les symétries dans les poids du dictionnaire pour que la méthode soient fonctionnelle pour les instances données
+	    add_symmetry!(edge_weights_dict)
+	
+	    # Copie du dictionnaire car ce dernier va être modifié avec la pénalisation
+	    edge_weights_dict_copy = copy(edge_weights_dict) ; 
+	
+	    # Définition d'une période considérée
+	    period = floor(Int, length(graph_edges) / 2)
+	
+	    # On complète graph_edges pour avoir l'ensemble des arêtes et que la méthode soit fonctionnelle pour l'ensemble des instances.
+	    graph_edges = complete_graph_edges(graph_edges)
+	
+	    # Initialisation du 1-tree et des autres paramètres
+	    one_tree, poids_minimal_one_tree = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+	    k = 0
+	    pi_k = ones(BigFloat, nb_edges(one_tree));
+	    W = poids_minimal_one_tree - 2 * sum(pi_k)
+	
+	    # Initialisation du 1-tree qui va varier
+	    one_tree_k = Graph("one_tree_k", Node{Int64}[], Edge{Int64, Int64}[])
+	
+	    # Initialisation du gradient
+	    d_k = [get_degree(node, one_tree) for node in nodes(one_tree)]
+	    v_k_et = d_k-ones(Int, nb_nodes(one_tree))*2;
+	    one_tree_et = one_tree;
+	    poids_minimal_one_tree_et = poids_minimal_one_tree;
+	    
+	    # Initialisation du gradient à deux étapes précédentes
+	    v_k_1 = d_k-ones(Int, nb_nodes(one_tree))*2;
+	
+	    # Initialisation des variables de gestion de la recherche
+	    compteur = 0;
+	    compteur_period = 0;
+	
+	    while k < limite
+	
+	        # On limite la recherche si la recherche a durée plus longtemps qu'une certaine période
+	        if compteur_period > period
+	            pas /= 2
+	            period = floor(Int, length(period) / 2)
+	        end
+	
+	        # Mis à jour du 1-tree et de son poids pendant la boucle
+	        if k == 0
+	            one_tree_k, poids_minimal_one_tree_k = one_tree, poids_minimal_one_tree
+	        else
+	            one_tree_k, poids_minimal_one_tree_k = get_one_tree(graph_nodes, graph_edges, edge_weights_dict, racine, algo_Arbre_minimal)
+	        end
+	
+	        # Calcul du poids décalé à cause des pénalités
+	        w_pi_k = poids_minimal_one_tree_k - 2 * sum(pi_k)
+	        
+	        # Obtention du max des poids décalé
+	        W = max(W,w_pi_k)
+	
+	        # S'il le poids décalé a évolué à la dernière étape, alors, on double la période
+	        if compteur_period == period && w_pi_k == W
+	            period = 2*period
+	        end
+	        
+	        # Calcul du degré des noeuds du 1-tree considéré
+	        d_k = [get_degree(node, one_tree_k) for node in nodes(one_tree_k)]
+	        
+	        # Calcul du gradient
+	        v_k = d_k-ones(Int, nb_nodes(one_tree_k))*2;
+	
+	        # Si la somme en valeur absolu est meilleur que celle déjà connue, alors on met à jour
+	        if sum(abs.(v_k)) < sum(abs.(v_k_et))
+	            one_tree_et = one_tree_k;
+	            poids_minimal_one_tree_et = poids_minimal_one_tree_k;
+	            v_k_et = v_k;
+	            compteur = 0;
+	        else
+	            compteur += 1
+	        end
+	
+	        # Conditions d'arrêt
+	        if v_k == zeros(Int,nb_nodes(one_tree_k)) || compteur > compteur_max || pas == 0.0 || period == 0
+	            break
+	        end
+	
+	        # Mis à jour des pénalités
+	        pi_k += pas*(0.7*v_k+0.3*v_k_1);
+	
+	        # Retenu du gradient précédent
+	        v_k_1 = v_k
+	
+	        i = 1;
+	        
+	        # On met à jour le dictionnaire des poids suivant la pénalité
+	        for edge in edges(one_tree_k)
+	            couple_1 = (parse(Int,name(noeud_1(edge))), parse(Int,name(noeud_2(edge))))
+	            couple_2 = (parse(Int,name(noeud_2(edge))), parse(Int,name(noeud_1(edge))))
+	            if haskey(edge_weights_dict, couple_1)
+	                edge_weights_dict[couple_1] += pi_k[i]
+	            end
+	            if haskey(edge_weights_dict, couple_2)
+	                edge_weights_dict[couple_2] += pi_k[i]
+	            end
+	            i += 1
+	        end
+	
+	        k += 1 ;
+	        compteur_period += 1
+	
+	    end
+	
+	    # Ici on reprend la même méthode que dans l'algorithme RSL    
+	    Arbre_minimal_dict = Dict{Int, Vector{Int}}()
+	    # Parcourir chaque arête
+	    for edge in edges(one_tree_et)
+	        # Extraire les deux nœuds connectés par l'arête
+	        node1 = parse(Int, edge.node_1.name)
+	        node2 = parse(Int, edge.node_2.name)
+	
+	        # Ajouter node2 comme voisin de node1
+	        if !haskey(Arbre_minimal_dict, node1)
+	            Arbre_minimal_dict[node1] = []
+	        end
+	        push!(Arbre_minimal_dict[node1], node2)
+	
+	        # Ajouter node1 comme voisin de node2
+	        if !haskey(Arbre_minimal_dict, node2)
+	            Arbre_minimal_dict[node2] = []
+	        end
+	        push!(Arbre_minimal_dict[node2], node1)
+	    end
+	
+	    visited::Vector{Int64} = []
+	    parcours_preordre(Arbre_minimal_dict, racine, visited)
+	    push!(visited, racine)
+	
+	    Poids_tournee = 0.0  # Initialiser le poids total de la tournée
+	
+	    # Parcourir les nœuds de la tournée dans 'visited' et additionner les poids des arêtes
+	    for i in 1:(length(visited) - 1)
+	        node1 = visited[i]
+	        node2 = visited[i + 1]
+	        # println("(node1, node2) = ", (node1, node2))
+	        # println("edge_weights_dict_copy = ", edge_weights_dict_copy[(node1, node2)])
+	        # Ajouter le poids de l'arête entre node1 et node2
+	        if (node1, node2) in keys(edge_weights_dict_copy)
+	            Poids_tournee += edge_weights_dict_copy[(node1, node2)]
+	        elseif (node2, node1) in keys(edge_weights_dict_copy)
+	            Poids_tournee += edge_weights_dict_copy[(node2, node1)]
+	        else
+	            error("Le graphe n'est pas complet !")
+	        end
+	    end
+	    Tournee_HK = Graph("Tournee_HK", Node{Int64}[], Edge{Int64, BigFloat}[])
+	    graph_edges = complete_graph_edges(graph_edges)
+	
+	    # Creation du graphe
+	    for i in 1:(length(visited) - 1)
+	        weight = edge_weights_dict_copy[(visited[i], visited[i+1])]
+	        node1 = string(visited[i])
+	        node2 = string(visited[i+1])
+	        # Ajout du nœud1 dans l'arbre
+	        add_node!(Tournee_HK, Node(node1, 0))
+	        # Ajout de l'arete dans l'arbre
+	        arete = Edge(node1*"--->"*node2, weight, Node(node1, 0), Node(node2, 0))
+	        add_edge!(Tournee_HK, arete)
+	        # Ajout du nœud2 dans l'arbre
+	        add_node!(Tournee_HK, Node(node2, 0))
+	
+	    end
+	
+	    if algo_Arbre_minimal == 1
+	        println(" ")
+	        println("Avec la méthode Kruskal !")
+	    end
+	    
+	    if algo_Arbre_minimal == 2
+	        println(" ")
+	        println("Avec la méthode Prim !")
+	    end
+	
+	    println("Ordre de la tournée HK : ", visited)
+	
+	    return Tournee_HK, Poids_tournee
+	end
+end	
+
+
+# ╔═╡ 99be5fd3-1f23-4f03-9c20-17ab1c277d6f
+md"""#### Question 3 : Test de l'implémentation"""
+
+# ╔═╡ 28eb763f-a049-475d-bc0e-e2d13f76b3be
+md"""
+Comme pour RSL, nous avons explorer l'impact du choix du nœud de départ sur les performances de l'algorithme HK pour résoudre des instances du STSP. En testant chaque nœud comme point de départ, elle évalue les poids des tournées générées pour différentes valeurs de pas. Les résultats permettent d'identifier le meilleur nœud de départ qui minimise la différence de poids par rapport à la solution optimale, pour chaque choix d'algorithme (Prim et Kruskal).
+"""
+
+# ╔═╡ bdd4f72e-a991-4ce1-95b1-ce15aec3cda0
+"""
+    comparaison_HK(filename::String, valeur_comp::Int64)
+
+# Arguments
+- `filename::String`: Nom de l'instance considéré.
+- `valeur_comp::Int64` : Valeur limite de la différence entre le poids trouvé et le point optimaml
+
+# Permet d'appliquer la méhtode HK suivant le paramètre du noeud de départ, du pas et de la méthode utilisée pour réaliser une recherche d'optimale et renvoie:
+- `best_i_prim`: Meilleur noeud trouvé avec la méthode de Prim
+- `best_poids_prim` : Meilleur poids trouvé avec la méthode de Prim
+- `best_pas_prim` : Meilleur pas trouvé avec la méthode de Prim
+- `best_i_kruskal` : Meilleur noeud trouvé avec la méthode de Kruskal
+- `best_poids_kruskal`: Meilleur poids trouvé avec la méthode de Kruskal
+- `best_pas_kruskal` : Meilleur pas trouvé avec la méthode de Kruskal
+"""
+begin
+	function comparaison_HK(filename::String, valeur_comp::Int64)
+	    
+	    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
+	
+	    start_node_vec = [i for i in 1:length(graph_edges)]
+	
+	    pas_vec = [0.1:0.1:1; 1:0.2:2; 3:2:8; 9; 10:10:50]
+	
+	    dif_val_tournee_prim = Matrix{Float64}(undef, length(start_node_vec), length(pas_vec))
+	    stsp_weight = get_instance_weight(filename)
+	
+	    best_i_prim = nothing
+	    best_pas_prim = nothing
+	    best_poids_prim = Inf
+	
+	    for (i, start_node) in enumerate(start_node_vec)
+	        for (j, pas) in enumerate(pas_vec)
+	            _, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 1, pas, 2500, 100000)
+	            dif_val_tournee_prim[i, j] = poids_minimal - stsp_weight
+	            if poids_minimal < best_poids_prim
+	                best_i_prim = i 
+	                best_pas_prim = pas
+	                best_poids_prim = poids_minimal
+	            end
+	        end
+	    end
+	
+	    heatmap(
+	        pas_vec,                    
+	        start_node_vec,            
+	        dif_val_tournee_prim,   
+	        color=cgrad([:green,:yellow]), 
+	        clim = (0,valeur_comp),
+	        xlabel="pas", ylabel="Noeud de départ",
+	        title="Différences de poids (HK - STSP) avec Prim",
+	        xscale=:log10 
+	    )
+
+	
+	    println("best_i = ", best_i_prim)
+	    println("best_pas = ", best_pas_prim)
+	    println("best_poids = ", best_poids_prim)
+	
+	    dif_val_tournee_kruskal = Matrix{Float64}(undef, length(start_node_vec), length(pas_vec))
+	    stsp_weight = get_instance_weight(filename)
+	
+	    best_i_kruskal = nothing
+	    best_pas_kruskal = nothing
+	    best_poids_kruskal = Inf
+	
+	    for (i, start_node) in enumerate(start_node_vec)
+	        for (j, pas) in enumerate(pas_vec)
+	            _, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 2, pas, 2500, 100000)
+	            dif_val_tournee_kruskal[i, j] = poids_minimal - stsp_weight
+	            if poids_minimal < best_poids_kruskal
+	                best_i_kruskal = i 
+	                best_pas_kruskal = pas
+	                best_poids_kruskal = poids_minimal
+	            end
+	        end
+	    end
+	
+	    heatmap(
+	        pas_vec,                    
+	        start_node_vec,            
+	        dif_val_tournee_kruskal,   
+	        color=cgrad([:green,:yellow]), 
+	        clim = (0,valeur_comp),
+	        xlabel="pas", ylabel="Noeud de départ",
+	        title="Différences de poids (HK - STSP) avec Kruskal",
+	        xscale=:log10 
+	    )
+	
+	    # Enregistrement de la figure
+	    #savefig("C:/Users/Giorgi/Desktop/dossier_latex/Projet_MTH/"*filename*"_kruskal.png")
+	
+	    println("best_i = ", best_i_kruskal)
+	    println("best_pas = ", best_pas_kruskal)
+	    println("best_poids = ", best_poids_kruskal)
+	
+	    return best_i_prim, best_pas_prim, best_poids_prim, best_i_kruskal, best_pas_kruskal, best_poids_kruskal
+	
+	end
+end
+
+
+# ╔═╡ e51967b6-7b31-42be-ac11-e288c7e135dc
+md"""
+Les données sont visualisées sous forme de cartes thermiques pour analyser les variations liées au choix du nœud de départ. Nous avons fixé le compteur_max à 2500 et la limite à 100 000.
+
+Après cette analyse et comparaison, nous avons pu générer et afficher les tournées les plus proches de l'optimal. Vous les trouverez ci-dissous.
+"""
+
+# ╔═╡ 0c73dd9e-c3cc-418c-ac09-b72398233ed2
+exemple_phase4_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase4_HK.png")
+
+# ╔═╡ d09d7a36-b427-4e68-b090-f5bee5c46f2f
+md"""
+Poids de la tournée = 16
+"""
+
+# ╔═╡ d9fb124b-e4ff-40a4-8d03-dc837e056bdc
+exemple_phase_4_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_kruskal.png")
+
+# ╔═╡ 70b26b41-d078-415e-980d-52fb3045eb3a
+exemple_phase_4_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/exemple_phase_4_prim.png")
+
+# ╔═╡ 93cde914-f520-48e0-a8de-f316b105c298
+bayg29_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_HK.png")
+
+# ╔═╡ 311617f9-20ca-455f-b5a7-ff48f991c25c
+md"""
+Poids de la tournée = 1682
+"""
+
+# ╔═╡ 0dfd3a2d-ccdc-4241-af67-0845555e7a63
+bayg29_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_kruskal_v1.png")
+
+# ╔═╡ ee4aa98c-cccd-4d91-a465-b8b92e7928be
+bayg29_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bayg29_prim_v1.png")
+
+# ╔═╡ 3b8f366a-2dea-46dd-9214-52300dced6e1
+bays29_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_HK.png")
+
+# ╔═╡ 58df222c-cc99-4c51-9f70-04f2b8b24709
+md"""
+Poids de la tournée = 2174
+"""
+
+# ╔═╡ 5a7341f5-56c0-40b7-a1bd-5bb653b6eb33
+bays29_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_kruskal_v1.png")
+
+# ╔═╡ 5fcccec6-940a-4fca-8486-5ff62d1552cf
+bays29_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/bays29_prim_v1.png")
+
+# ╔═╡ 6ab4e867-30c8-4aee-9101-8f9683f9f012
+fri26_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_HK.png")
+
+# ╔═╡ 98d61eba-7aa4-4e8e-a88a-b6bee8d29bcf
+md"""
+Poids de la tournée = 986
+"""
+
+# ╔═╡ 0706c942-31a2-4285-96d8-8f549fbb0375
+fri26_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_kruskal.png")
+
+# ╔═╡ 78b47e33-5f19-4959-b7b1-8ffb24b35d43
+fri26_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/fri26_prim.png")
+
+# ╔═╡ 0f742e73-92f5-474a-8752-27edb445c3a8
+gr17_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_HK.png")
+
+# ╔═╡ fd6f19e7-2987-4425-acf0-c9e41b698bf7
+md"""
+Poids de la tournée = 2152
+"""
+
+# ╔═╡ 8e27505d-56cb-48ef-bad7-cafe48afb995
+gr17_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_kruskal.png")
+
+# ╔═╡ 9aae8c8f-67b7-41a5-ba03-980b58b9d0fa
+gr17_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr17_prim.png")
+
+# ╔═╡ 4d6602fd-ac40-41c1-b03e-8125ec4380e0
+dantzig42_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_HK.png")
+
+# ╔═╡ 7721b502-bd16-4bcb-abd0-5f48f22b856e
+md"""
+Poids de la tournée = 781
+"""
+
+# ╔═╡ 882f42f5-b19a-4176-ab75-f79ddcd59397
+dantzig42_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_kruskal.png")
+
+# ╔═╡ 99eb9777-4ced-46af-952a-fd7a1f682d56
+dantzig42_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/dantzig42_prim.png")
+
+# ╔═╡ 89f03118-2147-4bf0-a4f2-6e1aab0a8cef
+swiss42_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_HK.png")
+
+# ╔═╡ 6616be01-77e9-4213-936b-a8987c0174bb
+md"""
+Poids de la tournée = 1459
+"""
+
+# ╔═╡ cc502f08-eee5-4c5f-9025-a5c6c67d5e0f
+swiss42_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_kruskal.png")
+
+# ╔═╡ eb4bc48d-78ff-4135-b047-b0589759fd5b
+swiss42_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/swiss42_prim.png")
+
+# ╔═╡ 4f3a7311-579f-4f5f-a45e-ca0aa6873214
+gr48_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_HK.png")
+
+# ╔═╡ 2b2a2747-b8c2-4406-9155-b1d7526a7710
+md"""
+Poids de la tournée = 5777
+"""
+
+# ╔═╡ 0a288078-4ecc-41e3-95ed-ad38f7864346
+gr48_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_kruskal.png")
+
+# ╔═╡ d6a45a08-5e2b-44d4-aa36-5007a0e44483
+gr48_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr48_prim.png")
+
+# ╔═╡ 4b7c2fde-50d8-40f3-8962-bad1e71d7781
+gr21_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_HK.png")
+
+# ╔═╡ e8341c94-f069-42f4-8da1-262c8340e2a5
+md"""
+Poids de la tournée = 2823
+"""
+
+# ╔═╡ c562b2ad-16c2-4249-b538-a2632caea5f0
+gr21_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_kruskal.png")
+
+# ╔═╡ 39f1471a-2a19-4956-972f-40cc207e8eaa
+gr21_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr21_prim.png")
+
+# ╔═╡ a2a57d31-ef43-41e5-9067-e2575ad7715d
+gr24_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_HK.png")
+
+# ╔═╡ f9e1d2bc-12dd-4f65-a0b1-2a1658971193
+md"""
+Poids de la tournée = 1299
+"""
+
+# ╔═╡ 8037775b-822d-4816-b873-72b1850208af
+gr24_kruskal_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_kruskal.png")
+
+# ╔═╡ 5b07c3b9-63b6-4bd0-ab44-6fd81ce1037c
+gr24_prim_histo_HK = load("C:/Users/olfam/mth6412b-starter-code/src/figures/gr24_prim.png")
+
+# ╔═╡ 5bf95e46-6246-4fa1-b5fa-b66342d163cf
+md"""
+À partir de ces cartes thermiques et des comparaisons effectuées, nous avons identifié les meilleures combinaisons de paramètres qui produisent la tournée la plus proche de l'optimale, c'est-à-dire celle avec l'écart relatif minimal.
+
+Voici un récapitulatif des résultats dans le tableau suivant :
+
+"""
+
+# ╔═╡ 6127cc66-ef9a-42e2-a089-21772cf1dd29
+md"""
+| Instance              | Choix des paramètres(Kruskal OU Prim, Noeud de départ, Pas)   | Meilleure tournée trouvée (Poids) | Erreur relative (%) |
+|:----------------------|:-----------------------:|:-----------------------------:|:-------------------:|
+| **Exemple simple**  | (Kruskal, 1, 0.1)                 | 16.0                       | 0
+|   | (Prim, 1, 0.1)                 | 16.0                       | 0
+| **bayg29**           | (Kruskal, 16, 1.2)                | 1682.0                      | 4.47
+|            | (Prim, 23, 0.4)                  | 1750.0                      | 8.69
+| **bays29**           | (Kruskal, 16, 1.6)                | 2174.0                      | 9.35
+|            | (Prim, 5, 1.1)                   | 2209.0                      | 9.35
+| **fri26**            | (Kruskal, 11, 0.3)                | 1010.0                      | 7.79
+|             | (Prim, 2, 0.1)                   | 986.0                       | 5.22
+| **gr17**             | (Kruskal, 4, 0.2)                 | 2152.0                      | 3.21
+|             | (Prim, 16, 0.8)                  | 2203.0                      | 5.65
+| **dantzig42**        | (Kruskal, 30, 0.6)                | 781.0                       | 11.73
+|         | (Prim, 10, 0.6)                  | 791.0                       | 13.16
+| **swiss42**          | (Kruskal, 30, 0.8)                | 1482.0                      | 16.41
+|           | (Prim, 39, 0.1)                  | 1459.0                      | 14.61
+| **gr48**             | (Kruskal, 26, 1.4)                | 5777.0                      | 14.48
+|             | (Prim, 40, 0.2)                  | 6048.0                      | 19.85
+| **gr21**             | (Kruskal, 21, 7.0)                | 2834.0                      | 4.69
+|             | (Prim, 13, 10.0)                  | 2823.0                      | 4.28
+| **gr24**             | (Kruskal, 13, 0.6)                | 1435.0                      | 12.81
+|             | (Prim, 23, 10.0)                  | 1299.0                      | 2.12
+                 |
+
+
+"""
+
+# ╔═╡ 3b50693e-a48e-47df-9305-064955a02d7a
+md"""#### Conclusion"""
+
+# ╔═╡ f6aadfe0-2161-4ed7-8856-3ffa8fcbfb5d
+md"""
+En comparant les résultats obtenus avec ceux de la méthode RSL, on remarque une nette amélioration en termes d'écart relatif, démontrant la robustesse et l'efficacité de l’approche HK dans la recherche des solutions optimales ou quasi-optimales. La mojorités des instances sont plus proche de l'optimal de moins de 10% et de moins de 5%.
+
+Voici un récapitulatif des résultats dans le tableau suivant :
+
+"""
+
+# ╔═╡ 3b5cfa16-bc91-42e3-bc44-5e53b0cb945e
+md"""
+| Instance      | Erreur relative (RSL) | Erreur relative (HK) |
+|:--------------|:----------------------:|:---------------------:|
+| bayg29         | 25.09%               | 4.47%                |
+| bays29         | 12.12%               | 9.35%                |
+| fri26          | 17.60%               | 5.22%                |
+| dantzig42      | 24.74%               | 11.73%               |
+| swiss42        | 24.98%               | 14.61%               |
+| gr48           | 32.81%               | 14.48%               |
+| gr21           | 10.74%               | 4.28%                |
+| gr24           | 23.50%               | 2.12%                |
+| gr17           | 5.99%                | 3.21%                |
+"""
+
+# ╔═╡ 21a21213-344d-4fa0-87cf-0e72abeb6999
+md"""####  Exécution du code sur GitHub"""
+
+# ╔═╡ 19190605-1636-4d7e-945c-04fad376a102
+md"""
+Pour exécuter le code rendez-vous, dans le fichier mth6412b-starter-code.
+
+Dans le terminal de commande de Julia taper les commandes suivantes :
+
+« ] » puis « activate . » puis « instantiate » puis revenez dans le terminal de Julia puis tapez : « ; » puis « cd src » puis vous pourrez exécuter le fichier main.jl.
+
+Dans ce fichier, vous pouvez afficher les chemins proches de l’optimal pour chacune des méthodes et les instances TSP décrites. 
+
+Aussi, vous pourrez exécuter les fonctions pour la recherche des paramètres optimaux et enfin afficher les résultats comparés aux valeurs optimales exprimée en erreur relative.
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000001
+PLUTO_PROJECT_TOML_CONTENTS = """
+[deps]
+Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+Images = "~0.26.1"
+LaTeXStrings = "~1.3.1"
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000002
+PLUTO_MANIFEST_TOML_CONTENTS = """
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.10.5"
+manifest_format = "2.0"
+project_hash = "3d9712a710855342b45696cfd8cae0e80aa13636"
+
+[[deps.AbstractFFTs]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "d92ad398961a3ed262d8bf04a1a2b8340f915fef"
+uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+version = "1.5.0"
+weakdeps = ["ChainRulesCore", "Test"]
+
+    [deps.AbstractFFTs.extensions]
+    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
+    AbstractFFTsTestExt = "Test"
+
+[[deps.Adapt]]
+deps = ["LinearAlgebra", "Requires"]
+git-tree-sha1 = "6a55b747d1812e699320963ffde36f1ebdda4099"
+uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+version = "4.0.4"
+weakdeps = ["StaticArrays"]
+
+    [deps.Adapt.extensions]
+    AdaptStaticArraysExt = "StaticArrays"
+
+[[deps.ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.1"
+
+[[deps.ArnoldiMethod]]
+deps = ["LinearAlgebra", "Random", "StaticArrays"]
+git-tree-sha1 = "d57bd3762d308bded22c3b82d033bff85f6195c6"
+uuid = "ec485272-7323-5ecc-a04f-4719b315124d"
+version = "0.4.0"
+
+[[deps.ArrayInterface]]
+deps = ["Adapt", "LinearAlgebra"]
+git-tree-sha1 = "3640d077b6dafd64ceb8fd5c1ec76f7ca53bcf76"
+uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
+version = "7.16.0"
+
+    [deps.ArrayInterface.extensions]
+    ArrayInterfaceBandedMatricesExt = "BandedMatrices"
+    ArrayInterfaceBlockBandedMatricesExt = "BlockBandedMatrices"
+    ArrayInterfaceCUDAExt = "CUDA"
+    ArrayInterfaceCUDSSExt = "CUDSS"
+    ArrayInterfaceChainRulesExt = "ChainRules"
+    ArrayInterfaceGPUArraysCoreExt = "GPUArraysCore"
+    ArrayInterfaceReverseDiffExt = "ReverseDiff"
+    ArrayInterfaceSparseArraysExt = "SparseArrays"
+    ArrayInterfaceStaticArraysCoreExt = "StaticArraysCore"
+    ArrayInterfaceTrackerExt = "Tracker"
+
+    [deps.ArrayInterface.weakdeps]
+    BandedMatrices = "aae01518-5342-5314-be14-df237901396f"
+    BlockBandedMatrices = "ffab5731-97b5-5995-9138-79e8c1846df0"
+    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+    CUDSS = "45b445bb-4962-46a0-9369-b4df9d0f772e"
+    ChainRules = "082447d4-558c-5d27-93f4-14fc19e9eca2"
+    GPUArraysCore = "46192b85-c4d5-4398-a991-12ede77f4527"
+    ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    StaticArraysCore = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
+    Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
+
+[[deps.Artifacts]]
+uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+
+[[deps.AxisAlgorithms]]
+deps = ["LinearAlgebra", "Random", "SparseArrays", "WoodburyMatrices"]
+git-tree-sha1 = "01b8ccb13d68535d73d2b0c23e39bd23155fb712"
+uuid = "13072b0f-2c55-5437-9ae7-d433b7a33950"
+version = "1.1.0"
+
+[[deps.AxisArrays]]
+deps = ["Dates", "IntervalSets", "IterTools", "RangeArrays"]
+git-tree-sha1 = "16351be62963a67ac4083f748fdb3cca58bfd52f"
+uuid = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
+version = "0.4.7"
+
+[[deps.Base64]]
+uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+
+[[deps.BitTwiddlingConvenienceFunctions]]
+deps = ["Static"]
+git-tree-sha1 = "f21cfd4950cb9f0587d5067e69405ad2acd27b87"
+uuid = "62783981-4cbd-42fc-bca8-16325de8dc4b"
+version = "0.1.6"
+
+[[deps.CEnum]]
+git-tree-sha1 = "389ad5c84de1ae7cf0e28e381131c98ea87d54fc"
+uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+version = "0.5.0"
+
+[[deps.CPUSummary]]
+deps = ["CpuId", "IfElse", "PrecompileTools", "Static"]
+git-tree-sha1 = "5a97e67919535d6841172016c9530fd69494e5ec"
+uuid = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
+version = "0.2.6"
+
+[[deps.CatIndices]]
+deps = ["CustomUnitRanges", "OffsetArrays"]
+git-tree-sha1 = "a0f80a09780eed9b1d106a1bf62041c2efc995bc"
+uuid = "aafaddc9-749c-510e-ac4f-586e18779b91"
+version = "0.2.2"
+
+[[deps.ChainRulesCore]]
+deps = ["Compat", "LinearAlgebra"]
+git-tree-sha1 = "3e4b134270b372f2ed4d4d0e936aabaefc1802bc"
+uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+version = "1.25.0"
+weakdeps = ["SparseArrays"]
+
+    [deps.ChainRulesCore.extensions]
+    ChainRulesCoreSparseArraysExt = "SparseArrays"
+
+[[deps.CloseOpenIntervals]]
+deps = ["Static", "StaticArrayInterface"]
+git-tree-sha1 = "05ba0d07cd4fd8b7a39541e31a7b0254704ea581"
+uuid = "fb6a15b2-703c-40df-9091-08a04967cfa9"
+version = "0.1.13"
+
+[[deps.Clustering]]
+deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase"]
+git-tree-sha1 = "9ebb045901e9bbf58767a9f34ff89831ed711aae"
+uuid = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+version = "0.15.7"
+
+[[deps.ColorSchemes]]
+deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
+git-tree-sha1 = "b5278586822443594ff615963b0c09755771b3e0"
+uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+version = "3.26.0"
+
+[[deps.ColorTypes]]
+deps = ["FixedPointNumbers", "Random"]
+git-tree-sha1 = "b10d0b65641d57b8b4d5e234446582de5047050d"
+uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
+version = "0.11.5"
+
+[[deps.ColorVectorSpace]]
+deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "SpecialFunctions", "Statistics", "TensorCore"]
+git-tree-sha1 = "600cc5508d66b78aae350f7accdb58763ac18589"
+uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
+version = "0.9.10"
+
+[[deps.Colors]]
+deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
+git-tree-sha1 = "362a287c3aa50601b0bc359053d5c2468f0e7ce0"
+uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
+version = "0.12.11"
+
+[[deps.CommonWorldInvalidations]]
+git-tree-sha1 = "ae52d1c52048455e85a387fbee9be553ec2b68d0"
+uuid = "f70d9fcc-98c5-4d4a-abd7-e4cdeebd8ca8"
+version = "1.0.0"
+
+[[deps.Compat]]
+deps = ["TOML", "UUIDs"]
+git-tree-sha1 = "8ae8d32e09f0dcf42a36b90d4e17f5dd2e4c4215"
+uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
+version = "4.16.0"
+weakdeps = ["Dates", "LinearAlgebra"]
+
+    [deps.Compat.extensions]
+    CompatLinearAlgebraExt = "LinearAlgebra"
+
+[[deps.CompilerSupportLibraries_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "1.1.1+0"
+
+[[deps.ComputationalResources]]
+git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
+uuid = "ed09eef8-17a6-5b46-8889-db040fac31e3"
+version = "0.3.2"
+
+[[deps.CoordinateTransformations]]
+deps = ["LinearAlgebra", "StaticArrays"]
+git-tree-sha1 = "f9d7112bfff8a19a3a4ea4e03a8e6a91fe8456bf"
+uuid = "150eb455-5306-5404-9cee-2592286d6298"
+version = "0.6.3"
+
+[[deps.CpuId]]
+deps = ["Markdown"]
+git-tree-sha1 = "fcbb72b032692610bfbdb15018ac16a36cf2e406"
+uuid = "adafc99b-e345-5852-983c-f28acb93d879"
+version = "0.3.1"
+
+[[deps.CustomUnitRanges]]
+git-tree-sha1 = "1a3f97f907e6dd8983b744d2642651bb162a3f7a"
+uuid = "dc8bdbbb-1ca9-579f-8c36-e416f6a65cce"
+version = "1.0.2"
+
+[[deps.DataAPI]]
+git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
+uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
+version = "1.16.0"
+
+[[deps.DataStructures]]
+deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
+git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
+uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+version = "0.18.20"
+
+[[deps.Dates]]
+deps = ["Printf"]
+uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
+[[deps.Distances]]
+deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "66c4c81f259586e8f002eacebc177e1fb06363b0"
+uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+version = "0.10.11"
+weakdeps = ["ChainRulesCore", "SparseArrays"]
+
+    [deps.Distances.extensions]
+    DistancesChainRulesCoreExt = "ChainRulesCore"
+    DistancesSparseArraysExt = "SparseArrays"
+
+[[deps.Distributed]]
+deps = ["Random", "Serialization", "Sockets"]
+uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+
+[[deps.DocStringExtensions]]
+deps = ["LibGit2"]
+git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
+uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+version = "0.9.3"
+
+[[deps.Downloads]]
+deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
+uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+version = "1.6.0"
+
+[[deps.FFTViews]]
+deps = ["CustomUnitRanges", "FFTW"]
+git-tree-sha1 = "cbdf14d1e8c7c8aacbe8b19862e0179fd08321c2"
+uuid = "4f61f5a4-77b1-5117-aa51-3ab5ef4ef0cd"
+version = "0.3.2"
+
+[[deps.FFTW]]
+deps = ["AbstractFFTs", "FFTW_jll", "LinearAlgebra", "MKL_jll", "Preferences", "Reexport"]
+git-tree-sha1 = "4820348781ae578893311153d69049a93d05f39d"
+uuid = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+version = "1.8.0"
+
+[[deps.FFTW_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "4d81ed14783ec49ce9f2e168208a12ce1815aa25"
+uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
+version = "3.3.10+1"
+
+[[deps.FileIO]]
+deps = ["Pkg", "Requires", "UUIDs"]
+git-tree-sha1 = "82d8afa92ecf4b52d78d869f038ebfb881267322"
+uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+version = "1.16.3"
+
+[[deps.FileWatching]]
+uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.FixedPointNumbers]]
+deps = ["Statistics"]
+git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
+uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
+version = "0.8.5"
+
+[[deps.Ghostscript_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "43ba3d3c82c18d88471cfd2924931658838c9d8f"
+uuid = "61579ee1-b43e-5ca0-a5da-69d92c66a64b"
+version = "9.55.0+4"
+
+[[deps.Graphics]]
+deps = ["Colors", "LinearAlgebra", "NaNMath"]
+git-tree-sha1 = "d61890399bc535850c4bf08e4e0d3a7ad0f21cbd"
+uuid = "a2bd30eb-e257-5431-a919-1863eab51364"
+version = "1.1.2"
+
+[[deps.Graphs]]
+deps = ["ArnoldiMethod", "Compat", "DataStructures", "Distributed", "Inflate", "LinearAlgebra", "Random", "SharedArrays", "SimpleTraits", "SparseArrays", "Statistics"]
+git-tree-sha1 = "1dc470db8b1131cfc7fb4c115de89fe391b9e780"
+uuid = "86223c79-3864-5bf0-83f7-82e725a168b6"
+version = "1.12.0"
+
+[[deps.HistogramThresholding]]
+deps = ["ImageBase", "LinearAlgebra", "MappedArrays"]
+git-tree-sha1 = "7194dfbb2f8d945abdaf68fa9480a965d6661e69"
+uuid = "2c695a8d-9458-5d45-9878-1b8a99cf7853"
+version = "0.3.1"
+
+[[deps.HostCPUFeatures]]
+deps = ["BitTwiddlingConvenienceFunctions", "IfElse", "Libdl", "Static"]
+git-tree-sha1 = "8e070b599339d622e9a081d17230d74a5c473293"
+uuid = "3e5b6fbb-0976-4d2c-9146-d79de83f2fb0"
+version = "0.1.17"
+
+[[deps.IfElse]]
+git-tree-sha1 = "debdd00ffef04665ccbb3e150747a77560e8fad1"
+uuid = "615f187c-cbe4-4ef1-ba3b-2fcf58d6d173"
+version = "0.1.1"
+
+[[deps.ImageAxes]]
+deps = ["AxisArrays", "ImageBase", "ImageCore", "Reexport", "SimpleTraits"]
+git-tree-sha1 = "2e4520d67b0cef90865b3ef727594d2a58e0e1f8"
+uuid = "2803e5a7-5153-5ecf-9a86-9b4c37f5f5ac"
+version = "0.6.11"
+
+[[deps.ImageBase]]
+deps = ["ImageCore", "Reexport"]
+git-tree-sha1 = "b51bb8cae22c66d0f6357e3bcb6363145ef20835"
+uuid = "c817782e-172a-44cc-b673-b171935fbb9e"
+version = "0.1.5"
+
+[[deps.ImageBinarization]]
+deps = ["HistogramThresholding", "ImageCore", "LinearAlgebra", "Polynomials", "Reexport", "Statistics"]
+git-tree-sha1 = "f5356e7203c4a9954962e3757c08033f2efe578a"
+uuid = "cbc4b850-ae4b-5111-9e64-df94c024a13d"
+version = "0.3.0"
+
+[[deps.ImageContrastAdjustment]]
+deps = ["ImageBase", "ImageCore", "ImageTransformations", "Parameters"]
+git-tree-sha1 = "eb3d4365a10e3f3ecb3b115e9d12db131d28a386"
+uuid = "f332f351-ec65-5f6a-b3d1-319c6670881a"
+version = "0.3.12"
+
+[[deps.ImageCore]]
+deps = ["AbstractFFTs", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Graphics", "MappedArrays", "MosaicViews", "OffsetArrays", "PaddedViews", "Reexport"]
+git-tree-sha1 = "acf614720ef026d38400b3817614c45882d75500"
+uuid = "a09fc81d-aa75-5fe9-8630-4744c3626534"
+version = "0.9.4"
+
+[[deps.ImageCorners]]
+deps = ["ImageCore", "ImageFiltering", "PrecompileTools", "StaticArrays", "StatsBase"]
+git-tree-sha1 = "24c52de051293745a9bad7d73497708954562b79"
+uuid = "89d5987c-236e-4e32-acd0-25bd6bd87b70"
+version = "0.1.3"
+
+[[deps.ImageDistances]]
+deps = ["Distances", "ImageCore", "ImageMorphology", "LinearAlgebra", "Statistics"]
+git-tree-sha1 = "08b0e6354b21ef5dd5e49026028e41831401aca8"
+uuid = "51556ac3-7006-55f5-8cb3-34580c88182d"
+version = "0.2.17"
+
+[[deps.ImageFiltering]]
+deps = ["CatIndices", "ComputationalResources", "DataStructures", "FFTViews", "FFTW", "ImageBase", "ImageCore", "LinearAlgebra", "OffsetArrays", "PrecompileTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "TiledIteration"]
+git-tree-sha1 = "3447781d4c80dbe6d71d239f7cfb1f8049d4c84f"
+uuid = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
+version = "0.7.6"
+
+[[deps.ImageIO]]
+deps = ["FileIO", "IndirectArrays", "JpegTurbo", "LazyModules", "Netpbm", "OpenEXR", "PNGFiles", "QOI", "Sixel", "TiffImages", "UUIDs"]
+git-tree-sha1 = "437abb322a41d527c197fa800455f79d414f0a3c"
+uuid = "82e4d734-157c-48bb-816b-45c225c6df19"
+version = "0.6.8"
+
+[[deps.ImageMagick]]
+deps = ["FileIO", "ImageCore", "ImageMagick_jll", "InteractiveUtils", "Libdl", "Pkg", "Random"]
+git-tree-sha1 = "5bc1cb62e0c5f1005868358db0692c994c3a13c6"
+uuid = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
+version = "1.2.1"
+
+[[deps.ImageMagick_jll]]
+deps = ["Artifacts", "Ghostscript_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "OpenJpeg_jll", "Zlib_jll", "libpng_jll"]
+git-tree-sha1 = "d65554bad8b16d9562050c67e7223abf91eaba2f"
+uuid = "c73af94c-d91f-53ed-93a7-00f77d67a9d7"
+version = "6.9.13+0"
+
+[[deps.ImageMetadata]]
+deps = ["AxisArrays", "ImageAxes", "ImageBase", "ImageCore"]
+git-tree-sha1 = "355e2b974f2e3212a75dfb60519de21361ad3cb7"
+uuid = "bc367c6b-8a6b-528e-b4bd-a4b897500b49"
+version = "0.9.9"
+
+[[deps.ImageMorphology]]
+deps = ["DataStructures", "ImageCore", "LinearAlgebra", "LoopVectorization", "OffsetArrays", "Requires", "TiledIteration"]
+git-tree-sha1 = "6f0a801136cb9c229aebea0df296cdcd471dbcd1"
+uuid = "787d08f9-d448-5407-9aad-5290dd7ab264"
+version = "0.4.5"
+
+[[deps.ImageQualityIndexes]]
+deps = ["ImageContrastAdjustment", "ImageCore", "ImageDistances", "ImageFiltering", "LazyModules", "OffsetArrays", "PrecompileTools", "Statistics"]
+git-tree-sha1 = "783b70725ed326340adf225be4889906c96b8fd1"
+uuid = "2996bd0c-7a13-11e9-2da2-2f5ce47296a9"
+version = "0.3.7"
+
+[[deps.ImageSegmentation]]
+deps = ["Clustering", "DataStructures", "Distances", "Graphs", "ImageCore", "ImageFiltering", "ImageMorphology", "LinearAlgebra", "MetaGraphs", "RegionTrees", "SimpleWeightedGraphs", "StaticArrays", "Statistics"]
+git-tree-sha1 = "44664eea5408828c03e5addb84fa4f916132fc26"
+uuid = "80713f31-8817-5129-9cf8-209ff8fb23e1"
+version = "1.8.1"
+
+[[deps.ImageShow]]
+deps = ["Base64", "ColorSchemes", "FileIO", "ImageBase", "ImageCore", "OffsetArrays", "StackViews"]
+git-tree-sha1 = "3b5344bcdbdc11ad58f3b1956709b5b9345355de"
+uuid = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
+version = "0.3.8"
+
+[[deps.ImageTransformations]]
+deps = ["AxisAlgorithms", "CoordinateTransformations", "ImageBase", "ImageCore", "Interpolations", "OffsetArrays", "Rotations", "StaticArrays"]
+git-tree-sha1 = "e0884bdf01bbbb111aea77c348368a86fb4b5ab6"
+uuid = "02fcd773-0e25-5acc-982a-7f6622650795"
+version = "0.10.1"
+
+[[deps.Images]]
+deps = ["Base64", "FileIO", "Graphics", "ImageAxes", "ImageBase", "ImageBinarization", "ImageContrastAdjustment", "ImageCore", "ImageCorners", "ImageDistances", "ImageFiltering", "ImageIO", "ImageMagick", "ImageMetadata", "ImageMorphology", "ImageQualityIndexes", "ImageSegmentation", "ImageShow", "ImageTransformations", "IndirectArrays", "IntegralArrays", "Random", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "TiledIteration"]
+git-tree-sha1 = "12fdd617c7fe25dc4a6cc804d657cc4b2230302b"
+uuid = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+version = "0.26.1"
+
+[[deps.Imath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "0936ba688c6d201805a83da835b55c61a180db52"
+uuid = "905a6f67-0a94-5f89-b386-d35d92009cd1"
+version = "3.1.11+0"
+
+[[deps.IndirectArrays]]
+git-tree-sha1 = "012e604e1c7458645cb8b436f8fba789a51b257f"
+uuid = "9b13fd28-a010-5f03-acff-a1bbcff69959"
+version = "1.0.0"
+
+[[deps.Inflate]]
+git-tree-sha1 = "d1b1b796e47d94588b3757fe84fbf65a5ec4a80d"
+uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
+version = "0.1.5"
+
+[[deps.IntegralArrays]]
+deps = ["ColorTypes", "FixedPointNumbers", "IntervalSets"]
+git-tree-sha1 = "be8e690c3973443bec584db3346ddc904d4884eb"
+uuid = "1d092043-8f09-5a30-832f-7509e371ab51"
+version = "0.1.5"
+
+[[deps.IntelOpenMP_jll]]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl"]
+git-tree-sha1 = "10bd689145d2c3b2a9844005d01087cc1194e79e"
+uuid = "1d5cc7b8-4909-519e-a0f8-d0f5ad9712d0"
+version = "2024.2.1+0"
+
+[[deps.InteractiveUtils]]
+deps = ["Markdown"]
+uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+
+[[deps.Interpolations]]
+deps = ["Adapt", "AxisAlgorithms", "ChainRulesCore", "LinearAlgebra", "OffsetArrays", "Random", "Ratios", "Requires", "SharedArrays", "SparseArrays", "StaticArrays", "WoodburyMatrices"]
+git-tree-sha1 = "88a101217d7cb38a7b481ccd50d21876e1d1b0e0"
+uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+version = "0.15.1"
+
+    [deps.Interpolations.extensions]
+    InterpolationsUnitfulExt = "Unitful"
+
+    [deps.Interpolations.weakdeps]
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[[deps.IntervalSets]]
+git-tree-sha1 = "dba9ddf07f77f60450fe5d2e2beb9854d9a49bd0"
+uuid = "8197267c-284f-5f27-9208-e0e47529a953"
+version = "0.7.10"
+weakdeps = ["Random", "RecipesBase", "Statistics"]
+
+    [deps.IntervalSets.extensions]
+    IntervalSetsRandomExt = "Random"
+    IntervalSetsRecipesBaseExt = "RecipesBase"
+    IntervalSetsStatisticsExt = "Statistics"
+
+[[deps.IrrationalConstants]]
+git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
+uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
+version = "0.2.2"
+
+[[deps.IterTools]]
+git-tree-sha1 = "42d5f897009e7ff2cf88db414a389e5ed1bdd023"
+uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+version = "1.10.0"
+
+[[deps.JLD2]]
+deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "PrecompileTools", "Requires", "TranscodingStreams"]
+git-tree-sha1 = "a0746c21bdc986d0dc293efa6b1faee112c37c28"
+uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+version = "0.4.53"
+
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "f389674c99bfcde17dc57454011aa44d5a260a40"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.6.0"
+
+[[deps.JpegTurbo]]
+deps = ["CEnum", "FileIO", "ImageCore", "JpegTurbo_jll", "TOML"]
+git-tree-sha1 = "fa6d0bcff8583bac20f1ffa708c3913ca605c611"
+uuid = "b835a17e-a41a-41e7-81f0-2f016b05efe0"
+version = "0.1.5"
+
+[[deps.JpegTurbo_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "25ee0be4d43d0269027024d75a24c24d6c6e590c"
+uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
+version = "3.0.4+0"
+
+[[deps.LERC_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "bf36f528eec6634efc60d7ec062008f171071434"
+uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
+version = "3.0.0+1"
+
+[[deps.LaTeXStrings]]
+git-tree-sha1 = "50901ebc375ed41dbf8058da26f9de442febbbec"
+uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+version = "1.3.1"
+
+[[deps.LayoutPointers]]
+deps = ["ArrayInterface", "LinearAlgebra", "ManualMemory", "SIMDTypes", "Static", "StaticArrayInterface"]
+git-tree-sha1 = "a9eaadb366f5493a5654e843864c13d8b107548c"
+uuid = "10f19ff3-798f-405d-979b-55457f8fc047"
+version = "0.1.17"
+
+[[deps.LazyArtifacts]]
+deps = ["Artifacts", "Pkg"]
+uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+
+[[deps.LazyModules]]
+git-tree-sha1 = "a560dd966b386ac9ae60bdd3a3d3a326062d3c3e"
+uuid = "8cdb02fc-e678-4876-92c5-9defec4f444e"
+version = "0.3.1"
+
+[[deps.LibCURL]]
+deps = ["LibCURL_jll", "MozillaCACerts_jll"]
+uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+version = "0.6.4"
+
+[[deps.LibCURL_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "8.4.0+0"
+
+[[deps.LibGit2]]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
+
+[[deps.LibSSH2_jll]]
+deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
+version = "1.11.0+1"
+
+[[deps.Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
+[[deps.Libtiff_jll]]
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
+git-tree-sha1 = "2da088d113af58221c52828a80378e16be7d037a"
+uuid = "89763e89-9b03-5906-acba-b20f662cd828"
+version = "4.5.1+1"
+
+[[deps.LinearAlgebra]]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[[deps.LittleCMS_jll]]
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll"]
+git-tree-sha1 = "fa7fd067dca76cadd880f1ca937b4f387975a9f5"
+uuid = "d3a379c0-f9a3-5b72-a4c0-6bf4d2e8af0f"
+version = "2.16.0+0"
+
+[[deps.LogExpFunctions]]
+deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
+git-tree-sha1 = "a2d09619db4e765091ee5c6ffe8872849de0feea"
+uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
+version = "0.3.28"
+
+    [deps.LogExpFunctions.extensions]
+    LogExpFunctionsChainRulesCoreExt = "ChainRulesCore"
+    LogExpFunctionsChangesOfVariablesExt = "ChangesOfVariables"
+    LogExpFunctionsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.LogExpFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ChangesOfVariables = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
+[[deps.Logging]]
+uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
+
+[[deps.LoopVectorization]]
+deps = ["ArrayInterface", "CPUSummary", "CloseOpenIntervals", "DocStringExtensions", "HostCPUFeatures", "IfElse", "LayoutPointers", "LinearAlgebra", "OffsetArrays", "PolyesterWeave", "PrecompileTools", "SIMDTypes", "SLEEFPirates", "Static", "StaticArrayInterface", "ThreadingUtilities", "UnPack", "VectorizationBase"]
+git-tree-sha1 = "8084c25a250e00ae427a379a5b607e7aed96a2dd"
+uuid = "bdcacae8-1622-11e9-2a5c-532679323890"
+version = "0.12.171"
+
+    [deps.LoopVectorization.extensions]
+    ForwardDiffExt = ["ChainRulesCore", "ForwardDiff"]
+    SpecialFunctionsExt = "SpecialFunctions"
+
+    [deps.LoopVectorization.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+
+[[deps.MKL_jll]]
+deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "oneTBB_jll"]
+git-tree-sha1 = "f046ccd0c6db2832a9f639e2c669c6fe867e5f4f"
+uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
+version = "2024.2.0+0"
+
+[[deps.MacroTools]]
+deps = ["Markdown", "Random"]
+git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
+uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+version = "0.5.13"
+
+[[deps.ManualMemory]]
+git-tree-sha1 = "bcaef4fc7a0cfe2cba636d84cda54b5e4e4ca3cd"
+uuid = "d125e4d3-2237-4719-b19c-fa641b8a4667"
+version = "0.1.8"
+
+[[deps.MappedArrays]]
+git-tree-sha1 = "2dab0221fe2b0f2cb6754eaa743cc266339f527e"
+uuid = "dbb5928d-eab1-5f90-85c2-b9b0edb7c900"
+version = "0.4.2"
+
+[[deps.Markdown]]
+deps = ["Base64"]
+uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[deps.MbedTLS_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
+version = "2.28.2+1"
+
+[[deps.MetaGraphs]]
+deps = ["Graphs", "JLD2", "Random"]
+git-tree-sha1 = "1130dbe1d5276cb656f6e1094ce97466ed700e5a"
+uuid = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
+version = "0.7.2"
+
+[[deps.Missings]]
+deps = ["DataAPI"]
+git-tree-sha1 = "ec4f7fbeab05d7747bdf98eb74d130a2a2ed298d"
+uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
+version = "1.2.0"
+
+[[deps.Mmap]]
+uuid = "a63ad114-7e13-5084-954f-fe012c677804"
+
+[[deps.MosaicViews]]
+deps = ["MappedArrays", "OffsetArrays", "PaddedViews", "StackViews"]
+git-tree-sha1 = "7b86a5d4d70a9f5cdf2dacb3cbe6d251d1a61dbe"
+uuid = "e94cdb99-869f-56ef-bcf0-1ae2bcbe0389"
+version = "0.3.4"
+
+[[deps.MozillaCACerts_jll]]
+uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+version = "2023.1.10"
+
+[[deps.NaNMath]]
+deps = ["OpenLibm_jll"]
+git-tree-sha1 = "0877504529a3e5c3343c6f8b4c0381e57e4387e4"
+uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
+version = "1.0.2"
+
+[[deps.NearestNeighbors]]
+deps = ["Distances", "StaticArrays"]
+git-tree-sha1 = "3cebfc94a0754cc329ebc3bab1e6c89621e791ad"
+uuid = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
+version = "0.4.20"
+
+[[deps.Netpbm]]
+deps = ["FileIO", "ImageCore", "ImageMetadata"]
+git-tree-sha1 = "d92b107dbb887293622df7697a2223f9f8176fcd"
+uuid = "f09324ee-3d7c-5217-9330-fc30815ba969"
+version = "1.1.1"
+
+[[deps.NetworkOptions]]
+uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+version = "1.2.0"
+
+[[deps.OffsetArrays]]
+git-tree-sha1 = "1a27764e945a152f7ca7efa04de513d473e9542e"
+uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+version = "1.14.1"
+weakdeps = ["Adapt"]
+
+    [deps.OffsetArrays.extensions]
+    OffsetArraysAdaptExt = "Adapt"
+
+[[deps.OpenBLAS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.23+4"
+
+[[deps.OpenEXR]]
+deps = ["Colors", "FileIO", "OpenEXR_jll"]
+git-tree-sha1 = "327f53360fdb54df7ecd01e96ef1983536d1e633"
+uuid = "52e1d378-f018-4a11-a4be-720524705ac7"
+version = "0.3.2"
+
+[[deps.OpenEXR_jll]]
+deps = ["Artifacts", "Imath_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
+git-tree-sha1 = "8292dd5c8a38257111ada2174000a33745b06d4e"
+uuid = "18a262bb-aa17-5467-a713-aee519bc75cb"
+version = "3.2.4+0"
+
+[[deps.OpenJpeg_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libtiff_jll", "LittleCMS_jll", "libpng_jll"]
+git-tree-sha1 = "f4cb457ffac5f5cf695699f82c537073958a6a6c"
+uuid = "643b3616-a352-519d-856d-80112ee9badc"
+version = "2.5.2+0"
+
+[[deps.OpenLibm_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
+version = "0.8.1+2"
+
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
+
+[[deps.OrderedCollections]]
+git-tree-sha1 = "dfdf5519f235516220579f949664f1bf44e741c5"
+uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+version = "1.6.3"
+
+[[deps.PNGFiles]]
+deps = ["Base64", "CEnum", "ImageCore", "IndirectArrays", "OffsetArrays", "libpng_jll"]
+git-tree-sha1 = "67186a2bc9a90f9f85ff3cc8277868961fb57cbd"
+uuid = "f57f5aa1-a3ce-4bc8-8ab9-96f992907883"
+version = "0.4.3"
+
+[[deps.PaddedViews]]
+deps = ["OffsetArrays"]
+git-tree-sha1 = "0fac6313486baae819364c52b4f483450a9d793f"
+uuid = "5432bcbf-9aad-5242-b902-cca2824c8663"
+version = "0.5.12"
+
+[[deps.Parameters]]
+deps = ["OrderedCollections", "UnPack"]
+git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
+uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+version = "0.12.3"
+
+[[deps.Pkg]]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+version = "1.10.0"
+
+[[deps.PkgVersion]]
+deps = ["Pkg"]
+git-tree-sha1 = "f9501cc0430a26bc3d156ae1b5b0c1b47af4d6da"
+uuid = "eebad327-c553-4316-9ea0-9fa01ccd7688"
+version = "0.3.3"
+
+[[deps.PolyesterWeave]]
+deps = ["BitTwiddlingConvenienceFunctions", "CPUSummary", "IfElse", "Static", "ThreadingUtilities"]
+git-tree-sha1 = "645bed98cd47f72f67316fd42fc47dee771aefcd"
+uuid = "1d0040c9-8b98-4ee7-8388-3f51789ca0ad"
+version = "0.2.2"
+
+[[deps.Polynomials]]
+deps = ["LinearAlgebra", "RecipesBase"]
+git-tree-sha1 = "3aa2bb4982e575acd7583f01531f241af077b163"
+uuid = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+version = "3.2.13"
+
+    [deps.Polynomials.extensions]
+    PolynomialsChainRulesCoreExt = "ChainRulesCore"
+    PolynomialsMakieCoreExt = "MakieCore"
+    PolynomialsMutableArithmeticsExt = "MutableArithmetics"
+
+    [deps.Polynomials.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
+    MutableArithmetics = "d8a4904e-b15c-11e9-3269-09a3773c0cb0"
+
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.2.1"
+
+[[deps.Preferences]]
+deps = ["TOML"]
+git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
+uuid = "21216c6a-2e73-6563-6e65-726566657250"
+version = "1.4.3"
+
+[[deps.Printf]]
+deps = ["Unicode"]
+uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[[deps.ProgressMeter]]
+deps = ["Distributed", "Printf"]
+git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
+uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
+version = "1.10.2"
+
+[[deps.QOI]]
+deps = ["ColorTypes", "FileIO", "FixedPointNumbers"]
+git-tree-sha1 = "18e8f4d1426e965c7b532ddd260599e1510d26ce"
+uuid = "4b34888f-f399-49d4-9bb3-47ed5cae4e65"
+version = "1.0.0"
+
+[[deps.Quaternions]]
+deps = ["LinearAlgebra", "Random", "RealDot"]
+git-tree-sha1 = "994cc27cdacca10e68feb291673ec3a76aa2fae9"
+uuid = "94ee1d12-ae83-5a48-8b1c-48b8ff168ae0"
+version = "0.7.6"
+
+[[deps.REPL]]
+deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
+uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+
+[[deps.Random]]
+deps = ["SHA"]
+uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[[deps.RangeArrays]]
+git-tree-sha1 = "b9039e93773ddcfc828f12aadf7115b4b4d225f5"
+uuid = "b3c3ace0-ae52-54e7-9d0b-2c1406fd6b9d"
+version = "0.3.2"
+
+[[deps.Ratios]]
+deps = ["Requires"]
+git-tree-sha1 = "1342a47bf3260ee108163042310d26f2be5ec90b"
+uuid = "c84ed2f1-dad5-54f0-aa8e-dbefe2724439"
+version = "0.4.5"
+weakdeps = ["FixedPointNumbers"]
+
+    [deps.Ratios.extensions]
+    RatiosFixedPointNumbersExt = "FixedPointNumbers"
+
+[[deps.RealDot]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "9f0a1b71baaf7650f4fa8a1d168c7fb6ee41f0c9"
+uuid = "c1ae055f-0cd5-4b69-90a6-9a35b1a98df9"
+version = "0.1.0"
+
+[[deps.RecipesBase]]
+deps = ["PrecompileTools"]
+git-tree-sha1 = "5c3d09cc4f31f5fc6af001c250bf1278733100ff"
+uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+version = "1.3.4"
+
+[[deps.Reexport]]
+git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
+uuid = "189a3867-3050-52da-a836-e630ba90ab69"
+version = "1.2.2"
+
+[[deps.RegionTrees]]
+deps = ["IterTools", "LinearAlgebra", "StaticArrays"]
+git-tree-sha1 = "4618ed0da7a251c7f92e869ae1a19c74a7d2a7f9"
+uuid = "dee08c22-ab7f-5625-9660-a9af2021b33f"
+version = "0.3.2"
+
+[[deps.Requires]]
+deps = ["UUIDs"]
+git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
+uuid = "ae029012-a4dd-5104-9daa-d747884805df"
+version = "1.3.0"
+
+[[deps.Rotations]]
+deps = ["LinearAlgebra", "Quaternions", "Random", "StaticArrays"]
+git-tree-sha1 = "5680a9276685d392c87407df00d57c9924d9f11e"
+uuid = "6038ab10-8711-5258-84ad-4b1120ba62dc"
+version = "1.7.1"
+weakdeps = ["RecipesBase"]
+
+    [deps.Rotations.extensions]
+    RotationsRecipesBaseExt = "RecipesBase"
+
+[[deps.SHA]]
+uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "0.7.0"
+
+[[deps.SIMD]]
+deps = ["PrecompileTools"]
+git-tree-sha1 = "98ca7c29edd6fc79cd74c61accb7010a4e7aee33"
+uuid = "fdea26ae-647d-5447-a871-4b548cad5224"
+version = "3.6.0"
+
+[[deps.SIMDTypes]]
+git-tree-sha1 = "330289636fb8107c5f32088d2741e9fd7a061a5c"
+uuid = "94e857df-77ce-4151-89e5-788b33177be4"
+version = "0.1.0"
+
+[[deps.SLEEFPirates]]
+deps = ["IfElse", "Static", "VectorizationBase"]
+git-tree-sha1 = "456f610ca2fbd1c14f5fcf31c6bfadc55e7d66e0"
+uuid = "476501e8-09a2-5ece-8869-fb82de89a1fa"
+version = "0.6.43"
+
+[[deps.Serialization]]
+uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+
+[[deps.SharedArrays]]
+deps = ["Distributed", "Mmap", "Random", "Serialization"]
+uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
+
+[[deps.SimpleTraits]]
+deps = ["InteractiveUtils", "MacroTools"]
+git-tree-sha1 = "5d7e3f4e11935503d3ecaf7186eac40602e7d231"
+uuid = "699a6c99-e7fa-54fc-8d76-47d257e15c1d"
+version = "0.9.4"
+
+[[deps.SimpleWeightedGraphs]]
+deps = ["Graphs", "LinearAlgebra", "Markdown", "SparseArrays"]
+git-tree-sha1 = "4b33e0e081a825dbfaf314decf58fa47e53d6acb"
+uuid = "47aef6b3-ad0c-573a-a1e2-d07658019622"
+version = "1.4.0"
+
+[[deps.Sixel]]
+deps = ["Dates", "FileIO", "ImageCore", "IndirectArrays", "OffsetArrays", "REPL", "libsixel_jll"]
+git-tree-sha1 = "2da10356e31327c7096832eb9cd86307a50b1eb6"
+uuid = "45858cf5-a6b0-47a3-bbea-62219f50df47"
+version = "0.1.3"
+
+[[deps.Sockets]]
+uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
+
+[[deps.SortingAlgorithms]]
+deps = ["DataStructures"]
+git-tree-sha1 = "66e0a8e672a0bdfca2c3f5937efb8538b9ddc085"
+uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
+version = "1.2.1"
+
+[[deps.SparseArrays]]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
+uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
+
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "2f5d4697f21388cbe1ff299430dd169ef97d7e14"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.4.0"
+weakdeps = ["ChainRulesCore"]
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+[[deps.StackViews]]
+deps = ["OffsetArrays"]
+git-tree-sha1 = "46e589465204cd0c08b4bd97385e4fa79a0c770c"
+uuid = "cae243ae-269e-4f55-b966-ac2d0dc13c15"
+version = "0.1.1"
+
+[[deps.Static]]
+deps = ["CommonWorldInvalidations", "IfElse", "PrecompileTools"]
+git-tree-sha1 = "87d51a3ee9a4b0d2fe054bdd3fc2436258db2603"
+uuid = "aedffcd0-7271-4cad-89d0-dc628f76c6d3"
+version = "1.1.1"
+
+[[deps.StaticArrayInterface]]
+deps = ["ArrayInterface", "Compat", "IfElse", "LinearAlgebra", "PrecompileTools", "Static"]
+git-tree-sha1 = "96381d50f1ce85f2663584c8e886a6ca97e60554"
+uuid = "0d7ed370-da01-4f52-bd93-41d350b8b718"
+version = "1.8.0"
+weakdeps = ["OffsetArrays", "StaticArrays"]
+
+    [deps.StaticArrayInterface.extensions]
+    StaticArrayInterfaceOffsetArraysExt = "OffsetArrays"
+    StaticArrayInterfaceStaticArraysExt = "StaticArrays"
+
+[[deps.StaticArrays]]
+deps = ["LinearAlgebra", "PrecompileTools", "Random", "StaticArraysCore"]
+git-tree-sha1 = "eeafab08ae20c62c44c8399ccb9354a04b80db50"
+uuid = "90137ffa-7385-5640-81b9-e52037218182"
+version = "1.9.7"
+weakdeps = ["ChainRulesCore", "Statistics"]
+
+    [deps.StaticArrays.extensions]
+    StaticArraysChainRulesCoreExt = "ChainRulesCore"
+    StaticArraysStatisticsExt = "Statistics"
+
+[[deps.StaticArraysCore]]
+git-tree-sha1 = "192954ef1208c7019899fbf8049e717f92959682"
+uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
+version = "1.4.3"
+
+[[deps.Statistics]]
+deps = ["LinearAlgebra", "SparseArrays"]
+uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.10.0"
+
+[[deps.StatsAPI]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "1ff449ad350c9c4cbc756624d6f8a8c3ef56d3ed"
+uuid = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
+version = "1.7.0"
+
+[[deps.StatsBase]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
+git-tree-sha1 = "5cf7606d6cef84b543b483848d4ae08ad9832b21"
+uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+version = "0.34.3"
+
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "7.2.1+1"
+
+[[deps.TOML]]
+deps = ["Dates"]
+uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.3"
+
+[[deps.Tar]]
+deps = ["ArgTools", "SHA"]
+uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+version = "1.10.0"
+
+[[deps.TensorCore]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "1feb45f88d133a655e001435632f019a9a1bcdb6"
+uuid = "62fd8b95-f654-4bbd-a8a5-9c27f68ccd50"
+version = "0.1.1"
+
+[[deps.Test]]
+deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
+uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[[deps.ThreadingUtilities]]
+deps = ["ManualMemory"]
+git-tree-sha1 = "eda08f7e9818eb53661b3deb74e3159460dfbc27"
+uuid = "8290d209-cae3-49c0-8002-c8c24d57dab5"
+version = "0.5.2"
+
+[[deps.TiffImages]]
+deps = ["ColorTypes", "DataStructures", "DocStringExtensions", "FileIO", "FixedPointNumbers", "IndirectArrays", "Inflate", "Mmap", "OffsetArrays", "PkgVersion", "ProgressMeter", "SIMD", "UUIDs"]
+git-tree-sha1 = "bc7fd5c91041f44636b2c134041f7e5263ce58ae"
+uuid = "731e570b-9d59-4bfa-96dc-6df516fadf69"
+version = "0.10.0"
+
+[[deps.TiledIteration]]
+deps = ["OffsetArrays", "StaticArrayInterface"]
+git-tree-sha1 = "1176cc31e867217b06928e2f140c90bd1bc88283"
+uuid = "06e1c1a7-607b-532d-9fad-de7d9aa2abac"
+version = "0.5.0"
+
+[[deps.TranscodingStreams]]
+git-tree-sha1 = "e84b3a11b9bece70d14cce63406bbc79ed3464d2"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.11.2"
+
+[[deps.UUIDs]]
+deps = ["Random", "SHA"]
+uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+
+[[deps.UnPack]]
+git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
+uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
+version = "1.0.2"
+
+[[deps.Unicode]]
+uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+
+[[deps.VectorizationBase]]
+deps = ["ArrayInterface", "CPUSummary", "HostCPUFeatures", "IfElse", "LayoutPointers", "Libdl", "LinearAlgebra", "SIMDTypes", "Static", "StaticArrayInterface"]
+git-tree-sha1 = "e7f5b81c65eb858bed630fe006837b935518aca5"
+uuid = "3d5dd08c-fd9d-11e8-17fa-ed2836048c2f"
+version = "0.21.70"
+
+[[deps.WoodburyMatrices]]
+deps = ["LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "c1a7aa6219628fcd757dede0ca95e245c5cd9511"
+uuid = "efce3f68-66dc-5838-9240-27a6d6f5f9b6"
+version = "1.0.0"
+
+[[deps.XZ_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "ac88fb95ae6447c8dda6a5503f3bafd496ae8632"
+uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
+version = "5.4.6+0"
+
+[[deps.Zlib_jll]]
+deps = ["Libdl"]
+uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.2.13+1"
+
+[[deps.Zstd_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "555d1076590a6cc2fdee2ef1469451f872d8b41b"
+uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
+version = "1.5.6+1"
+
+[[deps.libblastrampoline_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.11.0+0"
+
+[[deps.libpng_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
+git-tree-sha1 = "b70c870239dc3d7bc094eb2d6be9b73d27bef280"
+uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
+version = "1.6.44+0"
+
+[[deps.libsixel_jll]]
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Pkg", "libpng_jll"]
+git-tree-sha1 = "7dfa0fd9c783d3d0cc43ea1af53d69ba45c447df"
+uuid = "075b6546-f08a-558a-be8f-8157d0f608a5"
+version = "1.10.3+1"
+
+[[deps.nghttp2_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
+version = "1.52.0+1"
+
+[[deps.oneTBB_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "7d0ea0f4895ef2f5cb83645fa689e52cb55cf493"
+uuid = "1317d2d5-d96f-522e-a858-c73665f53c3e"
+version = "2021.12.0+0"
+
+[[deps.p7zip_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+version = "17.4.0+2"
+"""
+
+# ╔═╡ Cell order:
+# ╟─d66ffa51-1c09-43c5-86d5-c00ee61609b1
+# ╠═466b1feb-e208-4738-be70-733511fb3b6a
+# ╠═67d0eeaa-dcd6-45ef-8d94-7457d0eabaca
+# ╠═7049f94a-0545-4eb9-80e7-86486c335b72
+# ╟─72ba7e00-8358-11ef-3c2a-73d1b7473118
+# ╟─35ce874f-0c25-4ea3-ad96-837a7d262806
+# ╟─84284d95-aac1-4816-81db-c61643359868
+# ╠═7aff023f-2808-4a0d-8820-f0b6ef754f86
+# ╟─855f6dab-3688-48ac-9f50-47bedaf0cc07
+# ╟─3ecd61be-b9e6-4e50-b872-7520c4cc737a
+# ╟─cda23dde-a296-4778-bbff-57667e8151a4
+# ╟─50cbc9db-052f-4556-ad8f-a1ae54eb2ad6
+# ╟─9d3a6631-476e-4096-9adf-73b4665631d5
+# ╟─e75ca447-a81d-4bc3-9fbf-a12d78469e0b
+# ╟─31ff1d04-cab4-4c40-8a95-2a4ada100a70
+# ╟─71b5390d-9040-4bcb-8008-052dd7b53671
+# ╟─a66b6a24-0b7f-4b16-ae4e-8ed585a176f8
+# ╠═4438102c-0225-44b2-9f4f-d1b15752f1fa
+# ╟─f56e4aec-8d17-4dfc-a952-ca2f7c69e0df
+# ╟─89457b73-043c-49f8-8f06-985191c11dc1
+# ╟─fc7bbb3c-adbe-4c2c-99dd-ec045ef60d29
+# ╟─f4e892a9-7764-4a2d-b17c-b72a27b4054b
+# ╟─4b6afeb3-e834-40a1-9775-983fa7330bec
+# ╟─ec374865-aaed-42ed-84b5-d792fdc030e6
+# ╟─ee426cc2-2b73-4ff4-86e6-071dc615163f
+# ╟─abae1ef0-ede4-46b6-b89b-62be456d0b43
+# ╟─54919676-4761-4687-b689-f65fe3f84f43
+# ╟─a83a761e-48b7-4a22-9780-65aa8bb4c01a
+# ╟─79e37672-c88c-406c-b21d-86547f5ab012
+# ╟─2555ad63-c985-473a-aeaa-2345779dd12c
+# ╟─2169a82e-e4ee-47e7-99c4-fdba5a108a34
+# ╟─89299ea7-20c7-4142-ae81-a449e5364135
+# ╟─2bee2172-fd45-40e5-988d-918b8bd776c3
+# ╟─34d6d69e-e3d0-49a2-ae0a-aa42756c54df
+# ╟─bdf51e54-4832-4b49-98f3-5c30da28e445
+# ╟─9640e7d6-3652-4742-9718-53546370d797
+# ╟─a0751eed-f813-45af-b0d3-3b9e7650f1f6
+# ╟─52a49af2-699b-466a-9a75-97b493ea3454
+# ╟─a28072f8-f33c-4f8a-9fec-de5093dfa4e5
+# ╟─8f2ea57f-463a-4ad3-9af3-d177c5c03f15
+# ╟─f2891a2c-51e3-40c8-a977-822d9150015e
+# ╟─9d9a3e63-1a84-4990-81e1-e95e946a74fc
+# ╟─20c133b4-dee4-4af3-a590-c52d80fbed88
+# ╟─0ea3e45e-6690-465d-a1dd-72c5327a1a77
+# ╟─f8591f9e-1486-4c16-af0a-752d275716c2
+# ╟─ab6b1d5b-33b8-4781-b95c-10dcfc7fddf4
+# ╟─b79a46c2-3eb3-43c5-955f-1115ddc62498
+# ╟─5e1680d4-309d-4399-8d83-969eb14e86ee
+# ╟─bc1820e4-3b33-4f89-be3b-bc375b2d9177
+# ╟─4d2451fa-8ad1-4ae9-8563-3bddce6d1831
+# ╟─c049166c-48d0-460f-a738-9eca00943651
+# ╟─c2235155-8b6a-4a43-a091-57b2ef402eb9
+# ╟─0a0ef835-5fe2-4686-a0f7-a5eccf179d43
+# ╟─3ec4ce98-bba6-4ff5-b3b1-531caf8d0a64
+# ╟─6b48cf6d-838d-4d5b-9a6c-a695cd366272
+# ╟─fa01fff0-d73a-4a99-bb7d-34f09cf5462f
+# ╟─dc6c9142-e14e-4ed0-9776-94ea9fcd39f3
+# ╟─72ff33b5-e237-4446-be08-a4907c24afc3
+# ╟─9be1ae70-946d-4d17-b531-b4bd3baff722
+# ╟─a83d43d7-450f-4304-b49c-d471214e426d
+# ╟─74013101-1fd2-423d-b16e-eb8345bcc4f4
+# ╟─4c1be493-351c-40b4-816d-26f05e908e3b
+# ╟─f3051fa3-4be2-44cd-b990-a29fee60452d
+# ╟─f74aa454-3951-4572-9e6d-05faa1748876
+# ╟─9ed02d84-1a68-47ef-afe7-4047c901dc78
+# ╟─4331354b-8066-4d66-b116-0bdc02a78277
+# ╟─e2197aba-03ad-4cc5-beb7-9240f5070511
+# ╟─01fa5e56-74c3-4ead-a743-6443f3f64ab0
+# ╟─8bcb8920-d7e0-40e0-9b14-d9bdb4dd7d87
+# ╟─08821c58-86d9-4d0d-be95-55ecd08cd983
+# ╟─0be058ad-f74b-4410-bab8-db7621811cb5
+# ╟─d0afedd2-5f0b-4327-8000-61f20d5f447f
+# ╠═f19af153-7fbc-41fc-abec-b267adc7b6aa
+# ╟─99be5fd3-1f23-4f03-9c20-17ab1c277d6f
+# ╟─28eb763f-a049-475d-bc0e-e2d13f76b3be
+# ╠═bdd4f72e-a991-4ce1-95b1-ce15aec3cda0
+# ╟─e51967b6-7b31-42be-ac11-e288c7e135dc
+# ╟─0c73dd9e-c3cc-418c-ac09-b72398233ed2
+# ╟─d09d7a36-b427-4e68-b090-f5bee5c46f2f
+# ╟─d9fb124b-e4ff-40a4-8d03-dc837e056bdc
+# ╟─70b26b41-d078-415e-980d-52fb3045eb3a
+# ╟─93cde914-f520-48e0-a8de-f316b105c298
+# ╟─311617f9-20ca-455f-b5a7-ff48f991c25c
+# ╟─0dfd3a2d-ccdc-4241-af67-0845555e7a63
+# ╟─ee4aa98c-cccd-4d91-a465-b8b92e7928be
+# ╟─3b8f366a-2dea-46dd-9214-52300dced6e1
+# ╟─58df222c-cc99-4c51-9f70-04f2b8b24709
+# ╟─5a7341f5-56c0-40b7-a1bd-5bb653b6eb33
+# ╟─5fcccec6-940a-4fca-8486-5ff62d1552cf
+# ╟─6ab4e867-30c8-4aee-9101-8f9683f9f012
+# ╟─98d61eba-7aa4-4e8e-a88a-b6bee8d29bcf
+# ╟─0706c942-31a2-4285-96d8-8f549fbb0375
+# ╟─78b47e33-5f19-4959-b7b1-8ffb24b35d43
+# ╟─0f742e73-92f5-474a-8752-27edb445c3a8
+# ╟─fd6f19e7-2987-4425-acf0-c9e41b698bf7
+# ╟─8e27505d-56cb-48ef-bad7-cafe48afb995
+# ╟─9aae8c8f-67b7-41a5-ba03-980b58b9d0fa
+# ╟─4d6602fd-ac40-41c1-b03e-8125ec4380e0
+# ╟─7721b502-bd16-4bcb-abd0-5f48f22b856e
+# ╟─882f42f5-b19a-4176-ab75-f79ddcd59397
+# ╟─99eb9777-4ced-46af-952a-fd7a1f682d56
+# ╟─89f03118-2147-4bf0-a4f2-6e1aab0a8cef
+# ╟─6616be01-77e9-4213-936b-a8987c0174bb
+# ╟─cc502f08-eee5-4c5f-9025-a5c6c67d5e0f
+# ╟─eb4bc48d-78ff-4135-b047-b0589759fd5b
+# ╟─4f3a7311-579f-4f5f-a45e-ca0aa6873214
+# ╟─2b2a2747-b8c2-4406-9155-b1d7526a7710
+# ╟─0a288078-4ecc-41e3-95ed-ad38f7864346
+# ╟─d6a45a08-5e2b-44d4-aa36-5007a0e44483
+# ╟─4b7c2fde-50d8-40f3-8962-bad1e71d7781
+# ╟─e8341c94-f069-42f4-8da1-262c8340e2a5
+# ╟─c562b2ad-16c2-4249-b538-a2632caea5f0
+# ╟─39f1471a-2a19-4956-972f-40cc207e8eaa
+# ╟─a2a57d31-ef43-41e5-9067-e2575ad7715d
+# ╟─f9e1d2bc-12dd-4f65-a0b1-2a1658971193
+# ╟─8037775b-822d-4816-b873-72b1850208af
+# ╟─5b07c3b9-63b6-4bd0-ab44-6fd81ce1037c
+# ╟─5bf95e46-6246-4fa1-b5fa-b66342d163cf
+# ╟─6127cc66-ef9a-42e2-a089-21772cf1dd29
+# ╟─3b50693e-a48e-47df-9305-064955a02d7a
+# ╟─f6aadfe0-2161-4ed7-8856-3ffa8fcbfb5d
+# ╟─3b5cfa16-bc91-42e3-bc44-5e53b0cb945e
+# ╟─21a21213-344d-4fa0-87cf-0e72abeb6999
+# ╟─19190605-1636-4d7e-945c-04fad376a102
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002
+import Pluto
+Pluto.run()

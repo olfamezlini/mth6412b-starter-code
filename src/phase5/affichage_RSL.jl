@@ -55,7 +55,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
         
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
         
         # Renvoie de la figure
         fig
@@ -100,7 +100,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        #savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
 
         # Renvoie de la figure
         fig
