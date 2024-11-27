@@ -58,7 +58,7 @@ temps_cpu = result[2]
 # Phase 3
 
 # Application de l'algorithme de prim
-affichage_arbre_minimal_prim("instances/stsp/swiss42.tsp", 1)
+affichage_arbre_minimal_prim("instances/stsp/swiss42.tsp", 1);
 
 # Application de l'algorithme de prim
-affichage_arbre_minimal_prim("instances/stsp/exemple_phase_2.tsp", 1)
+
