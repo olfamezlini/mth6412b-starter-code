@@ -34,7 +34,7 @@ function comparaison_HK(filename::String, valeur_comp::Int64)
 
     for (i, start_node) in enumerate(start_node_vec)
         for (j, pas) in enumerate(pas_vec)
-            _, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 1, pas, 2500, 100000)
+            _, poids_minimal, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 1, pas, 2500, 100000)
             dif_val_tournee_prim[i, j] = poids_minimal - stsp_weight
             if poids_minimal < best_poids_prim
                 best_i_prim = i 
@@ -71,7 +71,7 @@ function comparaison_HK(filename::String, valeur_comp::Int64)
 
     for (i, start_node) in enumerate(start_node_vec)
         for (j, pas) in enumerate(pas_vec)
-            _, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 2, pas, 2500, 100000)
+            _, poids_minimal, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, 2, pas, 2500, 100000)
             dif_val_tournee_kruskal[i, j] = poids_minimal - stsp_weight
             if poids_minimal < best_poids_kruskal
                 best_i_kruskal = i 
@@ -226,7 +226,7 @@ function comparaison_RSL(filename::String)
 
     # Calcul des poids minimaux pour chaque nœud de départ
     for (i, start_node) in enumerate(start_node_vec)
-        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 2)
+        _, poids_minimal, tour = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 2)
         println("poids_minimal = ", poids_minimal)
 
         # Calcul de la différence
@@ -263,7 +263,7 @@ function comparaison_RSL(filename::String)
 
     # Calcul des poids minimaux pour chaque nœud de départ
     for (i, start_node) in enumerate(start_node_vec)
-        _, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 1)
+        _, poids_minimal, tour = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, 1)
         println("poids_minimal = ", poids_minimal)
 
         # Calcul de la différence        

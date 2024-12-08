@@ -96,20 +96,38 @@ affichage_resultats_param_opt()
 
 graph_nodes, graph_edges, edge_weights_dict = read_stsp("../shredder-julia/tsp/instances/abstract-light-painting.tsp")
 
-println("graph_nodes = ", graph_nodes)
-println("graph_edges = ", graph_edges)
-println("edge_weights_dict = ", edge_weights_dict)
+#println("graph_nodes = ", graph_nodes)
+#println("graph_edges = ", graph_edges)
+#println("edge_weights_dict = ", edge_weights_dict)
 
 graph_edges = complete_graph_edges(graph_edges)
 
+#println("Graph weight    : ", edge_weights_dict)
+#println("Graph nodes    : ", graph_nodes)
+
+
+
+
 # Obtention de tous les poids
-print(typeof(edge_weights_dict))
+#print(typeof(edge_weights_dict))
 
 edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+println(typeof(edge_weights_dict))
 add_symmetry!(edge_weights_dict)
 
-print(edge_weights_dict)
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+println(typeof(edge_weights_dict))
+#print(edge_weights_dict)
 
-Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 2, 2)
+graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 2, 1)
 
-Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 545, 1, 10.0, 10, 100000)
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 545, 1, 10.0, 10, 100000)
+#tour=vcat(0, tour)
+println(tour)
+println(typeof(tour))
+println(tour)
+write_tour1("phase5/Tour/painting.tour", Array(tour), Float32(poids),1)
+
+
+
+reconstruct_picture("phase5/Tour/painting.tour", "../shredder-julia/images/shuffled/abstract-light-painting.png", "phase5/Tour/painting.png" )

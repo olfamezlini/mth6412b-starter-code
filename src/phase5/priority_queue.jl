@@ -11,7 +11,7 @@ end
 Queue{T}() where T = Queue(T[])
 
 """Ajoute `item` à la fin de la file `s`."""
-function push!(q::PriorityQueue{T}, item::T) where T <: AbstractPriorityItem
+function push!(q::AbstractQueue{T}, item::T) where T
     # Vérifier si un élément avec le même node existe déjà
     idx = findfirst(x -> x.node == item.node, q.items)
     

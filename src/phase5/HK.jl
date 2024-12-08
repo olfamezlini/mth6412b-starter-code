@@ -381,5 +381,5 @@ function Algorithme_HK(graph_nodes::Dict{Int64, Vector{Float64}}, graph_edges::V
 
     println("Ordre de la tournée HK : ", visited)
 
-    return Tournee_HK, Poids_tournee
+    return Tournee_HK, Poids_tournee, visited
 end

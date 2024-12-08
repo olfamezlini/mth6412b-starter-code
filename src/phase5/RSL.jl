@@ -121,7 +121,7 @@ function Algorithme_RSL(graph_nodes, graph_edges::Vector{Vector{Int64}}, edge_we
     end
 
     println("Ordre de la tournée RSL : ", visited)
-    return Tournee_RSL, Poids_tournee
+    return Tournee_RSL, Poids_tournee, visited
 
 end
 

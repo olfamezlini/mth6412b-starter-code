@@ -45,7 +45,7 @@ function test_Algorithme_Kruskal()
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/swiss42.tsp")
   edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
   # Exécution de l'algorithme
-  arbre_minimal, poids_minimal = Algortihme_Kruskal(graph_edges, edge_weights_dict)
+  arbre_minimal, poids_minimal= Algortihme_Kruskal(graph_edges, edge_weights_dict)
   # Affichage des résultats
   println("Méthode : Kruskal")
   println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)
@@ -85,7 +85,7 @@ test_Algorithme_Kruskal()
 function test_Algorithme_RSL()
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/swiss42.tsp")
   # Exécution de l'algorithme
-  ordre_tournée, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 5, 2)
+  ordre_tournée, poids_minimal, tour  = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 5, 2)
   # Affichage des résultats
   println("Méthode : RSL")
   println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)
@@ -95,7 +95,7 @@ function test_Algorithme_RSL()
 
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/bayg29.tsp")
   # Exécution de l'algorithme
-  ordre_tournée, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 3, 1)
+  ordre_tournée, poids_minimal, tour = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 3, 1)
   # Affichage des résultats
   println("Méthode : RSL")
   println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)
@@ -110,7 +110,7 @@ test_Algorithme_RSL()
 function test_Algorithme_HK()
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/exemple_phase_4.tsp")
   # Exécution de l'algorithme
-  Tournee_HK, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 0.1, 2500, 100000)
+  Tournee_HK, poids_minimal, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 0.1, 2500, 100000)
   # Affichage des résultats
   println("Méthode : HK")
   println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)
@@ -121,7 +121,7 @@ function test_Algorithme_HK()
   
   graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/gr24.tsp")
   # Exécution de l'algorithme
-  Tournee_HK, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 23, 1, 10.0, 2500, 100000)
+  Tournee_HK, poids_minimal, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 23, 1, 10.0, 2500, 100000)
   # Affichage des résultats
   println("Méthode : HK")
   println("Poids total de l'arbre de recouvrement minimal: ", poids_minimal)

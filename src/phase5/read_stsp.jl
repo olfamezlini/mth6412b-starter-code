@@ -199,7 +199,7 @@ function read_stsp(filename::String)
 
   for (index, edge) in enumerate(edges_brut)
       weight = edge_weights[index]
-      if weight != 0
+      if weight != 0 || filename[4:5]=="sh"
         if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
             push!(graph_edges[edge[1]], edge[2])
             edge_weights_dict[(edge[1], edge[2])] = weight

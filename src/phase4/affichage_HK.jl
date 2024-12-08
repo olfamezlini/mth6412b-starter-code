@@ -17,7 +17,7 @@ function affichage_HK(filename::String, start_node::Int64, algo_Arbre_minimal::I
     # Lecture du fichier filename
     graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
     # Application de l'algorithme de RSL sur le graphe considéré
-    Tournee_HK, poids_minimal = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal, pas, compteur_max, limite)
+    Tournee_HK, poids_minimal, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal, pas, compteur_max, limite)
     
     # Récupération de l'ensemble des arête de la tournée
     arbre_edges = Tournee_HK.edges
