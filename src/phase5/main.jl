@@ -131,3 +131,256 @@ write_tour1("phase5/Tour/painting.tour", Array(tour), Float32(poids),1)
 
 
 reconstruct_picture("phase5/Tour/painting.tour", "../shredder-julia/images/shuffled/abstract-light-painting.png", "phase5/Tour/painting.png" )
+
+###
+
+construction_image("blue-hour-paris", "HK", "Kruskal", 0.43, 500, 100000)
+
+# Cas "blue-hour-paris"
+instance = "blue-hour-paris"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 30, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+# Cas "abstract-light-painting"
+instance = "abstract-light-painting"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 30, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "alaska-railroad"
+instance = "alaska-railroad"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 50, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "lower-kananaskis-lake" (optimal !)
+instance = "lower-kananaskis-lake"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 50, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "marlet2-radio-board"
+instance = "marlet2-radio-board"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 500, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "nikos-cat" (optimal !)
+instance = "nikos-cat"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 10.0, 10, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "pizza-food-wallpaper"
+instance = "pizza-food-wallpaper"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 500, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+
+# Cas "the-enchanted-garden"
+instance = "the-enchanted-garden"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 10.0, 30, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)
+
+# Cas "tokyo-skytree-aerial" (optimal !)
+instance = "tokyo-skytree-aerial"
+
+filename = "../shredder-julia/tsp/instances/$instance.tsp"
+tour_filename = "phase5/Tour/$instance.tour"
+input_filename = "../shredder-julia/images/shuffled/$instance.png"
+output_name = "phase5/Tour/$instance.png" 
+
+graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
+
+graph_edges = complete_graph_edges(graph_edges)
+
+edge_weights_dict = Dict(k => BigFloat(v) for (k, v) in edge_weights_dict)
+
+add_symmetry!(edge_weights_dict)
+
+edge_weights_dict = Dict(k => Float64(v) for (k, v) in edge_weights_dict)
+
+
+# graph, poids, tour=Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 1)
+
+graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 10.0, 10, 100000)
+
+write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids),1)
+
+reconstruct_picture(tour_filename, input_filename, output_name)

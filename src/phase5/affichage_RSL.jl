@@ -15,8 +15,8 @@ Affiche l'application de l'algorithme de Kruskal en rouge sur le graphe considé
 """
 function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::Int64)
     # Lecture du fichier filename
-    graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
-    
+    # graph_nodes, graph_edges, edge_weights_dict = read_stsp("../instances/stsp/"*filename*".tsp")
+    graph_nodes, graph_edges, edge_weights_dict = read_stsp(filename)
     # Application de l'algorithme de RSL sur le graphe considéré
     Tournee_RSL, poids_minimal = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, start_node, algo_Arbre_minimal)
     # Récupération de l'ensemble des arête de la tournée
@@ -55,7 +55,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
         
         # On peut éventuellement sauvegarder la figure
-        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        # savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
         
         # Renvoie de la figure
         fig
@@ -100,7 +100,7 @@ function affichage_RSL(filename::String, start_node::Int64, algo_Arbre_minimal::
         scatter!(x, y)
 
         # On peut éventuellement sauvegarder la figure
-        savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
+        # savefig("C:/Users/Giorgi/Desktop/dossier_latex/donnees_projet_MTH/"*filename*".png")
 
         # Renvoie de la figure
         fig
