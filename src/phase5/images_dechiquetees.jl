@@ -1,5 +1,5 @@
 using STSP
-export construction_image
+export construction_image, write_tour1
 
 """Write a tour in TSPLIB format."""
 function write_tour1(filename::String, tour::Array{Int}, cost::Float32, algo::Int64)
@@ -60,24 +60,14 @@ function construction_image(instance::String, methode_TSP::String, methode_arbre
 	elseif methode_TSP == "RSL" && methode_arbre == "Prim"
 		graph, poids, tour = Algorithme_RSL(graph_nodes, graph_edges, edge_weights_dict, 1, 2)
 	elseif methode_TSP == "HK" && methode_arbre == "Kruskal"
-		if instance == "nikos-cat"
-			graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 10.0, 10, 100000)
-		elseif instance == "lower-kananaskis-lake"
-			graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 50, 100000)
-		elseif instance == "tokyo-skytree-aerial"			
-			graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 10.0, 10, 100000)
-		elseif instance == "abstract-light-painting" || instance == "the-enchanted-garden"
-			graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, 1.0, 500, 100000)
-		else
-			graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, pas, periode, limite)
-		end
+		graph, poids, tour=Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 1, pas, periode, limite)
 	elseif methode_TSP == "HK" && methode_arbre == "Prim"
-		graph, poids, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 2, 10.0, 10, 100000)
-	else
-		println("Noms invalides !")
+		graph, poids, tour = Algorithme_HK(graph_nodes, graph_edges, edge_weights_dict, 1, 2, pas, periode, limite)
 	end
 
 	write_tour1(tour_filename, Array(tour[1:end-1]), Float32(poids), 1)
-
 	reconstruct_picture(tour_filename, input_filename, output_name)
+	println("Poids minimal : ", poids)
 end
+
+
